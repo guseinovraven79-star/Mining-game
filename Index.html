@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mining Game</title>
+    <!-- Подключаем скрипт Telegram -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .score-container {
+            font-size: 36px;
+            font-weight: bold;
+            color: #0088cc;
+            margin-top: 10px;
+        }
+
+        .income {
+            font-size: 14px;
+            color: #aaaaaa;
+            margin-top: 5px;
+        }
+
+        .click-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+        }
+
+        .mine-btn {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 4px solid #0088cc;
+            background: linear-gradient(145deg, #0088cc, #005580);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            box-shadow: 0 0 20px rgba(0, 136, 204, 0.5);
+            cursor: pointer;
+            transition: transform 0.1s;
+            outline: none;
+        }
+
+        .mine-btn:active {
+            transform: scale(0.92);
+        }
+
+        .upgrades {
+            width: 100%;
+            max-width: 400px;
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+
+        .upgrade-btn {
+            width: 100%;
+            background-color: #2b2b2b;
+            color: white;
+            border: 1px solid #3a3a3a;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .upgrade-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Майнинг Ферма</h1>
+        <div class="score-container">
+            <span id="coins">0</span> COIN
+        </div>
+        <div class="income">
+            Доход: +<span id="pps">0</span>/сек
+        </div>
+    </div>
+
+    <div class="click-area">
+        <button class="mine-btn" onclick="mine()">МАЙНИТЬ</button>
+    </div>
+
+    <div class="upgrades">
+        <button class="upgrade-btn" id="buy-rig" onclick="buyRig()">
+            <span>Купить Ферму (+1/сек)</span>
+            <span id="rig-cost">10 COIN</span>
+        </button>
+    </div>
+
+    <script>
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачивает окно на весь экран
+
+        // Переменные игры
+        let coins = 0;
+        let pps = 0; // Доход в секунду (Passive Per Second)
+        let rigCost = 10;
+
+        // Клик по кнопке «Майнить»
+        function mine() {
+            coins += 1;
+            updateUI();
+        }
+
+        // Покупка пассивного дохода
+        function buyRig() {
+            if (coins >= rigCost) {
+                coins -= rigCost;
+                pps += 1;
+                rigCost = Math.floor(rigCost * 1.5); // Увеличение цены для следующей покупки
+                updateUI();
+            }
+        }
+
+        // Обновление отображения данных
+        function updateUI() {
+            document.getElementById('coins').innerText = Math.floor(coins);
+            document.getElementById('pps').innerText = pps;
+            document.getElementById('rig-cost').innerText = rigCost + ' COIN';
+            
+            // Отключаем кнопку, если не хватает монет
+            document.getElementById('buy-rig').disabled = coins < rigCost;
+        }
+
+        // Таймер для пассивного майнинга (каждую секунду)
+        setInterval(() => {
+            if (pps > 0) {
+                coins += pps;
+                updateUI();
+            }
+        }, 1000);
+
+        // Первичный запуск
+        updateUI();
+    </script>
+
+</body>
+</html>
