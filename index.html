@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chronocoin</title>
+    <!-- Подключаем скрипт Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -172,8 +173,10 @@
         </div>
     </div>
 
+    <!-- Вкладка 1: Майнинг -->
     <div id="tab-mining" class="tab-content active">
         <div class="center-area">
+            <!-- Главный круглый интерактивный элемент -->
             <button class="mine-btn" id="mine-main-btn" onclick="handleMineClick()">
                 <span class="mine-btn-title" id="btn-title">Включить майнинг</span>
                 <span class="mine-btn-sub" id="btn-sub">60 мин</span>
@@ -181,6 +184,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 2: Задания -->
     <div id="tab-tasks" class="tab-content">
         <div class="card">
             <h3 style="margin-top: 0; color: #00d2ff;">Ежедневные задания</h3>
@@ -188,6 +192,7 @@
         </div>
     </div>
 
+    <!-- Вкладка 3: О нас -->
     <div id="tab-about" class="tab-content">
         <div class="card">
             <h3 style="margin-top: 0; color: #00d2ff;">О проекте</h3>
@@ -198,6 +203,7 @@
         </div>
     </div>
 
+    <!-- Нижнее меню навигации -->
     <div class="bottom-nav">
         <button class="nav-item active" onclick="switchTab('mining', this)">
             <span>⛏️</span> Майнинг
@@ -215,104 +221,17 @@
         tg.expand();
 
         let coins = 0;
-        let timeLeft = 0;      // Оставшееся время сессии в секундах
+        let miningEndTime = 0; // Точное время окончания майнинга (timestamp в мс)
         let isMiningActive = false;
+        let notificationShown = false; // Флаг, чтобы уведомление показывалось 1 раз
 
         // Загрузка данных из облака
         function loadGame() {
             if (tg.CloudStorage) {
                 tg.CloudStorage.getItem('coins', (err, value) => { if (!err && value) coins = parseFloat(value); });
-                tg.CloudStorage.getItem('timeLeft', (err, value) => {
+                tg.CloudStorage.getItem('miningEndTime', (err, value) => {
                     if (!err && value) {
-                        timeLeft = parseInt(value);
-                        if (timeLeft > 0) {
-                            isMiningActive = true;
-                        }
-                    }
-                });
-            }
-        }
-
-        // Сохранение данных в облако
-        function saveGame() {
-            if (tg.CloudStorage) {
-                tg.CloudStorage.setItem('coins', coins.toString());
-                tg.CloudStorage.setItem('timeLeft', timeLeft.toString());
-            }
-        }
-
-        // Клик по центральной круглой кнопке
-        function handleMineClick() {
-            if (!isMiningActive) {
-                // Здесь в будущем можно будет вставить вызов рекламы
-                startMiningSession();
-            } else {
-                // Если майнинг идет, можно начислять бонусные очки за тапы (по желанию)
-                coins += 1;
-                updateUI();
-                saveGame();
-            }
-        }
-
-        // Запуск сессии майнинга на 60 минут (3600 секунд)
-        function startMiningSession() {
-            timeLeft = 3600; // 60 минут
-            isMiningActive = true;
-            updateUI();
-            saveGame();
-        }
-
-        // Форматирование времени в ММ:СС
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = seconds % 60;
-            return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        // Обновление интерфейса
-        function updateUI() {
-            document.getElementById('coins').innerText = Math.floor(coins);
-            
-            const btnTitle = document.getElementById('btn-title');
-            const btnSub = document.getElementById('btn-sub');
-
-            if (isMiningActive && timeLeft > 0) {
-                btnTitle.innerText = formatTime(timeLeft);
-                btnSub.innerText = "Идет майнинг...";
-            } else {
-                btnTitle.innerText = "Включить майнинг";
-                btnSub.innerText = "60 мин";
-            }
-        }
-
-        // Переключение вкладок меню
-        function switchTab(tabName, element) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-
-            document.getElementById('tab-' + tabName).classList.add('active');
-            element.classList.add('active');
-        }
-
-        // Главный игровой таймер (каждую секунду)
-        setInterval(() => {
-            if (isMiningActive && timeLeft > 0) {
-                timeLeft -= 1;
-                coins += 0.5; // Небольшой пассивный доход за каждую секунду майнинга
-                if (timeLeft <= 0) {
-                    isMiningActive = false;
-                }
-                updateUI();
-                saveGame();
-            }
-        }, 1000);
-
-        // Инициализация при старте
-        loadGame();
-        setTimeout(() => {
-            updateUI();
-        }, 400);
-    </script>
-
-</body>
-</html>
+                        miningEndTime = parseInt(value);
+                        const now = Date.now();
+                        if (mining
+                            
