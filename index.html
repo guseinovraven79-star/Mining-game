@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chronocoin</title>
-    <!-- Подключаем скрипт Telegram WebApp -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
@@ -24,11 +23,11 @@
 
         .header {
             text-align: center;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         .header h1 {
-            font-size: 24px;
+            font-size: 26px;
             margin: 0;
             letter-spacing: 2px;
             color: #00d2ff;
@@ -36,28 +35,11 @@
         }
 
         .score-container {
-            font-size: 38px;
+            font-size: 42px;
             font-weight: bold;
             color: #ffd700;
-            margin-top: 8px;
-            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-        }
-
-        .info-panel {
-            font-size: 13px;
-            color: #b3b3b3;
-            margin-top: 3px;
-        }
-
-        .timer-box {
-            background: rgba(0, 210, 255, 0.1);
-            border: 1px solid rgba(0, 210, 255, 0.3);
-            padding: 8px 15px;
-            border-radius: 10px;
             margin-top: 10px;
-            font-size: 14px;
-            color: #00d2ff;
-            font-weight: bold;
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
         }
 
         .center-area {
@@ -68,94 +50,116 @@
             flex-grow: 1;
         }
 
+        /* Центральная круглая кнопка-майнинг */
         .mine-btn {
-            width: 170px;
-            height: 170px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
             border: 5px solid #00d2ff;
             background: radial-gradient(circle, #00d2ff, #3a7bd5);
             color: white;
-            font-size: 20px;
-            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
             cursor: pointer;
             transition: transform 0.1s, box-shadow 0.1s;
             outline: none;
-            margin-bottom: 15px;
+            padding: 15px;
+            text-align: center;
         }
 
         .mine-btn:active {
-            transform: scale(0.92);
+            transform: scale(0.95);
             box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
         }
 
-        .start-session-btn {
-            background: linear-gradient(135deg, #00b09b, #96c93d);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 12px;
-            font-size: 16px;
+        .mine-btn-title {
+            font-size: 18px;
             font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4);
-            transition: transform 0.1s;
+            margin-bottom: 5px;
+            text-transform: uppercase;
         }
 
-        .start-session-btn:active {
-            transform: scale(0.95);
+        .mine-btn-sub {
+            font-size: 13px;
+            opacity: 0.9;
         }
 
-        .start-session-btn:disabled {
-            background: #4a4a5a;
-            color: #8a8a9a;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        .upgrades {
+        /* Нижнее меню навигации */
+        .bottom-nav {
             width: 100%;
             max-width: 400px;
-            background: rgba(25, 25, 40, 0.85);
-            padding: 12px;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(25, 25, 40, 0.9);
+            padding: 10px;
             border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 5px;
         }
 
-        .upgrade-btn {
-            width: 100%;
-            background-color: #2c2c46;
-            color: white;
-            border: 1px solid #4a4a75;
-            padding: 10px 12px;
-            border-radius: 10px;
-            font-size: 14px;
+        .nav-item {
+            background: none;
+            border: none;
+            color: #b3b3b3;
+            font-size: 13px;
+            font-weight: bold;
             cursor: pointer;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 8px;
-            transition: background 0.2s;
+            gap: 4px;
+            transition: color 0.2s;
+            outline: none;
         }
 
-        .upgrade-btn:last-child {
-            margin-bottom: 0;
+        .nav-item.active, .nav-item:hover {
+            color: #00d2ff;
         }
 
-        .upgrade-btn:hover:not(:disabled) {
-            background-color: #3b3b61;
+        /* Контентные вкладки */
+        .tab-content {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            flex-grow: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
         }
 
-        .upgrade-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+        .tab-content.active {
+            display: flex;
         }
 
-        .cost {
-            color: #ffd700;
+        .card {
+            background: rgba(25, 25, 40, 0.85);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .link-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+            text-decoration: none;
+            padding: 12px;
+            border-radius: 10px;
             font-weight: bold;
+            margin-top: 10px;
+            box-sizing: border-box;
+            box-shadow: 0 4px 15px rgba(0, 176, 155, 0.4);
         }
     </style>
 </head>
@@ -166,117 +170,96 @@
         <div class="score-container">
             <span id="coins">0</span>
         </div>
-        <div class="info-panel">
-            Доход: +<span id="pps">0</span>/сек | Клик: +<span id="click-power">1</span>
-        </div>
-        <div class="timer-box" id="timer-display">
-            Майнинг неактивен
+    </div>
+
+    <div id="tab-mining" class="tab-content active">
+        <div class="center-area">
+            <button class="mine-btn" id="mine-main-btn" onclick="handleMineClick()">
+                <span class="mine-btn-title" id="btn-title">Включить майнинг</span>
+                <span class="mine-btn-sub" id="btn-sub">60 мин</span>
+            </button>
         </div>
     </div>
 
-    <div class="center-area">
-        <button class="mine-btn" onclick="mine()">ТАП</button>
-        <button class="start-session-btn" id="start-btn" onclick="startMiningSession()">Запустить майнинг (60 мин)</button>
+    <div id="tab-tasks" class="tab-content">
+        <div class="card">
+            <h3 style="margin-top: 0; color: #00d2ff;">Ежедневные задания</h3>
+            <p style="color: #b3b3b3; font-size: 14px;">Скоро здесь появятся задания для получения дополнительных монет!</p>
+        </div>
     </div>
 
-    <div class="upgrades">
-        <button class="upgrade-btn" id="buy-rig" onclick="buyRig()">
-            <span>Ферма времени (+1/сек)</span>
-            <span class="cost" id="rig-cost">10 COIN</span>
+    <div id="tab-about" class="tab-content">
+        <div class="card">
+            <h3 style="margin-top: 0; color: #00d2ff;">О проекте</h3>
+            <p style="color: #b3b3b3; font-size: 14px; line-height: 1.4;">
+                Chronocoin — это инновационная игра в Telegram. Следите за нашими новостями, дорожной картой и анонсами в соцсетях!
+            </p>
+            <a href="https://t.me/your_channel" target="_blank" class="link-btn">Наш Telegram канал</a>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('mining', this)">
+            <span>⛏️</span> Майнинг
         </button>
-        <button class="upgrade-btn" id="buy-click" onclick="buyClickUpgrade()">
-            <span>Улучшенный клик (+1)</span>
-            <span class="cost" id="click-cost">25 COIN</span>
+        <button class="nav-item" onclick="switchTab('tasks', this)">
+            <span>📋</span> Задания
+        </button>
+        <button class="nav-item" onclick="switchTab('about', this)">
+            <span>ℹ️</span> О нас
         </button>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Игровые переменные
         let coins = 0;
-        let pps = 0;           
-        let clickPower = 1;    
-        let rigCost = 10;      
-        let clickCost = 25;    
-        
         let timeLeft = 0;      // Оставшееся время сессии в секундах
         let isMiningActive = false;
 
-        // Загрузка данных из облака Telegram CloudStorage
+        // Загрузка данных из облака
         function loadGame() {
             if (tg.CloudStorage) {
                 tg.CloudStorage.getItem('coins', (err, value) => { if (!err && value) coins = parseFloat(value); });
-                tg.CloudStorage.getItem('pps', (err, value) => { if (!err && value) pps = parseInt(value); });
-                tg.CloudStorage.getItem('clickPower', (err, value) => { if (!err && value) clickPower = parseInt(value); });
-                tg.CloudStorage.getItem('rigCost', (err, value) => { if (!err && value) rigCost = parseInt(value); });
-                tg.CloudStorage.getItem('clickCost', (err, value) => { if (!err && value) clickCost = parseInt(value); });
-                
-                // Загружаем оставшееся время сессии майнинга
                 tg.CloudStorage.getItem('timeLeft', (err, value) => {
                     if (!err && value) {
                         timeLeft = parseInt(value);
                         if (timeLeft > 0) {
                             isMiningActive = true;
-                            document.getElementById('start-btn').disabled = true;
                         }
                     }
                 });
             }
         }
 
-        // Сохранение данных в облако Telegram CloudStorage
+        // Сохранение данных в облако
         function saveGame() {
             if (tg.CloudStorage) {
                 tg.CloudStorage.setItem('coins', coins.toString());
-                tg.CloudStorage.setItem('pps', pps.toString());
-                tg.CloudStorage.setItem('clickPower', clickPower.toString());
-                tg.CloudStorage.setItem('rigCost', rigCost.toString());
-                tg.CloudStorage.setItem('clickCost', clickCost.toString());
                 tg.CloudStorage.setItem('timeLeft', timeLeft.toString());
+            }
+        }
+
+        // Клик по центральной круглой кнопке
+        function handleMineClick() {
+            if (!isMiningActive) {
+                // Здесь в будущем можно будет вставить вызов рекламы
+                startMiningSession();
+            } else {
+                // Если майнинг идет, можно начислять бонусные очки за тапы (по желанию)
+                coins += 1;
+                updateUI();
+                saveGame();
             }
         }
 
         // Запуск сессии майнинга на 60 минут (3600 секунд)
         function startMiningSession() {
-            if (!isMiningActive) {
-                timeLeft = 3600; // 60 минут
-                isMiningActive = true;
-                document.getElementById('start-btn').disabled = true;
-                updateUI();
-                saveGame();
-            }
-        }
-
-        // Клик по центральной кнопке
-        function mine() {
-            coins += clickPower;
+            timeLeft = 3600; // 60 минут
+            isMiningActive = true;
             updateUI();
             saveGame();
-        }
-
-        // Покупка фермы пассивного дохода
-        function buyRig() {
-            if (coins >= rigCost) {
-                coins -= rigCost;
-                pps += 1;
-                rigCost = Math.floor(rigCost * 1.5);
-                updateUI();
-                saveGame();
-            }
-        }
-
-        // Покупка силы клика
-        function buyClickUpgrade() {
-            if (coins >= clickCost) {
-                coins -= clickCost;
-                clickPower += 1;
-                clickCost = Math.floor(clickCost * 1.8);
-                updateUI();
-                saveGame();
-            }
         }
 
         // Форматирование времени в ММ:СС
@@ -289,34 +272,33 @@
         // Обновление интерфейса
         function updateUI() {
             document.getElementById('coins').innerText = Math.floor(coins);
-            document.getElementById('pps').innerText = pps;
-            document.getElementById('click-power').innerText = clickPower;
-            document.getElementById('rig-cost').innerText = rigCost + ' COIN';
-            document.getElementById('click-cost').innerText = clickCost + ' COIN';
             
-            const timerDisplay = document.getElementById('timer-display');
-            const startBtn = document.getElementById('start-btn');
+            const btnTitle = document.getElementById('btn-title');
+            const btnSub = document.getElementById('btn-sub');
 
             if (isMiningActive && timeLeft > 0) {
-                timerDisplay.innerText = `До конца майнинга: ${formatTime(timeLeft)}`;
-                startBtn.disabled = true;
+                btnTitle.innerText = formatTime(timeLeft);
+                btnSub.innerText = "Идет майнинг...";
             } else {
-                timerDisplay.innerText = "Майнинг остановлен. Нажмите Старт!";
-                startBtn.disabled = false;
+                btnTitle.innerText = "Включить майнинг";
+                btnSub.innerText = "60 мин";
             }
+        }
 
-            // Блокировка кнопок улучшений при нехватке монет
-            document.getElementById('buy-rig').disabled = coins < rigCost;
-            document.getElementById('buy-click').disabled = coins < clickCost;
+        // Переключение вкладок меню
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+            element.classList.add('active');
         }
 
         // Главный игровой таймер (каждую секунду)
         setInterval(() => {
             if (isMiningActive && timeLeft > 0) {
                 timeLeft -= 1;
-                if (pps > 0) {
-                    coins += pps;
-                }
+                coins += 0.5; // Небольшой пассивный доход за каждую секунду майнинга
                 if (timeLeft <= 0) {
                     isMiningActive = false;
                 }
