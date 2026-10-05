@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mining Game</title>
+    <title>Chronocoin Mining</title>
     <!-- Подключаем скрипт Telegram -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -99,7 +99,7 @@
 <body>
 
     <div class="header">
-        <h1>Майнинг Ферма</h1>
+        <h1>Chronocoin</h1>
         <div class="score-container">
             <span id="coins">0</span> COIN
         </div>
@@ -122,17 +122,36 @@
     <script>
         // Инициализация Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачивает окно на весь экран
+        tg.expand();
 
         // Переменные игры
         let coins = 0;
-        let pps = 0; // Доход в секунду (Passive Per Second)
+        let pps = 0; 
         let rigCost = 10;
+
+        // Загрузка сохраненных данных при запуске
+        function loadGame() {
+            const savedCoins = localStorage.getItem('chronocoin_coins');
+            const savedPps = localStorage.getItem('chronocoin_pps');
+            const savedCost = localStorage.getItem('chronocoin_cost');
+
+            if (savedCoins !== null) coins = parseFloat(savedCoins);
+            if (savedPps !== null) pps = parseInt(savedPps);
+            if (savedCost !== null) rigCost = parseInt(savedCost);
+        }
+
+        // Сохранение данных в localStorage
+        function saveGame() {
+            localStorage.setItem('chronocoin_coins', coins);
+            localStorage.setItem('chronocoin_pps', pps);
+            localStorage.setItem('chronocoin_cost', rigCost);
+        }
 
         // Клик по кнопке «Майнить»
         function mine() {
             coins += 1;
             updateUI();
+            saveGame();
         }
 
         // Покупка пассивного дохода
@@ -140,33 +159,33 @@
             if (coins >= rigCost) {
                 coins -= rigCost;
                 pps += 1;
-                rigCost = Math.floor(rigCost * 1.5); // Увеличение цены для следующей покупки
+                rigCost = Math.floor(rigCost * 1.5); 
                 updateUI();
+                saveGame();
             }
         }
 
-        // Обновление отображения данных
+        // Обновление интерфейса
         function updateUI() {
             document.getElementById('coins').innerText = Math.floor(coins);
             document.getElementById('pps').innerText = pps;
             document.getElementById('rig-cost').innerText = rigCost + ' COIN';
-            
-            // Отключаем кнопку, если не хватает монет
             document.getElementById('buy-rig').disabled = coins < rigCost;
         }
 
-        // Таймер для пассивного майнинга (каждую секунду)
+        // Таймер пассивного майнинга (каждую секунду)
         setInterval(() => {
             if (pps > 0) {
                 coins += pps;
                 updateUI();
+                saveGame();
             }
         }, 1000);
 
-        // Первичный запуск
+        // Запуск при открытии
+        loadGame();
         updateUI();
     </script>
 
 </body>
-  </html>
-  
+</html>
