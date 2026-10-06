@@ -257,14 +257,16 @@
                 
                 <div id="timer-container" style="display: none;">
                     <div class="timer-display" id="timer">01:00:00</div>
-                    <p id="mining-status" style="font-weight: 600; color: #ffffff;">Идет обычный майнинг...</p>
+                    <p id="mining-status" style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">Идет обычный майнинг...</p>
                 </div>
 
-                <button class="btn" id="start-mining-btn" onclick="startMining()">Запустить майнинг (1 час)</button>
+                <!-- Кнопка обычного майнинга -->
+                <button class="btn" id="start-mining-btn" onclick="requestStartMining()">Запустить майнинг (1 час)</button>
                 
+                <!-- Кнопка ночного майнинга всегда под ней -->
                 <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <button class="btn" id="start-night-mining-btn" style="background-color: var(--night-color); box-shadow: 0 4px 12px rgba(88, 86, 214, 0.3);" onclick="startNightMining()">Ночной майнинг (6 часов)</button>
-                    <p style="font-size: 12px; margin-top: 6px; color: var(--hint-color);">Доступно строго с 22:00 до 23:59 (Требуется 5 видео)</p>
+                    <button class="btn" id="start-night-mining-btn" style="background-color: var(--night-color); box-shadow: 0 4px 12px rgba(88, 86, 214, 0.3);" onclick="requestStartNightMining()">Ночной майнинг (6 часов)</button>
+                    <p style="font-size: 12px; margin-top: 6px; color: var(--hint-color);">Доступно с 22:00 до 23:59 (Требуется 5 видео)</p>
                 </div>
             </div>
 
@@ -307,16 +309,16 @@
             <div class="task-item">
                 <div class="task-info">
                     <div class="task-title">Подписаться на Telegram</div>
-                    <div class="task-reward">+1.0 CC</div>
+                    <div class="task-reward">+10.0 CC</div>
                 </div>
-                <button class="task-btn" onclick="completeTask(this, 1.0)">Подписаться</button>
+                <button class="task-btn" onclick="completeTask(this, 10.0)">Подписаться</button>
             </div>
             <div class="task-item">
                 <div class="task-info">
                     <div class="task-title">Подписаться на Instagram</div>
-                    <div class="task-reward">+1.0 CC</div>
+                    <div class="task-reward">+10.0 CC</div>
                 </div>
-                <button class="task-btn" onclick="completeTask(this, 1.0)">Подписаться</button>
+                <button class="task-btn" onclick="completeTask(this, 10.0)">Подписаться</button>
             </div>
 
             <h2 style="margin-top: 24px;">Специальные задания</h2>
@@ -372,7 +374,7 @@
                     <li><strong>Друзья:</strong> Скорость майнинга растет от приглашений (от 2 до 50 CC/ч).</li>
                     <li><strong>Задания:</strong> Прохождение ежедневных заданий и колеса фортуны обязательно для будущего проекта.</li>
                 </ul>
-                <p><strong>Партнерство и сотрудничество:</strong> Мы всегда открыты к новым предложениям!</p>
+                <p><strong>Партнерство и сотрудничество:</strong> Мы всегда открыты к новым предложениям! Вы можете связаться с нами через наши социальные сети.</p>
             </div>
         </div>
     </div>
@@ -405,7 +407,7 @@
         <div class="modal-content">
             <h3 id="modal-title" style="margin-top:0; font-size:18px; color: #fff;">Просмотр видео</h3>
             <p id="modal-desc" style="font-size: 14px; margin: 15px 0;">Пожалуйста, просмотрите видео для активации функции.</p>
-            <div id="modal-progress" style="font-weight: bold; font-size: 16px; color: var(--gold-color); margin-bottom: 15px;">Видео 1 из 5</div>
+            <div id="modal-progress" style="font-weight: bold; font-size: 16px; color: var(--gold-color); margin-bottom: 15px;">Видео 1 из 1</div>
             <button class="btn" id="modal-watch-btn" onclick="simulateVideoWatch()">Смотреть видео</button>
             <button class="btn" id="modal-close-btn" style="background-color: #2a3d31; color: #6c7d72; margin-top: 8px; display: none;" onclick="closeModal()">Закрыть</button>
         </div>
@@ -467,14 +469,17 @@
             checkWheelTimer();
         }
 
-        function startMining() {
-            state.miningEndTime = Date.now() + 1 * 60 * 60 * 1000;
-            state.miningDuration = 1;
-            saveState();
-            updateUI();
+        function requestStartMining() {
+            openModal("Обычный майнинг (1 час)", 1, function() {
+                state.miningEndTime = Date.now() + 1 * 60 * 60 * 1000;
+                state.miningDuration = 1;
+                saveState();
+                updateUI();
+                alert('Обычный майнинг успешно запущен на 1 час!');
+            });
         }
 
-        function startNightMining() {
+        function requestStartNightMining() {
             const now = new Date();
             const hours = now.getHours();
             
@@ -493,40 +498,46 @@
         }
 
         function checkMiningTimer() {
-            if (!state.miningEndTime) return;
+            const timerContainer = document.getElementById('timer-container');
+            const startBtn = document.getElementById('start-mining-btn');
+            const miningStatus = document.getElementById('mining-status');
+
+            if (!state.miningEndTime) {
+                if (timerContainer) timerContainer.style.display = 'none';
+                if (startBtn) startBtn.style.display = 'block';
+                return;
+            }
             
             const now = Date.now();
             const diff = state.miningEndTime - now;
 
-            const timerContainer = document.getElementById('timer-container');
-            const startBtn = document.getElementById('start-mining-btn');
-            const nightBtn = document.getElementById('start-night-mining-btn');
-            const miningStatus = document.getElementById('mining-status');
-
             if (diff > 0) {
-                timerContainer.style.display = 'block';
-                startBtn.style.display = 'none';
-                nightBtn.style.display = 'none';
+                if (timerContainer) timerContainer.style.display = 'block';
+                if (startBtn) startBtn.style.display = 'none';
 
                 const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-                document.getElementById('timer').innerText = 
-                    String(hours).padStart(2, '0') + ':' + 
-                    String(minutes).padStart(2, '0') + ':' + 
-                    String(seconds).padStart(2, '0');
+                const timerEl = document.getElementById('timer');
+                if (timerEl) {
+                    timerEl.innerText = 
+                        String(hours).padStart(2, '0') + ':' + 
+                        String(minutes).padStart(2, '0') + ':' + 
+                        String(seconds).padStart(2, '0');
+                }
 
-                miningStatus.innerText = state.miningDuration === 6 ? 'Ночной майнинг (6 часов)' : 'Идет обычный майнинг (1ч)...';
+                if (miningStatus) {
+                    miningStatus.innerText = state.miningDuration === 6 ? 'Ночной майнинг (6 часов)' : 'Идет обычный майнинг (1ч)...';
+                }
             } else {
                 const reward = state.miningDuration * state.speed;
                 state.balance += reward;
                 state.miningEndTime = null;
                 saveState();
 
-                timerContainer.style.display = 'none';
-                startBtn.style.display = 'block';
-                nightBtn.style.display = 'block';
+                if (timerContainer) timerContainer.style.display = 'none';
+                if (startBtn) startBtn.style.display = 'block';
                 updateUI();
             }
         }
@@ -659,4 +670,5 @@
         loadState();
     </script>
 </body>
-</html>
+    </html>
+    
