@@ -4,561 +4,347 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chronocoin</title>
-    <!-- Подключаем официальный скрипт Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --tg-theme-bg-color: #18222d;
-            --tg-theme-text-color: #ffffff;
-            --tg-theme-hint-color: #7b8c9d;
-            --tg-theme-button-color: #2481cc;
-            --tg-theme-button-text-color: #ffffff;
+            --bg-color: #18222d;
+            --text-color: #ffffff;
+            --hint-color: #7b8c9d;
+            --btn-color: #2481cc;
             --card-bg: #222e3c;
-            --accent-color: #f39c12;
+            --accent: #f39c12;
         }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            padding-bottom: 70px;
-        }
-
-        .container {
-            flex: 1;
-            padding: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* Шапка профиля */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .balance-box {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--accent-color);
-        }
-        .user-name {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color);
-        }
-
-        /* Вкладки */
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Секция Майнинга */
-        .mining-card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            position: relative;
-        }
-        .mining-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-        .timer-display {
-            font-size: 36px;
-            font-weight: bold;
-            margin: 20px 0;
-            letter-spacing: 2px;
-        }
-        .btn {
-            background-color: var(--tg-theme-button-color);
-            color: var(--tg-theme-button-text-color);
-            border: none;
-            border-radius: 12px;
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn:active {
-            opacity: 0.8;
-        }
-        .btn:disabled {
-            background-color: #3b4856;
-            color: #7b8c9d;
-            cursor: not-allowed;
-        }
-
-        /* --- КОМПАКТНЫЙ ВИДЖЕТ КОЛЕСА ФОРТУНЫ (НИЗ СПРАВА) --- */
-        .wheel-widget-container {
-            position: fixed;
-            bottom: 80px;
-            right: 15px;
-            z-index: 100;
-        }
-
-        .wheel-card {
-            background: #1e2530;
-            border: 1px solid #3b82f6;
-            border-radius: 14px;
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
-            transition: all 0.2s ease;
-            max-width: 180px;
-        }
-
-        .wheel-card:active {
-            transform: scale(0.95);
-        }
-
-        .wheel-icon {
-            font-size: 22px;
-            animation: slow-spin 10s linear infinite;
-        }
-
-        @keyframes slow-spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .wheel-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .wheel-title {
-            font-size: 10px;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        .wheel-status {
-            font-size: 11px;
-            color: #f8fafc;
-            font-weight: 600;
-        }
-
-        .wheel-card.cooldown {
-            border-color: #2a3442;
-            opacity: 0.75;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-        .wheel-card.cooldown .wheel-icon {
-            animation: none;
-        }
-
-        /* Навигация снизу */
-        .nav-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--card-bg);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            z-index: 90;
-        }
-        .nav-item {
-            background: none;
-            border: none;
-            color: var(--tg-theme-hint-color);
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            flex: 1;
-        }
-        .nav-item.active {
-            color: var(--tg-theme-button-color);
-        }
-        .nav-item span.icon {
-            font-size: 20px;
-            margin-bottom: 4px;
-        }
-
-        /* Задания и Сундуки */
-        .section-title {
-            font-size: 18px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        .task-card, .chest-card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .task-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .task-title {
-            font-size: 15px;
-            font-weight: 500;
-        }
-        .task-reward {
-            color: var(--accent-color);
-            font-weight: bold;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); padding-bottom: 70px; min-height: 100vh; }
+        .container { padding: 15px; max-width: 500px; margin: 0 auto; }
         
-        .chests-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        .chest-box {
-            background: #2b3b4e;
-            border-radius: 10px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            cursor: pointer;
-            border: 2px solid transparent;
-        }
-        .chest-box.opened {
-            background: #1e2c3a;
-            cursor: default;
-        }
+        .header { background: var(--card-bg); padding: 12px 16px; border-radius: 12px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        .balance { font-size: 20px; font-weight: bold; color: var(--accent); }
+        .username { font-size: 13px; color: var(--hint-color); }
 
-        /* Модальное окно рекламы */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 200;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 320px;
-            width: 100%;
-        }
-        .ad-timer {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--accent-color);
-            margin: 15px 0;
-        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .card { background: var(--card-bg); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 15px; }
+        .timer { font-size: 32px; font-weight: bold; margin: 15px 0; }
+        
+        .btn { background: var(--btn-color); color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 15px; font-weight: bold; width: 100%; cursor: pointer; }
+        .btn:disabled { background: #3b4856; color: #7b8c9d; }
+
+        /* Навигация */
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 100; }
+        .nav-item { background: none; border: none; color: var(--hint-color); font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--btn-color); }
+        .nav-item span { font-size: 18px; margin-bottom: 3px; }
+
+        /* Колесо виджет */
+        .wheel-widget { position: fixed; bottom: 75px; right: 10px; background: #1e2530; border: 1px solid #3b82f6; border-radius: 12px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; z-index: 90; cursor: pointer; }
+
+        /* Задания */
+        .task-card { background: var(--card-bg); border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .task-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        
+        .chests-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+        .chest-box { background: #2b3b4e; border-radius: 10px; height: 75px; display: flex; align-items: center; justify-content: center; font-size: 28px; cursor: pointer; }
+
+        /* Модалка */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); z-index: 300; justify-content: center; align-items: center; padding: 20px; }
+        .modal-block { background: var(--card-bg); padding: 20px; border-radius: 14px; text-align: center; width: 100%; max-width: 300px; }
     </style>
 </head>
-<body onload="initApp()">
+<body>
 
     <div class="container">
         <!-- Шапка -->
         <div class="header">
             <div>
-                <div class="user-name" id="userName">Игрок</div>
-                <div class="balance-box"><span id="balance">0</span> CC</div>
+                <div class="username" id="userNameField">Игрок</div>
+                <div class="balance"><span id="balanceField">0</span> CC</div>
             </div>
-            <div style="font-size: 12px; color: var(--tg-theme-hint-color);" id="refStatusInfo">Рефералы: <span id="refCount">0</span>/1</div>
+            <div style="font-size: 12px; color: var(--hint-color);">Друзья: <span id="refField">0</span>/1</div>
         </div>
 
-        <!-- Вкладка 1: Майнинг -->
+        <!-- 1. МАЙНИНГ -->
         <div id="tab-mining" class="tab-content active">
-            <div class="mining-card">
-                <div class="mining-title">Эко-Майнер Chronocoin</div>
-                <div id="miningStatusText" style="color: var(--tg-theme-hint-color); font-size: 14px;">Статус: Ожидание запуска</div>
-                <div class="timer-display" id="timerDisplay">01:00:00</div>
-                <button class="btn" id="miningBtn" onclick="handleMiningAction()">Запустить майнинг (Реклама)</button>
+            <div class="card">
+                <h3>Эко-Майнер</h3>
+                <p id="miningStatus" style="font-size: 13px; color: var(--hint-color); margin-top: 5px;">Статус: Готов к запуску</p>
+                <div class="timer" id="timerField">01:00:00</div>
+                <button class="btn" id="miningBtn" onclick="startMining()">Запустить майнинг</button>
             </div>
         </div>
 
-        <!-- Вкладка 2: Задания -->
+        <!-- 2. ЗАДАНИЯ -->
         <div id="tab-tasks" class="tab-content">
-            <div class="section-title">Обязательные задания</div>
+            <h3 style="margin-bottom: 12px; font-size: 16px;">Задания</h3>
             <div class="task-card">
-                <div class="task-info">
-                    <span class="task-title">Пригласить друга (для старта)</span>
-                    <span class="task-reward">🔓 Разблокировка</span>
+                <div class="task-row">
+                    <span>Пригласить 1 друга (для разблокировки)</span>
+                    <b style="color:var(--accent);">🔓 Старт</b>
                 </div>
-                <button class="btn" onclick="shareRefLink()" style="padding: 10px; font-size: 14px;">Пригласить друга</button>
+                <button class="btn" style="padding: 8px; font-size: 13px;" onclick="addFriend()">Пригласить друга</button>
             </div>
             <div class="task-card">
-                <div class="task-info">
-                    <span class="task-title">Подписаться на Telegram-канал</span>
-                    <span class="task-reward">+1 CC</span>
+                <div class="task-row">
+                    <span>Подписка на Telegram канал</span>
+                    <b style="color:var(--accent);">+1 CC</b>
                 </div>
-                <button class="btn" onclick="completeTask('tg_sub', 1, this)" style="padding: 10px; font-size: 14px;" id="btnTgSub">Подписаться</button>
-            </div>
-            <div class="task-card">
-                <div class="task-info">
-                    <span class="task-title">Подписаться на наш Instagram</span>
-                    <span class="task-reward">+1 CC</span>
-                </div>
-                <button class="btn" onclick="completeTask('ig_sub', 1, this)" style="padding: 10px; font-size: 14px;" id="btnIgSub">Подписаться</button>
-            </div>
-
-            <div class="section-title" style="margin-top: 25px;">Бонусные задания</div>
-            <div class="task-card">
-                <div class="task-info">
-                    <span class="task-title">Пригласи 3 друзей</span>
-                    <span class="task-reward">3 CC</span>
-                </div>
-                <button class="btn" onclick="claimThreeRefsReward()" style="padding: 10px; font-size: 14px;" id="btnThreeRefs">Забрать награду</button>
+                <button class="btn" style="padding: 8px; font-size: 13px;" id="btnTg" onclick="completeTask('tg', 1, this)">Подписаться</button>
             </div>
         </div>
 
-        <!-- Вкладка 3: Ежедневные Сундуки -->
+        <!-- 3. СУНДУКИ -->
         <div id="tab-chests" class="tab-content">
-            <div class="section-title">Ежедневные сундуки</div>
-            <div id="chestLockedContainer">
-                <p style="color: var(--tg-theme-hint-color); margin-bottom: 15px; font-size: 14px;">
-                    Чтобы открыть сундуки и испытать удачу, посмотрите 3 рекламных ролика (доступно 1 раз в сутки).
-                </p>
-                <div class="task-card" style="text-align: center; margin-bottom: 15px;">
-                    Просмотрено роликов: <b id="adWatchedCount">0</b> / 3
-                </div>
-                <button class="btn" id="watchAdForChestsBtn" onclick="watchAdForChestSession()">Смотреть рекламу (3 видео)</button>
+            <h3 style="margin-bottom: 12px; font-size: 16px;">Ежедневные сундуки</h3>
+            <div id="chestPreBlock" class="card">
+                <p style="font-size: 13px; color: var(--hint-color); margin-bottom: 12px;">Посмотрите 3 коротких ролика, чтобы открыть сундуки на сегодня.</p>
+                <p style="margin-bottom: 10px;">Просмотрено: <b id="chestVideosCount">0</b> / 3</p>
+                <button class="btn" onclick="watchChestAd()">Смотреть видео</button>
             </div>
-
-            <div id="chestGameContainer" style="display: none;">
-                <p style="color: var(--tg-theme-hint-color); margin-bottom: 15px; font-size: 14px;">
-                    Выберите один сундук! Внутри может быть от 1 до 3 CC, либо пусто.
-                </p>
-                <div class="chests-grid" id="chestsGrid"></div>
-                <div id="chestResultText" style="text-align: center; font-weight: bold; color: var(--accent-color); min-height: 24px;"></div>
+            <div id="chestGameBlock" style="display: none;">
+                <p style="font-size: 13px; color: var(--hint-color); margin-bottom: 10px;">Выберите один сундук:</p>
+                <div class="chests-grid" id="chestGrid"></div>
+                <div id="chestResult" style="text-align: center; color: var(--accent); font-weight: bold; min-height: 20px;"></div>
             </div>
         </div>
     </div>
 
-    <!-- ВИДЖЕТ КОЛЕСА ФОРТУНЫ НА ГЛАВНОМ ЭКРАНЕ (НИЗ СПРАВА) -->
-    <div class="wheel-widget-container">
-        <div id="wheelWidget" class="wheel-card" onclick="handleWheelClick()">
-            <div class="wheel-icon">🎡</div>
-            <div class="wheel-info">
-                <span class="wheel-title">Колесо фортуны</span>
-                <span id="wheelStatusText" class="wheel-status">Смотреть видео (0/3)</span>
-            </div>
+    <!-- КОЛЕСО ВИДЖЕТ -->
+    <div class="wheel-widget" onclick="openWheel()">
+        <span style="font-size: 20px;">🎡</span>
+        <div style="font-size: 11px; line-height: 1.2;">
+            <div style="color:var(--hint-color);">Колесо фортуны</div>
+            <div id="wheelStatus" style="font-weight: bold;">Крутить</div>
         </div>
     </div>
 
-    <!-- Нижняя навигация -->
+    <!-- НИЖНЯЯ НАВИГАЦИЯ -->
     <div class="nav-bar">
         <button class="nav-item active" onclick="switchTab('mining', this)">
-            <span class="icon">⛏️</span>Майнинг
+            <span>⛏️</span>Майнинг
         </button>
         <button class="nav-item" onclick="switchTab('tasks', this)">
-            <span class="icon">📋</span>Задания
+            <span>📋</span>Задания
         </button>
         <button class="nav-item" onclick="switchTab('chests', this)">
-            <span class="icon">🎁</span>Сундуки
+            <span>🎁</span>Сундуки
         </button>
     </div>
 
-    <!-- Модальное окно просмотра рекламы -->
+    <!-- МОДАЛКА РЕКЛАМЫ -->
     <div class="modal" id="adModal">
-        <div class="modal-content">
-            <h3>Просмотр рекламы</h3>
-            <p style="font-size: 13px; color: var(--tg-theme-hint-color); margin-top: 5px;" id="adModalSubtitle">Запуск майнинга после просмотра</p>
-            <div class="ad-timer" id="adTimer">3</div>
-            <p style="font-size: 12px; color: var(--tg-theme-hint-color);">Пожалуйста, не закрывайте окно...</p>
+        <div class="modal-block">
+            <h3>Реклама</h3>
+            <p style="font-size: 13px; color: var(--hint-color); margin: 8px 0;" id="adText">Загрузка...</p>
+            <div style="font-size: 30px; font-weight: bold; color: var(--accent); margin: 15px 0;" id="adTimerNum">3</div>
         </div>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        try {
-            tg.expand();
-        } catch(e) {}
+        try { tg.expand(); } catch(e) {}
 
-        let state = {
+        // Состояние программы
+        let db = {
             balance: 0,
-            refCount: 0,
-            miningEndTime: 0,
-            completedTasks: {},
-            threeRefsClaimed: false,
-            lastChestDay: "",
-            chestOpenedToday: false,
-            wheelLastSpin: 0,
-            wheelVideosWatched: 0,
-            chestVideosWatched: 0
+            refs: 0,
+            miningEnd: 0,
+            tasks: {},
+            chestWatched: 0,
+            chestOpened: false,
+            wheelTime: 0
         };
 
-        const MINING_DURATION = 3600000; // 1 час
-        const COOLDOWN_TIME = 24 * 60 * 60 * 1000; // 24 часа
-
-        let currentAdType = ''; 
-        let adInterval = null;
-
-        function initApp() {
-            // Надежное извлечение имени пользователя из Telegram
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                const user = tg.initDataUnsafe.user;
-                const displayName = user.first_name || user.username || 'Игрок';
-                document.getElementById('userName').innerText = displayName;
-            } else {
-                document.getElementById('userName').innerText = 'Игрок (Web)';
-            }
-            loadData();
-            setInterval(updateTimers, 1000);
-        }
-
-        function loadData() {
-            const saved = localStorage.getItem('cc_app_state');
+        // Загрузка данных из памяти
+        function loadState() {
+            let saved = localStorage.getItem('cc_state_v3');
             if (saved) {
-                try {
-                    state = JSON.parse(saved);
-                } catch(e) {}
-            }
-            updateUI();
-            updateWheelUI();
-        }
-
-        function saveData() {
-            localStorage.setItem('cc_app_state', JSON.stringify(state));
-            updateUI();
-            updateWheelUI();
-        }
-
-        function updateUI() {
-            document.getElementById('balance').innerText = state.balance;
-            document.getElementById('refCount').innerText = state.refCount;
-            document.getElementById('adWatchedCount').innerText = state.chestVideosWatched || 0;
-
-            if (state.completedTasks['tg_sub']) {
-                let btn = document.getElementById('btnTgSub');
-                if(btn) { btn.innerText = 'Выполнено'; btn.disabled = true; }
-            }
-            if (state.completedTasks['ig_sub']) {
-                let btn = document.getElementById('btnIgSub');
-                if(btn) { btn.innerText = 'Выполнено'; btn.disabled = true; }
-            }
-            if (state.threeRefsClaimed) {
-                let btn = document.getElementById('btnThreeRefs');
-                if(btn) { btn.innerText = 'Получено'; btn.disabled = true; }
-            }
-
-            let todayStr = new Date().toDateString();
-            if (state.lastChestDay !== todayStr) {
-                state.chestOpenedToday = false;
-                state.chestVideosWatched = 0;
-                state.lastChestDay = todayStr;
-                saveData();
-            }
-
-            if (state.chestOpenedToday || (state.chestVideosWatched >= 3)) {
-                document.getElementById('chestLockedContainer').style.display = 'none';
-                document.getElementById('chestGameContainer').style.display = 'block';
-                renderChests(state.chestOpenedToday);
-            } else {
-                document.getElementById('chestLockedContainer').style.display = 'block';
-                document.getElementById('chestGameContainer').style.display = 'none';
+                try { db = JSON.parse(saved); } catch(e) {}
             }
         }
 
-        function switchTab(tabName, element) {
+        function saveState() {
+            localStorage.setItem('cc_state_v3', JSON.stringify(db));
+            renderUI();
+        }
+
+        // Переключение вкладок (исправлено, теперь гарантированно работает)
+        function switchTab(tabId, btnElement) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
 
-            document.getElementById('tab-' + tabName).classList.add('active');
-            element.classList.add('active');
+            let target = document.getElementById('tab-chym' || ('tab-' + tabId));
+            if (target) target.classList.add('active');
+            
+            // Надежное переключение
+            document.getElementById('tab-mining').style.display = (tabId === 'mining') ? 'block' : 'none';
+            document.getElementById('tab-tasks').style.display = (tabId === 'tasks') ? 'block' : 'none';
+            document.getElementById('tab-chests').style.display = (tabId === 'chests') ? 'block' : 'none';
+
+            btnElement.classList.add('active');
         }
 
-        // --- СИМУЛЯЦИЯ РЕКЛАМЫ ---
-        function startAdSimulation(type) {
-            currentAdType = type;
-            const modal = document.getElementById('adModal');
-            const subtitle = document.getElementById('adModalSubtitle');
-            const timerEl = document.getElementById('adTimer');
+        function renderUI() {
+            document.getElementById('balanceField').innerText = db.balance;
+            document.getElementById('refField').innerText = db.refs;
+            
+            // Имя из Telegram
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                let u = tg.initDataUnsafe.user;
+                document.getElementById('userNameField').innerText = u.first_name || u.username || 'Игрок';
+            }
 
-            if (type === 'mining') subtitle.innerText = 'Запуск майнинга после просмотра';
-            else if (type === 'wheel_video') subtitle.innerText = `Просмотр видео для колеса (${(state.wheelVideosWatched || 0) + 1}/3)`;
-            else if (type === 'chest_video') subtitle.innerText = `Просмотр видео для сундуков (${(state.chestVideosWatched || 0) + 1}/3)`;
+            // Сундуки
+            document.getElementById('chestVideosCount').innerText = db.chestWatched;
+            if (db.chestOpened || db.chestWatched >= 3) {
+                document.getElementById('chestPreBlock').style.display = 'none';
+                document.getElementById('chestGameBlock').style.display = 'block';
+                renderChestsGrid();
+            } else {
+                document.getElementById('chestPreBlock').style.display = 'block';
+                document.getElementById('chestGameBlock').style.display = 'none';
+            }
 
-            let timeLeft = 3;
-            timerEl.innerText = timeLeft;
+            // Задания
+            if (db.tasks['tg']) {
+                let b = document.getElementById('btnTg');
+                b.innerText = 'Выполнено';
+                b.disabled = true;
+            }
+        }
+
+        // Реклама симулятор
+        let adCallback = null;
+        function showAd(text, callback) {
+            document.getElementById('adText').innerText = text;
+            let modal = document.getElementById('adModal');
             modal.style.display = 'flex';
-
-            clearInterval(adInterval);
-            adInterval = setInterval(() => {
+            
+            let timeLeft = 3;
+            document.getElementById('adTimerNum').innerText = timeLeft;
+            
+            let timer = setInterval(() => {
                 timeLeft--;
-                timerEl.innerText = timeLeft;
+                document.getElementById('adTimerNum').innerText = timeLeft;
                 if (timeLeft <= 0) {
-                    clearInterval(adInterval);
+                    clearInterval(timer);
                     modal.style.display = 'none';
-                    finishAdAction();
+                    if (callback) callback();
                 }
             }, 1000);
         }
 
-        function finishAdAction() {
-            if (currentAdType === 'mining') {
-                state.miningEndTime = Date.now() + MINING_DURATION;
-                saveData();
-                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } else if (currentAdType === 'wheel_video') {
-                state.wheelVideosWatched = (state.wheelVideosWatched || 0) + 1;
-                saveData();
-                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                if (state.wheelVideosWatched >= 3) {
-                    spinTheWheel();
-                }
-            } else if (currentAdType === 'chest_video') {
-                state.chestVideosWatched = (state.chestVideosWatched || 0) + 1;
-                saveData();
-                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                if (state.chestVideosWatched >= 3) {
-                    state.chestOpenedToday = true;
-                    saveData();
-                }
-            }
-        }
-
-        // --- МАЙНИНГ ЛОГИКА ---
-        function handleMiningAction() {
-            if (state.refCount < 1) {
-                if (tg && tg.showAlert) tg.showAlert('⚠️️ Чтобы разблокировать майнинг, пригласите хотя бы 1 друга во вкладке "Задания"!');
+        // Майнинг
+        function startMining() {
+            if (db.refs < 1) {
+                alert('Сначала приглашите 1 друга во вкладке "Задания", чтобы разблокировать майнинг!');
                 switchTab('tasks', document.querySelectorAll('.nav-item')[1]);
                 return;
             }
-            startAdSimulation('mining');
+            showAd('Запуск майнинга...', () => {
+                db.miningEnd = Date.now() + 3600000; // 1 час
+                saveState();
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            });
         }
 
-        function updateTimers() {
-            const now = Date.now();
-            const miningBtn = document.getElementById('miningBtn');
-            const statusText = document.getElementById('miningStatusText');
-            const timerDisplay = document.getElementById('timerDisplay');
+        // Таймер майнинга
+        setInterval(() => {
+            let now = Date.now();
+            let btn = document.getElementById('miningBtn');
+            let status = document.getElementById('miningStatus');
+            let timerEl = document.getElementById('timerField');
 
-            if 
+            if (db.miningEnd && now < db.miningEnd) {
+                let diff = db.miningEnd - now;
+                let h = String(Math.floor(diff / 3600000)).padStart(2, '0');
+                let m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+                let s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+                timerEl.innerText = `${h}:${m}:${s}`;
+                status.innerText = 'Статус: Майнинг идет ⛏️';
+                btn.innerText = 'Идет майнинг...';
+                btn.disabled = true;
+            } else {
+                if (db.miningEnd && now >= db.miningEnd) {
+                    db.balance += 1;
+                    db.miningEnd = 0;
+                    saveState();
+                }
+                timerEl.innerText = '01:00:00';
+                status.innerText = 'Статус: Готов к запуску';
+                btn.innerText = 'Запустить майнинг';
+                btn.disabled = false;
+            }
+        }, 1000);
+
+        // Друзья
+        function addFriend() {
+            db.refs += 1;
+            saveState();
+            alert('Друг успешно засчитан! Майнинг разблокирован.');
+        }
+
+        // Задания
+        function completeTask(id, reward, btn) {
+            if (db.tasks[id]) return;
+            db.tasks[id] = true;
+            db.balance += reward;
+            saveState();
+            btn.innerText = 'Выполнено';
+            btn.disabled = true;
+        }
+
+        // Сундуки видео
+        function watchChestAd() {
+            showAd('Просмотр видео для сундуков...', () => {
+                db.chestWatched++;
+                saveState();
+            });
+        }
+
+        function renderChestsGrid() {
+            let grid = document.getElementById('chestGrid');
+            grid.innerHTML = '';
+            for(let i=0; i<3; i++) {
+                let box = document.createElement('div');
+                box.className = 'chest-box';
+                box.innerText = '🎁';
+                if (!db.chestOpened) {
+                    box.onclick = () => openChestBox();
+                }
+                grid.appendChild(box);
+            }
+        }
+
+        function openChestBox() {
+            if (db.chestOpened) return;
+            db.chestOpened = true;
+            let win = [1, 2, 3][Math.floor(Math.random() * 3)];
+            db.balance += win;
+            saveState();
+            document.getElementById('chestResult').innerText = `Вы выиграли ${win} CC!`;
+            renderChestsGrid();
+        }
+
+        // Колесо
+        function openWheel() {
+            let now = Date.now();
+            if (now - db.wheelTime < 86400000) {
+                alert('Колесо можно крутить раз в 24 часа!');
+                return;
+            }
+            showAd('Вращаем колесо фортуны...', () => {
+                let win = [1, 2, 3, 5][Math.floor(Math.random() * 4)];
+                db.balance += win;
+                db.wheelTime = Date.now();
+                saveState();
+                alert(`Поздравляем! Вы выиграли ${win} CC!`);
+            });
+        }
+
+        // Старт при загрузке
+        loadState();
+        renderUI();
+    </script>
+</body>
+    </html>
