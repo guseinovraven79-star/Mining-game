@@ -13,6 +13,7 @@
             --button-color: var(--tg-theme-button-color, #3390ec);
             --button-text-color: var(--tg-theme-button-text-color, #ffffff);
             --card-bg: rgba(255, 255, 255, 0.05);
+            --wallet-pink: #ff2d75; /* Розовый цвет для кошелька */
         }
 
         body {
@@ -51,7 +52,7 @@
             text-align: center;
             width: 100%;
             box-sizing: border-box;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             backdrop-filter: blur(10px);
         }
 
@@ -86,14 +87,20 @@
             cursor: not-allowed;
         }
 
+        /* Кнопка в стиле Кошелька (розовая) */
+        .btn-wallet {
+            background-color: var(--wallet-pink);
+            color: #ffffff;
+        }
+
         .timer-display {
             font-size: 24px;
             font-weight: bold;
-            margin: 20px 0;
+            margin: 15px 0;
             color: var(--button-color);
         }
 
-        /* Навигация (4 пункта) */
+        /* Навигация (4 кнопки) */
         .nav-bar {
             position: fixed;
             bottom: 0;
@@ -112,7 +119,7 @@
             background: none;
             border: none;
             color: var(--hint-color);
-            font-size: 12px;
+            font-size: 11px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -124,8 +131,13 @@
             color: var(--button-color);
         }
 
+        /* Активная иконка кошелька в меню тоже может подсвечиваться розовым */
+        .nav-item.wallet-active.active {
+            color: var(--wallet-pink);
+        }
+
         .nav-icon {
-            font-size: 20px;
+            font-size: 18px;
             margin-bottom: 4px;
         }
 
@@ -188,7 +200,7 @@
 <body>
 
     <div class="container">
-        <!-- Вкладка: Майнинг -->
+        <!-- Вкладка: Майнинг (Главный экран) -->
         <div id="tab-mining" class="tab-content active">
             <div class="balance-card">
                 <div>Ваш баланс ChronoCoin</div>
@@ -196,19 +208,20 @@
             </div>
 
             <div class="card-box">
-                <div style="font-size: 48px;">⛏️</div>
+                <div style="font-size: 38px;">⛏️</div>
                 <h3>Фоновый майнинг</h3>
-                <p style="color: var(--hint-color); font-size: 14px;">Запустите добычу и получайте CC каждый час.</p>
+                <p style="color: var(--hint-color); font-size: 13px;" id="mining-status-text">Запустите добычу и получайте CC каждый час.</p>
                 <div class="timer-display" id="timer">00:00:00</div>
+                
+                <button class="btn" id="watch-mining-video-btn" style="display: none;" onclick="watchMiningVideo()">Смотреть видео для запуска</button>
                 <button class="btn" id="mining-btn" onclick="toggleMining()">Начать майнинг</button>
             </div>
         </div>
 
-        <!-- Вкладка: Задания (Включая Колесо Фортуны) -->
+        <!-- Вкладка: Задания -->
         <div id="tab-tasks" class="tab-content">
             <h2>Задания и Бонусы</h2>
             
-            <!-- Блок Колеса Фортуны -->
             <div class="card-box" style="border: 1px solid rgba(255, 215, 0, 0.3);">
                 <div style="font-size: 40px;">🎡</div>
                 <h3>Колесо Фортуны</h3>
@@ -218,31 +231,36 @@
                 <button class="btn" id="wheel-spin-btn" style="background: #28a745; display: none;" onclick="spinWheel()">Крутить колесо!</button>
             </div>
 
-            <div class="task-list" id="task-list">
-                <!-- Динамически заполняемые задания -->
-            </div>
-        </div>
-
-        <!-- Вкладка: Кошелек -->
-        <div id="tab-wallet" class="tab-content">
-            <h2>Кошелек</h2>
-            <div class="card-box">
-                <div style="font-size: 48px;">👛</div>
-                <h3>Ваш Web3 Кошелек</h3>
-                <p style="color: var(--hint-color); font-size: 14px; margin-bottom: 20px;">Подключите кошелек для вывода и управления вашими токенами.</p>
-                <button class="btn" style="background-color: var(--hint-color);" disabled>Кошелек в разработке</button>
-            </div>
+            <div class="task-list" id="task-list"></div>
         </div>
 
         <!-- Вкладка: Профиль -->
         <div id="tab-profile" class="tab-content">
             <h2>Профиль</h2>
-            <div class="balance-card" style="text-align: left;">
-                <p><strong>Имя:</strong> <span id="user-name">Игрок</span></p>
-                <p><strong>ID:</strong> <span id="user-id">---</span></p>
-                <p><strong>Приглашенные друзья:</strong> <span id="friend-count">0</span></p>
+            <div class="card-box" style="text-align: left;">
+                <p style="margin: 8px 0;"><strong>Имя:</strong> <span id="user-name">Игрок</span></p>
+                <p style="margin: 8px 0;"><strong>ID:</strong> <span id="user-id">---</span></p>
+                <p style="margin: 8px 0;"><strong>Приглашенные друзья:</strong> <span id="friend-count" style="color: #ffd700;">0</span></p>
+                <button class="btn" style="margin-top: 15px;" onclick="inviteFriend()">Пригласить друга</button>
             </div>
-            <button class="btn" onclick="inviteFriend()">Пригласить друга</button>
+
+            <div class="card-box" style="text-align: left;">
+                <div style="font-weight: 600; font-size: 14px; margin-bottom: 10px;">Список ваших друзей:</div>
+                <div id="friends-list" style="display: flex; flex-direction: column; gap: 8px;">
+                    <span style="color: var(--hint-color); font-size: 13px;" id="no-friends-text">Вы еще никого не пригласили</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Вкладка: Кошелек (Розовая тема) -->
+        <div id="tab-wallet" class="tab-content">
+            <h2>Кошелек</h2>
+            <div class="card-box" style="border: 1px solid rgba(255, 45, 117, 0.3);">
+                <div style="font-size: 48px;">👛</div>
+                <h3 style="color: var(--wallet-pink);">Ваш Web3 Кошелек</h3>
+                <p style="color: var(--hint-color); font-size: 14px; margin-bottom: 20px;">Подключите кошелек для вывода и управления вашими токенами ChronoCoin.</p>
+                <button class="btn btn-wallet" disabled>Подключить кошелек (в разработке)</button>
+            </div>
         </div>
     </div>
 
@@ -254,11 +272,11 @@
         <button class="nav-item" onclick="switchTab('tasks', this)">
             <span class="nav-icon">📋</span>Задания
         </button>
-        <button class="nav-item" onclick="switchTab('wallet', this)">
-            <span class="nav-icon">👛</span>Кошелек
-        </button>
         <button class="nav-item" onclick="switchTab('profile', this)">
             <span class="nav-icon">👤</span>Профиль
+        </button>
+        <button class="nav-item wallet-active" onclick="switchTab('wallet', this)">
+            <span class="nav-icon">👛</span>Кошелек
         </button>
     </nav>
 
@@ -267,9 +285,13 @@
         tg.expand();
 
         let userState = {
+            userId: null,
             balance: 0,
             miningEndTime: 0,
             isMining: false,
+            invitedFriendsCount: 0,
+            friends: [],
+            miningVideoWatched: false,
             tasksCompleted: {},
             wheelVideosWatched: 0,
             wheelReady: false
@@ -283,14 +305,16 @@
 
         function initApp() {
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                userState.userId = tg.initDataUnsafe.user.id;
                 document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name || 'Игрок';
-                document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id || '---';
+                document.getElementById('user-id').innerText = userState.userId || '---';
             }
 
             tg.CloudStorage.getItem('userState', (err, value) => {
                 if (!err && value) {
                     try {
-                        userState = JSON.parse(value);
+                        const savedState = JSON.parse(value);
+                        userState = { ...userState, ...savedState };
                     } catch (e) {
                         console.error(e);
                     }
@@ -317,6 +341,16 @@
         }
 
         function toggleMining() {
+            if (userState.invitedFriendsCount < 1) {
+                tg.showAlert('Чтобы разблокировать майнинг, перейдите в профиль и пригласите хотя бы одного друга!');
+                return;
+            }
+
+            if (!userState.miningVideoWatched) {
+                tg.showAlert('Чтобы запустить майнинг, необходимо посмотреть видеоролик!');
+                return;
+            }
+
             const now = Date.now();
             if (!userState.isMining) {
                 userState.isMining = true;
@@ -324,6 +358,14 @@
                 saveState();
             }
             updateUI();
+        }
+
+        function watchMiningVideo() {
+            userState.miningVideoWatched = true;
+            saveState();
+            updateUI();
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert('Видео просмотрено! Теперь вы можете запустить майнинг.');
         }
 
         function checkTimer() {
@@ -334,6 +376,7 @@
 
             if (timeLeft <= 0) {
                 userState.isMining = false;
+                userState.miningVideoWatched = false; 
                 userState.balance += 1.0; 
                 saveState();
                 updateUI();
@@ -351,15 +394,53 @@
 
         function updateUI() {
             document.getElementById('balance').innerText = userState.balance.toFixed(2) + ' CC';
+            document.getElementById('friend-count').innerText = userState.invitedFriendsCount;
+            
+            // Отрисовка списка друзей в профиле
+            const friendsListEl = document.getElementById('friends-list');
+            const noFriendsText = document.getElementById('no-friends-text');
+            
+            if (userState.friends.length > 0) {
+                noFriendsText.style.display = 'none';
+                friendsListEl.innerHTML = '';
+                userState.friends.forEach(friend => {
+                    const friendRow = document.createElement('div');
+                    friendRow.style.cssText = 'display: flex; justify-content: space-between; font-size: 13px; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px;';
+                    friendRow.innerHTML = `<span>👤 ${friend.name}</span> <span style="color: #28a745;">Активен</span>`;
+                    friendsListEl.appendChild(friendRow);
+                });
+            } else {
+                noFriendsText.style.display = 'block';
+            }
+
             const btn = document.getElementById('mining-btn');
+            const watchVideoBtn = document.getElementById('watch-mining-video-btn');
+            const statusText = document.getElementById('mining-status-text');
             
             if (userState.isMining) {
                 btn.disabled = true;
                 btn.innerText = 'Майнинг идет...';
+                watchVideoBtn.style.display = 'none';
+                statusText.innerText = 'Идет добыча ChronoCoin.';
             } else {
-                btn.disabled = false;
-                btn.innerText = 'Начать майнинг';
-                document.getElementById('timer').innerText = '00:00:00';
+                if (userState.invitedFriendsCount < 1) {
+                    btn.disabled = true;
+                    btn.innerText = 'Сначала приглашите друга (вкладка Профиль)';
+                    watchVideoBtn.style.display = 'none';
+                    statusText.innerText = 'Майнинг заблокирован. Нужен минимум 1 друг.';
+                } else if (!userState.miningVideoWatched) {
+                    btn.disabled = true;
+                    btn.style.display = 'none';
+                    watchVideoBtn.style.display = 'block';
+                    statusText.innerText = 'Посмотрите видеоролик перед запуском майнинга.';
+                } else {
+                    btn.disabled = false;
+                    btn.style.display = 'block';
+                    watchVideoBtn.style.display = 'none';
+                    btn.innerText = 'Начать майнинг';
+                    statusText.innerText = 'Запустите добычу и получайте CC каждый час.';
+                    document.getElementById('timer').innerText = '00:00:00';
+                }
             }
         }
 
@@ -393,7 +474,6 @@
             tg.HapticFeedback.notificationOccurred('success');
         }
 
-        // Логика колеса фортуны с видео
         function watchVideoForWheel() {
             if (userState.wheelVideosWatched < 3) {
                 userState.wheelVideosWatched++;
@@ -426,7 +506,7 @@
         }
 
         function spinWheel() {
-            const reward = Math.floor(Math.random() * 5) + 1; // Случайный приз от 1 до 5 CC
+            const reward = Math.floor(Math.random() * 5) + 1; 
             userState.balance += reward;
             userState.wheelVideosWatched = 0;
             userState.wheelReady = false;
@@ -437,11 +517,15 @@
         }
 
         function inviteFriend() {
+            const newFriendName = 'Друг #' + (userState.friends.length + 1);
+            userState.friends.push({ name: newFriendName });
+            userState.invitedFriendsCount = userState.friends.length;
+            
+            saveState();
+            updateUI();
+
             const shareUrl = `https://t.me/share/url?url=https://t.me/YourBotName/app?start=ref_${userState.userId}&text=Присоединяйся к майнингу ChronoCoin!`;
             tg.openTelegramLink(shareUrl);
         }
 
-        window.onload = initApp;
-    </script>
-</body>
-</html>
+        window.onload = initA
