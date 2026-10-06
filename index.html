@@ -127,8 +127,135 @@
 
         .btn:disabled {
             background-color: #d1d1d6;
-            box-shadow: none
-                <div class="content">
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .timer-display {
+            font-size: 30px;
+            font-weight: 700;
+            color: #007aff;
+            margin: 16px 0;
+            font-family: monospace;
+        }
+
+        .task-item {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .task-info {
+            text-align: left;
+            flex: 1;
+            padding-right: 10px;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: #1c1c1e;
+        }
+
+        .task-reward {
+            font-size: 13px;
+            color: #f5a623;
+            font-weight: bold;
+        }
+
+        .task-btn {
+            background-color: #007aff;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .task-btn.completed {
+            background-color: #34c759;
+            cursor: default;
+        }
+
+        .nav-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-item {
+            flex: 1;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--hint-color);
+            font-size: 11px;
+        }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            margin-bottom: 2px;
+            fill: currentColor;
+        }
+
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        #activation-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .referral-list {
+            text-align: left;
+            background: #f8f8fa;
+            border-radius: 10px;
+            padding: 12px;
+            margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+        <div class="content">
         <!-- TAB 1: MINING -->
         <div id="tab-mining" class="tab-content active">
             <h2>Chrono Mining</h2>
@@ -145,7 +272,7 @@
                 
                 <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
                     <button class="btn" id="start-night-mining-btn" style="background-color: #5856d6;" onclick="startNightMining()">Ночной майнинг (6 часов)</button>
-                    <p style="font-size: 12px; margin-top: 6px; color: var(--hint-color);">Доступно с 22:00 до 23:59 (Требуется 5 видео)</p>
+                    <p style="font-size: 12px; margin-top: 6px; color: var(--hint-color);">Доступно строго с 22:00 до 23:59 (Требуется 5 видео)</p>
                 </div>
             </div>
 
@@ -254,8 +381,8 @@
                 <p style="border-top: 1px solid rgba(255,45,85,0.2); padding-top: 14px; margin-top: 14px;"><strong>Обращение от разработчиков:</strong> Мы просим каждого из вас проявить максимальную активность и <strong>обязательно подписаться на наши соцсети</strong>, чтобы нас заметили и о нас услышал весь мир! Каждый, кто пройдет этот путь до конца вместе с нами, обязательно получит достойное вознаграждение за свои усилия и преданность проекту. Давайте сделаем это вместе, ведь всё в наших руках!</p>
             </div>
         </div>
-    </div>
-            <!-- NAVIGATION BAR -->
+                        </div>
+               <!-- NAVIGATION BAR -->
     <nav class="nav-bar">
         <button class="nav-item active" onclick="switchTab('mining', this)">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.03-.42 1.98-1.07 2.75z"/></svg>
@@ -279,7 +406,7 @@
         </button>
     </nav>
 
-    <!-- MODAL FOR WATCHING VIDEOS (Night Mining / Wheel of Fortune) -->
+    <!-- MODAL FOR WATCHING VIDEOS -->
     <div id="activation-modal" style="display: none;">
         <div class="modal-content">
             <h3 id="modal-title" style="margin-top:0; font-size:18px;">Просмотр видео</h3>
@@ -289,7 +416,8 @@
             <button class="btn" id="modal-close-btn" style="background-color: #8e8e93; margin-top: 8px; display: none;" onclick="closeModal()">Закрыть</button>
         </div>
     </div>
-            <script>
+
+    <script>
         // Состояние приложения
         let state = {
             balance: 0,
@@ -535,4 +663,3 @@
     </script>
 </body>
 </html>
-        
