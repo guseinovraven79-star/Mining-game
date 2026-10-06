@@ -76,6 +76,12 @@
             box-shadow: 0 0 15px rgba(0, 210, 255, 0.4);
         }
 
+        .mine-btn.mining {
+            border-color: #ffd700;
+            background: radial-gradient(circle, #ffd700, #ff8c00);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+
         .mine-btn-title {
             font-size: 18px;
             font-weight: bold;
@@ -179,7 +185,7 @@
             <!-- Главный круглый интерактивный элемент -->
             <button class="mine-btn" id="mine-main-btn" onclick="handleMineClick()">
                 <span class="mine-btn-title" id="btn-title">Включить майнинг</span>
-                <span class="mine-btn-sub" id="btn-sub">60 мин</span>
+                <span class="mine-btn-sub" id="btn-sub">Получить 100 CC</span>
             </button>
         </div>
     </div>
@@ -221,17 +227,118 @@
         tg.expand();
 
         let coins = 0;
-        let miningEndTime = 0; // Точное время окончания майнинга (timestamp в мс)
+        let miningEndTime = 0; // Timestamp окончания сессии (в мс)
         let isMiningActive = false;
-        let notificationShown = false; // Флаг, чтобы уведомление показывалось 1 раз
+        const MINING_DURATION = 60 * 1000; // Для теста: 1 минута (позже можно поставить 60 * 60 * 1000 для часа)
+        const REWARD_AMOUNT = 100;
 
-        // Загрузка данных из облака
+        // Элементы интерфейса
+        const coinsEl = document.getElementById('coins');
+        const mineBtn = document.getElementById('mine-main-btn');
+        const btnTitle = document.getElementById('btn-title');
+        const btnSub = document.getElementById('btn-sub');
+
+        // Загрузка данных из облака Telegram
         function loadGame() {
             if (tg.CloudStorage) {
-                tg.CloudStorage.getItem('coins', (err, value) => { if (!err && value) coins = parseFloat(value); });
+                tg.CloudStorage.getItem('coins', (err, value) => { 
+                    if (!err && value) {
+                        coins = parseFloat(value);
+                        updateUI();
+                    } 
+                });
                 tg.CloudStorage.getItem('miningEndTime', (err, value) => {
                     if (!err && value) {
                         miningEndTime = parseInt(value);
-                        const now = Date.now();
-                        if (mining
-                            
+                        checkMiningStatus();
+                    }
+                });
+            }
+        }
+
+        // Сохранение данных в облако Telegram
+        function saveGame() {
+            if (tg.CloudStorage) {
+                tg.CloudStorage.setItem('coins', coins.toString());
+                tg.CloudStorage.setItem('miningEndTime', miningEndTime.toString());
+            }
+        }
+
+        // Переключение вкладок
+        function switchTab(tabName, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            document.getElementById('tab-' + tabName).classList.add('active');
+            element.classList.add('active');
+        }
+
+        // Клик по кнопке майнинга
+        function handleMineClick() {
+            const now = Date.now();
+
+            if (!isMiningActive && now >= miningEndTime) {
+                // Запуск нового майнинга
+                miningEndTime = now + MINING_DURATION;
+                isMiningActive = true;
+                mineBtn.classList.add('mining');
+                saveGame();
+                updateUI();
+            } else if (!isMiningActive && now < miningEndTime) {
+                // Забрать награду, если время истекло (на случай рассинхронизации таймера)
+                collectReward();
+            }
+        }
+
+        // Сбор награды
+        function collectReward() {
+            coins += REWARD_AMOUNT;
+            miningEndTime = 0;
+            isMiningActive = false;
+            mineBtn.classList.remove('mining');
+            saveGame();
+            updateUI();
+            if (tg.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+
+        // Проверка статуса майнинга (вызывается каждую секунду)
+        function checkMiningStatus() {
+            const now = Date.now();
+
+            if (miningEndTime > 0) {
+                if (now < miningEndTime) {
+                    isMiningActive = true;
+                    mineBtn.classList.add('mining');
+                    const timeLeft = Math.ceil((miningEndTime - now) / 1000);
+                    const minutes = Math.floor(timeLeft / 60);
+                    const seconds = timeLeft % 60;
+                    btnTitle.textContent = "Майнинг идет...";
+                    btnSub.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                } else {
+                    // Время вышло, можно забирать награду
+                    isMiningActive = false;
+                    mineBtn.classList.remove('mining');
+                    btnTitle.textContent = "Забрать награду";
+                    btnSub.textContent = `+${REWARD_AMOUNT} CC`;
+                }
+            } else {
+                isMiningActive = false;
+                mineBtn.classList.remove('mining');
+                btnTitle.textContent = "Включить майнинг";
+                btnSub.textContent = "60 мин";
+            }
+        }
+
+        // Обновление отображения монеток на экране
+        function updateUI() {
+            coinsEl.textContent = coins;
+        }
+
+        // Инициализация при загрузке
+        loadGame();
+        setInterval(checkMiningStatus, 1000);
+    </script>
+</body>
+</html>
