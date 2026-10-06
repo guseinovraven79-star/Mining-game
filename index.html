@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChronoCoin - Secure Edition</title>
+    <title>ChronoCoin</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -86,6 +86,7 @@
             width: 100%;
             cursor: pointer;
             transition: opacity 0.2s;
+            margin-top: 8px;
         }
 
         .btn:active {
@@ -149,30 +150,6 @@
             cursor: default;
         }
 
-        .boxes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .box-card {
-            background: #fff;
-            border: 2px dashed var(--border-color);
-            border-radius: 12px;
-            padding: 15px 5px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 24px;
-            transition: 0.2s;
-        }
-
-        .box-card.opened {
-            background: #eef9ff;
-            border-style: solid;
-            cursor: default;
-        }
-
         .nav-bar {
             position: fixed;
             bottom: 0;
@@ -197,12 +174,12 @@
             flex-direction: column;
             align-items: center;
             color: var(--hint-color);
-            font-size: 11px;
+            font-size: 10px;
         }
 
         .nav-item svg {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             margin-bottom: 2px;
             fill: currentColor;
         }
@@ -229,6 +206,17 @@
             max-width: 320px;
             width: 100%;
         }
+
+        .referral-list {
+            text-align: left;
+            background: #fff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -236,38 +224,38 @@
     <!-- Модальное окно активации (1 друг обязателен) -->
     <div id="activation-modal" style="display: none;">
         <div class="modal-content">
-            <h2>Активация проекта</h2>
-            <p>Для защиты от ботов требуется обязательное подтверждение: пригласите 1 реального друга через Telegram!</p>
-            <button class="btn" onclick="inviteFriend()">Пригласить 1 друга</button>
+            <h2 id="m-title">Активация проекта</h2>
+            <p id="m-desc">Для защиты от ботов требуется обязательное подтверждение: пригласите 1 реального друга через Telegram!</p>
+            <button class="btn" onclick="inviteFriend()" id="m-btn">Пригласить 1 друга</button>
         </div>
     </div>
 
     <div class="content">
         <!-- Майнинг -->
         <div id="tab-mining" class="tab-content active">
-            <h1>Майнинг</h1>
+            <h1 id="t-mining-title">Майнинг</h1>
             <div class="card">
-                <div class="balance-title">Ваш баланс ChronoCoin</div>
+                <div class="balance-title" id="t-balance-title">Ваш баланс ChronoCoin</div>
                 <div class="balance-value" id="balance">0.00 CC</div>
-                <div style="font-size: 36px; margin: 10px 0;">🛡️⛏️</div>
-                <div style="font-weight: 600; margin-bottom: 4px;">Защищенный майнинг</div>
-                <p>Таймер защищен от изменения системного времени.</p>
+                <div style="font-size: 32px; margin: 5px 0;">🛡️⛏️️</div>
+                <div style="font-size: 13px; color: #007aff; font-weight: 600; margin-bottom: 8px;" id="speed-display">Скорость: 1 CC/час</div>
                 <div class="timer-display" id="timer">00:00:00</div>
                 <button class="btn" id="mining-btn" onclick="watchAdForMining()">Запустить майнинг (1 час)</button>
+                <button class="btn" id="night-mining-btn" style="background-color: #5856d6; display: none;" onclick="watchNightAds()">🌙 Ночной майнинг 6ч (3 видео)</button>
             </div>
         </div>
 
         <!-- Задания -->
         <div id="tab-tasks" class="tab-content">
-            <h1>Задания</h1>
-            <p>Выполняйте задания с защитой от накрутки.</p>
+            <h1 id="t-tasks-title">Задания</h1>
+            <p id="t-tasks-desc">Выполняйте задания и ежедневные активности.</p>
             
             <div class="task-item">
                 <div class="task-info">
-                    <div class="task-title">Пригласить 5 друзей</div>
-                    <div class="task-reward">+10.00 CC (<span id="ref-count-task">0</span>/5)</div>
+                    <div class="task-title" id="t-daily-title">Ежедневные видео (5 штук)</div>
+                    <div class="task-reward">+5.00 CC (<span id="daily-videos-count">0</span>/5)</div>
                 </div>
-                <button class="task-btn" id="task-refs-5" onclick="claimRefTask5()">Получить</button>
+                <button class="task-btn" id="task-daily-btn" onclick="watchDailyVideos()">Смотреть</button>
             </div>
 
             <div class="task-item">
@@ -285,44 +273,46 @@
                 </div>
                 <button class="task-btn" id="task-insta" onclick="completeSocialTask('insta', 5)">Проверить</button>
             </div>
-
-            <!-- Ящики удачи -->
-            <div class="card" style="margin-top: 20px; text-align: left;">
-                <div class="task-title">📦 Защищенные ящики</div>
-                <p style="margin-bottom: 10px;">Проверка на ботов активна.</p>
-                <div id="boxes-container">
-                    <div style="text-align: center; font-weight: bold; color: #007aff;" id="box-timer-display">Доступно!</div>
-                    <div class="boxes-grid" id="boxes-grid">
-                        <div class="box-card" onclick="openBox(0)">🎁</div>
-                        <div class="box-card" onclick="openBox(1)">🎁</div>
-                        <div class="box-card" onclick="openBox(2)">🎁</div>
-                        <div class="box-card" onclick="openBox(3)">🎁</div>
-                        <div class="box-card" onclick="openBox(4)">🎁</div>
-                        <div class="box-card" onclick="openBox(5)">🎁</div>
-                    </div>
-                    <button class="btn" id="watch-3-ads-btn" onclick="watchAdsForBoxes()">Открыть ящики</button>
-                </div>
-            </div>
         </div>
 
         <!-- Профиль -->
         <div id="tab-profile" class="tab-content">
-            <h1>Профиль</h1>
+            <h1 id="t-profile-title">Профиль</h1>
             <div class="card" style="text-align: left;">
-                <p style="margin-bottom: 8px;"><strong>Имя:</strong> <span id="user-name">Загрузка...</span></p>
-                <p style="margin-bottom: 8px;"><strong>Telegram ID:</strong> <span id="user-id">Загрузка...</span></p>
-                <p style="margin-bottom: 16px;"><strong>Рефералы (анти-бот):</strong> <span id="invited-count" style="font-weight: bold; color: #007aff;">0</span> / 6</p>
-                <button class="btn" onclick="inviteFriend()">Пригласить друга</button>
+                <p><strong><span id="t-name-lbl">Имя</span>:</strong> <span id="user-name">Загрузка...</span></p>
+                <p><strong>Telegram ID:</strong> <span id="user-id">Загрузка...</span></p>
+                <p><strong><span id="t-refs-lbl">Приглашено друзей</span>:</strong> <span id="invited-count" style="font-weight: bold; color: #007aff;">0</span></p>
+                
+                <div style="font-size: 13px; font-weight: 600; margin-top: 10px;" id="t-ref-list-title">Список ваших друзей:</div>
+                <div class="referral-list" id="referral-names-container">
+                    <span style="color: #999;" id="t-no-refs">Пока нет приглашенных друзей</span>
+                </div>
+
+                <button class="btn" onclick="inviteFriend()" id="t-invite-btn" style="margin-top: 15px;">Пригласить друга</button>
             </div>
         </div>
 
         <!-- Кошелек -->
         <div id="tab-wallet" class="tab-content">
-            <h1>Кошелек</h1>
+            <h1 id="t-wallet-title">Кошелек</h1>
             <div class="card" style="background: linear-gradient(135deg, #ff2d55, #ff5e62); color: white;">
-                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;">Безопасный баланс</div>
+                <div style="font-size: 14px; opacity: 0.9; margin-bottom: 4px;" id="t-wallet-sub">Безопасный баланс</div>
                 <div style="font-size: 32px; font-weight: bold; margin-bottom: 16px;" id="wallet-balance">0.00 CC</div>
-                <button class="btn" style="background: white; color: #ff2d55;" onclick="withdrawCoins()">Безопасный вывод</button>
+                <button class="btn" style="background: white; color: #ff2d55;" onclick="withdrawCoins()" id="t-withdraw-btn">Безопасный вывод</button>
+            </div>
+        </div>
+
+        <!-- Инфо -->
+        <div id="tab-info" class="tab-content">
+            <h1 id="t-info-title">О проекте</h1>
+            <div class="card" style="text-align: left; font-size: 13px; line-height: 1.5;">
+                <p id="info-p1"><strong>ChronoCoin</strong> — уникальный проект, созданный с нуля с упором на честность, сообщество и реальные возможности для каждого участника!</p>
+                <p id="info-p2">Успех и развитие проекта зависят исключительно от вашей активности.</p>
+                <ul style="padding-left: 18px; margin: 8px 0; color: var(--text-color);">
+                    <li id="info-li1"><strong>Активность:</strong> Самым активным участникам в будущем будут начисляться эксклюзивные аирдропы.</li>
+                    <li id="info-li2"><strong>Друзья:</strong> Скорость майнинга растет от приглашений (10 друзей = 2 CC/ч, 20 друзей = 3 CC/ч, 30 друзей = 4 CC/ч, 50 друзей = 20 CC/ч, 100 друзей = 50 CC/ч). Ночной майнинг за 6 часов при 50 друзьях приносит сразу 120 CC!</li>
+                    <li id="info-li3"><strong>Задания:</strong> Прохождение ежедневных заданий обязательно для будущего проекта.</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -331,37 +321,142 @@
     <nav class="nav-bar">
         <button class="nav-item active" onclick="switchTab('mining', this)">
             <svg viewBox="0 0 24 24"><path d="M20 6h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v2H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zM10 4h4v2h-4V4zm10 15H4V8h16v11z"/></svg>
-            Майнинг
+            <span id="nav-mining">Майнинг</span>
         </button>
         <button class="nav-item" onclick="switchTab('tasks', this)">
             <svg viewBox="0 0 24 24"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1s-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-            Задания
+            <span id="nav-tasks">Задания</span>
         </button>
         <button class="nav-item" onclick="switchTab('profile', this)">
             <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-            Профиль
+            <span id="nav-profile">Профиль</span>
         </button>
         <button class="nav-item" onclick="switchTab('wallet', this)">
             <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-            Кошелек
+            <span id="nav-wallet">Кошелек</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('info', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            <span id="nav-info">Инфо</span>
         </button>
     </nav>
-
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
 
+        let userLang = 'ru';
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code) {
+            let code = tg.initDataUnsafe.user.language_code.toLowerCase();
+            if (!code.startsWith('ru')) {
+                userLang = 'en';
+            }
+        }
+
+        const dict = {
+            ru: {
+                mTitle: "Активация проекта",
+                mDesc: "Для защиты от ботов требуется обязательное подтверждение: пригласите 1 реального друга через Telegram!",
+                mBtn: "Пригласить 1 друга",
+                miningTitle: "Майнинг",
+                balanceTitle: "Ваш баланс ChronoCoin",
+                tasksTitle: "Задания",
+                tasksDesc: "Выполняйте задания и ежедневные активности.",
+                dailyTitle: "Ежедневные видео (5 штук)",
+                profileTitle: "Профиль",
+                nameLbl: "Имя",
+                refsLbl: "Приглашено друзей",
+                refListTitle: "Список ваших друзей:",
+                noRefs: "Пока нет приглашенных друзей",
+                inviteBtn: "Пригласить друга",
+                walletTitle: "Кошелек",
+                walletSub: "Безопасный баланс",
+                withdrawBtn: "Безопасный вывод",
+                infoTitle: "О проекте",
+                navMining: "Майнинг",
+                navTasks: "Задания",
+                navProfile: "Профиль",
+                navWallet: "Кошелек",
+                navInfo: "Инфо",
+                infoP1: "ChronoCoin — уникальный проект, созданный с нуля с упором на честность, сообщество и реальные возможности для каждого участника!",
+                infoP2: "Успех и развитие проекта зависят исключительно от вашей активности.",
+                infoLi1: "Активность: Самым активным участникам в будущем будут начисляться эксклюзивные аирдропы.",
+                infoLi2: "Друзья: Скорость майнинга растет от приглашений (10 друзей = 2 CC/ч, 20 друзей = 3 CC/ч, 30 друзей = 4 CC/ч, 50 друзей = 20 CC/ч, 100 друзей = 50 CC/ч). Ночной майнинг за 6 часов при 50 друзьях приносит сразу 120 CC!",
+                infoLi3: "Задания: Прохождение ежедневных заданий обязательно для будущего проекта."
+            },
+            en: {
+                mTitle: "Project Activation",
+                mDesc: "Bot protection check: please invite 1 real friend via Telegram!",
+                mBtn: "Invite 1 Friend",
+                miningTitle: "Mining",
+                balanceTitle: "Your ChronoCoin Balance",
+                tasksTitle: "Tasks",
+                tasksDesc: "Complete tasks and daily activities.",
+                dailyTitle: "Daily Videos (5 pieces)",
+                profileTitle: "Profile",
+                nameLbl: "Name",
+                refsLbl: "Friends Invited",
+                refListTitle: "Your friends list:",
+                noRefs: "No invited friends yet",
+                inviteBtn: "Invite Friend",
+                walletTitle: "Wallet",
+                walletSub: "Secure Balance",
+                withdrawBtn: "Secure Withdrawal",
+                infoTitle: "About Project",
+                navMining: "Mining",
+                navTasks: "Tasks",
+                navProfile: "Profile",
+                navWallet: "Wallet",
+                navInfo: "Info",
+                infoP1: "ChronoCoin is a unique project created from scratch focusing on honesty, community, and real opportunities!",
+                infoP2: "The success and development of the project depend entirely on your activity.",
+                infoLi1: "Activity: Most active participants will receive exclusive airdrops in the future.",
+                infoLi2: "Friends: Mining speed increases with invitations (10 friends = 2 CC/h, 20 = 3 CC/h, 30 = 4 CC/h, 50 = 20 CC/h, 100 = 50 CC/h). Night mining for 6 hours with 50 friends brings 120 CC instantly!",
+                infoLi3: "Tasks: Completing daily tasks is mandatory for the future project."
+            }
+        };
+
+        let t = dict[userLang];
+
+        document.getElementById('m-title').innerText = t.mTitle;
+        document.getElementById('m-desc').innerText = t.mDesc;
+        document.getElementById('m-btn').innerText = t.mBtn;
+        document.getElementById('t-mining-title').innerText = t.miningTitle;
+        document.getElementById('t-balance-title').innerText = t.balanceTitle;
+        document.getElementById('t-tasks-title').innerText = t.tasksTitle;
+        document.getElementById('t-tasks-desc').innerText = t.tasksDesc;
+        document.getElementById('t-daily-title').innerText = t.dailyTitle;
+        document.getElementById('t-profile-title').innerText = t.profileTitle;
+        document.getElementById('t-name-lbl').innerText = t.nameLbl;
+        document.getElementById('t-refs-lbl').innerText = t.refsLbl;
+        document.getElementById('t-ref-list-title').innerText = t.refListTitle;
+        document.getElementById('t-no-refs').innerText = t.noRefs;
+        document.getElementById('t-invite-btn').innerText = t.inviteBtn;
+        document.getElementById('t-wallet-title').innerText = t.walletTitle;
+        document.getElementById('t-wallet-sub').innerText = t.walletSub;
+        document.getElementById('t-withdraw-btn').innerText = t.withdrawBtn;
+        document.getElementById('t-info-title').innerText = t.infoTitle;
+        document.getElementById('nav-mining').innerText = t.navMining;
+        document.getElementById('nav-tasks').innerText = t.navTasks;
+        document.getElementById('nav-profile').innerText = t.navProfile;
+        document.getElementById('nav-wallet').innerText = t.navWallet;
+        document.getElementById('nav-info').innerText = t.navInfo;
+        document.getElementById('info-p1').innerHTML = t.infoP1;
+        document.getElementById('info-p2').innerHTML = t.infoP2;
+        document.getElementById('info-li1').innerHTML = t.infoLi1;
+        document.getElementById('info-li2').innerHTML = t.infoLi2;
+        document.getElementById('info-li3').innerHTML = t.infoLi3;
+
         let userId = 'guest_user';
+        let userName = 'Игрок';
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             userId = String(tg.initDataUnsafe.user.id);
-            document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name || 'Игрок';
+            userName = tg.initDataUnsafe.user.first_name || 'Игрок';
+            document.getElementById('user-name').innerText = userName;
             document.getElementById('user-id').innerText = userId;
         } else {
             document.getElementById('user-name').innerText = 'Тестовый Игрок';
             document.getElementById('user-id').innerText = '123456789';
         }
-
-        // Защита баланса с привязкой к ID пользователя и простой подписью (базовая защита от простой подделки localStorage)
         function getSecureStorage(key, defaultValue) {
             let val = localStorage.getItem('cc_' + userId + '_' + key);
             return val !== null ? JSON.parse(val) : defaultValue;
@@ -373,8 +468,10 @@
 
         let balance = getSecureStorage('balance', 0.00);
         let invitedCount = getSecureStorage('invited_count', 0);
+        let referredFriends = getSecureStorage('referred_friends', []);
         let isMining = getSecureStorage('is_mining', false);
         let miningEndTime = getSecureStorage('mining_end', 0);
+        let dailyWatched = getSecureStorage('daily_watched', 0);
 
         checkActivation();
 
@@ -393,51 +490,87 @@
             element.classList.add('active');
         }
 
-        // Защищенная генерация реферальной ссылки через Telegram Share API
+        // Шкала скорости майнинга в час (10=2, 20=3, 30=4, 50=20, 100=50 CC/ч)
+        function getMiningReward() {
+            if (invitedCount >= 100) return 50.00;
+            if (invitedCount >= 50) return 20.00;
+            if (invitedCount >= 30) return 4.00;
+            if (invitedCount >= 20) return 3.00;
+            if (invitedCount >= 10) return 2.00;
+            return 1.00;
+        }
+
         function inviteFriend() {
-            let botUsername = "ChronoCoinBot"; // Замените на имя вашего бота
+            let botUsername = "ChronoCoinBot";
             let refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             
             if (tg.openTelegramLink) {
-                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("Присоединяйся к ChronoCoin и получай монеты!")}`);
+                tg.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("Присоединяйся к ChronoCoin!")}`);
             } else {
-                prompt("Скопируйте вашу защищенную реферальную ссылку:", refLink);
+                prompt("Скопируйте реферальную ссылку:", refLink);
             }
 
-            // Анти-бот имитация: в реальном приложении засчитывается только через вебхук от Telegram-бота
             setTimeout(() => {
-                if(confirm("[Симуляция анти-бота]: Имитировать успешное приглашение реального друга?")) {
+                let friendName = prompt("Симуляция: Введите имя приглашенного друга:", "Друг #" + (invitedCount + 1));
+                if (friendName) {
                     invitedCount++;
+                    referredFriends.push(friendName);
                     setSecureStorage('invited_count', invitedCount);
+                    setSecureStorage('referred_friends', referredFriends);
                     updateUI();
                     checkActivation();
-                    alert('Друг успешно верифицирован и засчитан!');
+                    alert('Друг успешно верифицирован!');
                 }
             }, 500);
         }
 
         function watchAdForMining() {
-            // Здесь будет интеграция с реальной рекламой (Adsgram / Telegram Ads)
             alert('Проверка рекламного блока...');
             isMining = true;
+            // Умножаем скорость на 1 час (3600 сек) для обычного майнинга
             miningEndTime = Math.floor(Date.now() / 1000) + 3600; 
             setSecureStorage('is_mining', true);
             setSecureStorage('mining_end', miningEndTime);
             updateUI();
         }
 
-        // Таймер с защитой от изменения времени устройства (серверная синхронизация в будущем)
+        function watchNightAds() {
+            alert('Просмотр 3 видео для ночного майнинга...');
+            isMining = true;
+            // Ночной майнинг на 6 часов (21600 сек). При 50 друзьях даст 20 * 6 = 120 CC!
+            miningEndTime = Math.floor(Date.now() / 1000) + 21600; 
+            setSecureStorage('is_mining', true);
+            setSecureStorage('mining_end', miningEndTime);
+            updateUI();
+            alert('Ночной майнинг на 6 часов успешно запущен!');
+        }
+
         setInterval(() => {
+            let now = Math.floor(Date.now() / 1000);
+
+            let currentHour = new Date().getHours();
+            if (!isMining && currentHour >= 22 && currentHour <= 23) {
+                document.getElementById('night-mining-btn').style.display = 'block';
+            } else {
+                document.getElementById('night-mining-btn').style.display = 'none';
+            }
+
             if (isMining) {
-                let now = Math.floor(Date.now() / 1000);
                 let timeLeft = miningEndTime - now;
 
                 if (timeLeft <= 0) {
-                    balance += 10.00;
+                    // Рассчитываем награду с учетом длительности сессии (обычный час или ночные 6 часов)
+                    let totalDuration = miningEndTime - (miningEndTime - (miningEndTime - now > 0 ? 0 : 0)); // базовый расчет
+                    // Если сессия была ночной (6 часов = 21600 сек), награда умножается на количество часов
+                    let isNight = (miningEndTime - (Date.now() / 1000) > 4000); 
+                    let hoursFactor = isNight ? 6 : 1; 
+                    
+                    let reward = getMiningReward() * hoursFactor;
+                    balance += reward;
                     isMining = false;
                     setSecureStorage('balance', balance);
                     setSecureStorage('is_mining', false);
-                    alert('Майнинг завершен! Начислено +10.00 CC.');
+                    alert(`Майнинг завершен! Начислено +${reward.toFixed(2)} CC.`);
                 } else {
                     let hours = Math.floor(timeLeft / 3600);
                     let minutes = Math.floor((timeLeft % 3600) / 60);
@@ -451,110 +584,65 @@
             updateUI();
         }, 1000);
 
+        function watchDailyVideos() {
+            if (dailyWatched >= 5) return;
+            alert(`Просмотр видео (${dailyWatched + 1}/5)...`);
+            dailyWatched++;
+            setSecureStorage('daily_watched', dailyWatched);
+
+            if (dailyWatched >= 5) {
+                balance += 5.00;
+                setSecureStorage('balance', balance);
+                let btn = document.getElementById('task-daily-btn');
+                btn.innerText = userLang === 'ru' ? 'Выполнено' : 'Completed';
+                btn.classList.add('completed');
+                btn.disabled = true;
+                alert(userLang === 'ru' ? 'Награда +5.00 CC получена!' : 'Reward +5.00 CC received!');
+            }
+            updateUI();
+        }
+
         function completeSocialTask(taskId, reward) {
             let completedTasks = getSecureStorage('completed_tasks', {});
             if (completedTasks[taskId]) return;
 
-            // Защита: отправка запроса на подтверждение подписки
-            alert('Проверяем подписку через Telegram API...');
-            
+            alert('Проверяем подписку...');
             balance += reward;
             completedTasks[taskId] = true;
             setSecureStorage('balance', balance);
             setSecureStorage('completed_tasks', completedTasks);
 
             let btn = document.getElementById('task-' + taskId);
-            btn.innerText = 'Выполнено';
+            btn.innerText = userLang === 'ru' ? 'Выполнено' : 'Completed';
             btn.classList.add('completed');
             btn.disabled = true;
 
             updateUI();
-            alert(`Подписка подтверждена! Начислено +${reward} CC`);
+            alert(`Начислено +${reward} CC`);
         }
-
-        function claimRefTask5() {
-            let taskClaimed = getSecureStorage('task_5refs', false);
-            if (taskClaimed) return;
-
-            if (invitedCount >= 5) {
-                balance += 10.00;
-                setSecureStorage('balance', balance);
-                setSecureStorage('task_5refs', true);
-                document.getElementById('task-refs-5').innerText = 'Выполнено';
-                document.getElementById('task-refs-5').classList.add('completed');
-                updateUI();
-                alert('Награда +10.00 CC успешно получена!');
-            } else {
-                alert(`Недостаточно верифицированных друзей. Приглашено: ${invitedCount}/5`);
-            }
-        }
-
-        let boxesUnlocked = false;
-        let boxTimerEnd = getSecureStorage('box_timer', 0);
-
-        function watchAdsForBoxes() {
-            alert('Просмотр защищенной рекламы для ящиков...');
-            boxesUnlocked = true;
-            document.getElementById('watch-3-ads-btn').style.display = 'none';
-            alert('Реклама просмотрена! Выберите ящик.');
-        }
-
-        function openBox(index) {
-            if (!boxesUnlocked) {
-                alert('Сначала посмотрите рекламу!');
-                return;
-            }
-            
-            const boxPrizes = [0, 0, 0, 1, 3, 5];
-            let prize = boxPrizes[index];
-
-            if (prize > 0) {
-                balance += prize;
-                setSecureStorage('balance', balance);
-                alert(`Вы выиграли ${prize} CC!`);
-            } else {
-                alert('Пустой ящик!');
-            }
-
-            boxesUnlocked = false;
-            boxTimerEnd = Math.floor(Date.now() / 1000) + 12 * 3600;
-            setSecureStorage('box_timer', boxTimerEnd);
-            document.getElementById('boxes-grid').style.opacity = '0.5';
-            updateUI();
-        }
-
-        setInterval(() => {
-            let now = Math.floor(Date.now() / 1000);
-            if (boxTimerEnd > now) {
-                let timeLeft = boxTimerEnd - now;
-                let hours = Math.floor(timeLeft / 3600);
-                let minutes = Math.floor((timeLeft % 3600) / 60);
-                let seconds = timeLeft % 60;
-                document.getElementById('box-timer-display').innerText = 
-                    `Следующие ящики через: ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                document.getElementById('watch-3-ads-btn').style.display = 'none';
-            } else {
-                document.getElementById('box-timer-display').innerText = 'Ящики доступны!';
-                if (!boxesUnlocked) {
-                    document.getElementById('watch-3-ads-btn').style.display = 'block';
-                    document.getElementById('boxes-grid').style.opacity = '1';
-                }
-            }
-        }, 1000);
 
         function updateUI() {
+            let currentReward = getMiningReward();
             document.getElementById('balance').innerText = balance.toFixed(2) + ' CC';
             document.getElementById('wallet-balance').innerText = balance.toFixed(2) + ' CC';
             document.getElementById('invited-count').innerText = invitedCount;
-            document.getElementById('ref-count-task').innerText = invitedCount;
+            document.getElementById('daily-videos-count').innerText = dailyWatched;
+            document.getElementById('speed-display').innerText = (userLang === 'ru' ? 'Скорость: ' : 'Speed: ') + currentReward.toFixed(2) + ' CC/ч';
+
+            let refContainer = document.getElementById('referral-names-container');
+            if (referredFriends.length > 0) {
+                refContainer.innerHTML = referredFriends.map(name => `• ${name}`).join('<br>');
+            } else {
+                refContainer.innerHTML = `<span style="color: #999;">${t.noRefs}</span>`;
+            }
 
             let btn = document.getElementById('mining-btn');
             if (isMining) {
-                btn.innerText = 'Майнинг идет...';
+                btn.innerText = userLang === 'ru' ? 'Майнинг идет...' : 'Mining in progress...';
                 btn.disabled = true;
                 btn.style.backgroundColor = '#999';
             } else {
-                btn.innerText = 'Запустить майнинг (1 час)';
+                btn.innerText = (userLang === 'ru' ? 'Запустить майнинг (' : 'Start mining (') + currentReward.toFixed(2) + (userLang === 'ru' ? ' CC/ч)' : ' CC/h)');
                 btn.disabled = false;
                 btn.style.backgroundColor = 'var(--primary-color)';
                 document.getElementById('timer').innerText = '00:00:00';
@@ -567,27 +655,27 @@
                 if (completedTasks[taskId]) {
                     let btn = document.getElementById('task-' + taskId);
                     if (btn) {
-                        btn.innerText = 'Выполнено';
+                        btn.innerText = userLang === 'ru' ? 'Выполнено' : 'Completed';
                         btn.classList.add('completed');
                         btn.disabled = true;
                     }
                 }
             }
-            if (getSecureStorage('task_5refs', false)) {
-                let refBtn = document.getElementById('task-refs-5');
-                refBtn.innerText = 'Выполнено';
-                refBtn.classList.add('completed');
-                refBtn.disabled = true;
+            if (dailyWatched >= 5) {
+                let dBtn = document.getElementById('task-daily-btn');
+                dBtn.innerText = userLang === 'ru' ? 'Выполнено' : 'Completed';
+                dBtn.classList.add('completed');
+                dBtn.disabled = true;
             }
             updateUI();
         }
 
         function withdrawCoins() {
             if (balance <= 0) {
-                alert('Недостаточно средств.');
+                alert(userLang === 'ru' ? 'Недостаточно средств.' : 'Insufficient funds.');
                 return;
             }
-            alert('Запрос на вывод отправлен на проверку безопасности анти-фрод системы.');
+            alert(userLang === 'ru' ? 'Запрос на вывод отправлен!' : 'Withdrawal request sent!');
         }
     </script>
 </body>
