@@ -530,4 +530,82 @@
             tg.showAlert('✅ Друг успешно засчитан! (Тест: счетчик рефералов увеличен на 1)');
         }
 
-        function completeTask(taskId
+        function completeTask(taskId, reward, btnElement) {
+            if (state.completedTasks[taskId]) return;
+            state.completedTasks[taskId] = true;
+            state.balance += reward;
+            saveData();
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert(`🎁 Задание выполнено! Получено +${reward} CC`);
+        }
+
+        function claimThreeRefsReward() {
+            if (state.threeRefsClaimed) return;
+            if (state.refCount < 3) {
+                tg.showAlert('⚠️ Нужно пригласить минимум 3 друзей, у вас приглашено: ' + state.refCount);
+                return;
+            }
+            state.threeRefsClaimed = true;
+            state.balance += 3;
+            saveData();
+            tg.HapticFeedback.notificationOccurred('success');
+            tg.showAlert('🎉 Награда получена! +3 CC за 3 друзей.');
+        }
+
+
+        // --- ЕЖЕДНЕВНЫЕ СУНДУКИ ---
+        function watchAdForChestSession() {
+            // Для открытия сундуков смотрим «три ролики» (в рамках симуляции запустим просмотр)
+            startAdSimulation('chests');
+        }
+
+        function renderChests(isAlreadyOpened) {
+            let grid = document.getElementById('chestsGrid');
+            grid.innerHTML = '';
+
+            // 6 сундуков: распределяем призы (пусто, пусто, пусто, 1 CC, 2 CC, 3 CC)
+            // Чтобы каждый день было честно, зафиксируем или рандомизируем
+            let prizes = [0, 0, 0, 1, 2, 3];
+            
+            prizes.forEach((prize, index) => {
+                let box = document.createElement('div');
+                box.className = 'chest-box';
+                box.innerHTML = '📦';
+                
+                if (isAlreadyOpened) {
+                    box.classList.add('opened');
+                    box.innerHTML = '🔒';
+                } else {
+                    box.onclick = () => openChest(box, prize);
+                }
+                grid.appendChild(box);
+            });
+        }
+
+        function openChest(element, prize) {
+            element.classList.add('opened');
+            let resultText = document.getElementById('chestResultText');
+
+            if (prize > 0) {
+                element.innerHTML = `🪙+${prize}`;
+                state.balance += prize;
+                resultText.innerText = `Поздравляем! Вы выиграли ${prize} CC!`;
+                tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                element.innerHTML = `❌`;
+                resultText.innerText = `Увы, этот сундук оказался пуст!`;
+                tg.HapticFeedback.notificationOccurred('warning');
+            }
+
+            saveData();
+
+            // Блокируем остальные сундуки после выбора
+            let allBoxes = document.querySelectorAll('.chest-box');
+            allBoxes.forEach(b => b.onclick = null);
+        }
+
+        // Запуск при загрузке страницы
+        initApp();
+    </script>
+</body>
+</html>
