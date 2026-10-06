@@ -76,6 +76,7 @@
             padding: 25px;
             text-align: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
         }
         .mining-title {
             font-size: 18px;
@@ -108,6 +109,70 @@
             cursor: not-allowed;
         }
 
+        /* --- КОМПАКТНЫЙ ВИДЖЕТ КОЛЕСА ФОРТУНЫ (НИЗ СПРАВА) --- */
+        .wheel-widget-container {
+            position: fixed;
+            bottom: 80px;
+            right: 15px;
+            z-index: 100;
+        }
+
+        .wheel-card {
+            background: #1e2530;
+            border: 1px solid #3b82f6;
+            border-radius: 14px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+            transition: all 0.2s ease;
+            max-width: 180px;
+        }
+
+        .wheel-card:active {
+            transform: scale(0.95);
+        }
+
+        .wheel-icon {
+            font-size: 22px;
+            animation: slow-spin 10s linear infinite;
+        }
+
+        @keyframes slow-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .wheel-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wheel-title {
+            font-size: 10px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .wheel-status {
+            font-size: 11px;
+            color: #f8fafc;
+            font-weight: 600;
+        }
+
+        /* Состояние кулдауна (24 часа) */
+        .wheel-card.cooldown {
+            border-color: #2a3442;
+            opacity: 0.75;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+        .wheel-card.cooldown .wheel-icon {
+            animation: none;
+        }
+
         /* Навигация снизу */
         .nav-bar {
             position: fixed;
@@ -119,6 +184,7 @@
             justify-content: space-around;
             padding: 10px 0;
             border-top: 1px solid rgba(255,255,255,0.05);
+            z-index: 90;
         }
         .nav-item {
             background: none;
@@ -197,7 +263,7 @@
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.8);
-            z-index: 100;
+            z-index: 200;
             justify-content: center;
             align-items: center;
             padding: 20px;
@@ -218,7 +284,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="initApp()">
 
     <div class="container">
         <!-- Шапка -->
@@ -292,10 +358,19 @@
                 <p style="color: var(--tg-theme-hint-color); margin-bottom: 15px; font-size: 14px;">
                     Выберите один сундук! Внутри может быть от 1 до 3 CC, либо пусто.
                 </p>
-                <div class="chests-grid" id="chestsGrid">
-                    <!-- Сгенерируем через JS -->
-                </div>
+                <div class="chests-grid" id="chestsGrid"></div>
                 <div id="chestResultText" style="text-align: center; font-weight: bold; color: var(--accent-color); min-height: 24px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВИДЖЕТ КОЛЕСА ФОРТУНЫ НА ГЛАВНОМ ЭКРАНЕ (НИЗ СПРАВА) -->
+    <div class="wheel-widget-container">
+        <div id="wheelWidget" class="wheel-card" onclick="handleWheelClick()">
+            <div class="wheel-icon">🎡</div>
+            <div class="wheel-info">
+                <span class="wheel-title">Колесо фортуны</span>
+                <span id="wheelStatusText" class="wheel-status">Смотреть видео (0/3)</span>
             </div>
         </div>
     </div>
@@ -313,51 +388,47 @@
         </button>
     </div>
 
-    <!-- Модальное окно просмотра рекламы (Имитация) -->
+    <!-- Модальное окно просмотра рекламы -->
     <div class="modal" id="adModal">
         <div class="modal-content">
             <h3>Просмотр рекламы</h3>
             <p style="font-size: 13px; color: var(--tg-theme-hint-color); margin-top: 5px;" id="adModalSubtitle">Запуск майнинга после просмотра</p>
-            <div class="ad-timer" id="adTimer">5</div>
+            <div class="ad-timer" id="adTimer">3</div>
             <p style="font-size: 12px; color: var(--tg-theme-hint-color);">Пожалуйста, не закрывайте окно...</p>
         </div>
     </div>
 
     <script>
-        // Инициализация Telegram WebApp
         let tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Состояние приложения
         let state = {
             balance: 0,
-            refCount: 0, // Количество приглашенных друзей
-            miningEndTime: 0, // Тайминг окончания майнинга (timestamp)
-            completedTasks: {}, // Выполненные задания
-            threeRefsClaimed: false, // Получена ли награда за 3 друзей
-            lastChestDay: "", // Дата последнего открытия сундуков
-            chestOpenedToday: false
+            refCount: 0,
+            miningEndTime: 0,
+            completedTasks: {},
+            threeRefsClaimed: false,
+            lastChestDay: "",
+            chestOpenedToday: false,
+            // Дополнительные параметры для Колеса Фортуны (индивидуальный кулдаун 24ч и просмотр 3 видео)
+            wheelLastSpin: 0,
+            wheelVideosWatched: 0
         };
 
-        // Длительность майнинга (1 час в миллисекундах = 3600000, для тестов можно поставить 60000 для 1 минуты)
-        const MINING_DURATION = 3600000; 
+        const MINING_DURATION = 3600000; // 1 час
+        const COOLDOWN_TIME = 24 * 60 * 60 * 1000; // 24 часа для колеса
 
-        // Переменные для отслеживания текущего контекста рекламы
-        let currentAdType = ''; // 'mining' или 'chests'
+        let currentAdType = ''; 
         let adInterval = null;
 
-        // Загрузка данных при старте
         function initApp() {
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
                 document.getElementById('userName').innerText = tg.initDataUnsafe.user.first_name || 'Игрок';
             }
-
-            // Загружаем сохраненные данные из CloudStorage (или localStorage как подстраховка)
             loadData();
         }
 
         function loadData() {
-            // Для локального теста используем localStorage, в реальном TG боте можно переключить на CloudStorage
             const saved = localStorage.getItem('cc_app_state');
             if (saved) {
                 try {
@@ -365,37 +436,32 @@
                 } catch(e) {}
             }
             updateUI();
+            updateWheelUI(); // Обновляем состояние виджета колеса
         }
 
         function saveData() {
             localStorage.setItem('cc_app_state', JSON.stringify(state));
             updateUI();
+            updateWheelUI();
         }
 
-        // Обновление интерфейса
         function updateUI() {
             document.getElementById('balance').innerText = state.balance;
             document.getElementById('refCount').innerText = state.refCount;
-            document.getElementById('refCount').innerText = state.refCount;
 
-            // Проверка задания подписок в UI
             if (state.completedTasks['tg_sub']) {
                 let btn = document.getElementById('btnTgSub');
-                btn.innerText = 'Выполнено';
-                btn.disabled = true;
+                if(btn) { btn.innerText = 'Выполнено'; btn.disabled = true; }
             }
             if (state.completedTasks['ig_sub']) {
                 let btn = document.getElementById('btnIgSub');
-                btn.innerText = 'Выполнено';
-                btn.disabled = true;
+                if(btn) { btn.innerText = 'Выполнено'; btn.disabled = true; }
             }
             if (state.threeRefsClaimed) {
                 let btn = document.getElementById('btnThreeRefs');
-                btn.innerText = 'Получено';
-                btn.disabled = true;
+                if(btn) { btn.innerText = 'Получено'; btn.disabled = true; }
             }
 
-            // Проверка сундуков наступившего дня
             let todayStr = new Date().toDateString();
             if (state.lastChestDay !== todayStr) {
                 state.chestOpenedToday = false;
@@ -406,14 +472,13 @@
             if (state.chestOpenedToday) {
                 document.getElementById('chestLockedContainer').style.display = 'none';
                 document.getElementById('chestGameContainer').style.display = 'block';
-                renderChests(true); // Заблокированы
+                renderChests(true);
             } else {
                 document.getElementById('chestLockedContainer').style.display = 'block';
                 document.getElementById('chestGameContainer').style.display = 'none';
             }
         }
 
-        // Переключение вкладок
         function switchTab(tabName, element) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -422,190 +487,60 @@
             element.classList.add('active');
         }
 
-        // --- ЛОГИКА МАЙНИНГА И РЕКЛАМЫ ---
+        // --- ЛОГИКА МАЙНИНГА ---
         function handleMiningAction() {
-            // Проверка обязательного условия: нужен минимум 1 друг для старта
             if (state.refCount < 1) {
                 tg.showAlert('⚠️ Чтобы разблокировать майнинг, пригласите хотя бы 1 друга во вкладке "Задания"!');
                 switchTab('tasks', document.querySelectorAll('.nav-item')[1]);
                 return;
             }
-
-            // Запускаем просмотр рекламы для старта/сбора майнинга
             startAdSimulation('mining');
         }
 
-        function startAdSimulation(type) {
-            currentAdType = type;
-            let modal = document.getElementById('adModal');
-            let timerEl = document.getElementById('adTimer');
-            let subtitleEl = document.getElementById('adModalSubtitle');
+        // --- ЛОГИКА КОЛЕСА ФОРТУНЫ ---
+        function updateWheelUI() {
+            const statusText = document.getElementById('wheelStatusText');
+            const widget = document.getElementById('wheelWidget');
+            if (!statusText || !widget) return;
 
-            if (type === 'mining') {
-                subtitleEl.innerText = 'Просмотр рекламы для запуска майнинга...';
-            } else if (type === 'chests') {
-                subtitleEl.innerText = 'Просмотр рекламных роликов (3 шт)...';
-            }
+            const now = Date.now();
+            const timePassed = now - (state.wheelLastSpin || 0);
 
-            modal.style.display = 'flex';
-            let timeLeft = 3; // 3 секунды имитации ролика
-            timerEl.innerText = timeLeft;
-
-            adInterval = setInterval(() => {
-                timeLeft--;
-                timerEl.innerText = timeLeft;
-                if (timeLeft <= 0) {
-                    clearInterval(adInterval);
-                    modal.style.display = 'none';
-                    onAdFinished();
-                }
-            }, 1000);
-        }
-
-        function onAdFinished() {
-            if (currentAdType === 'mining') {
-                // Запуск часового таймера
-                state.miningEndTime = Date.now() + MINING_DURATION;
-                saveData();
-                tg.showAlert('🎉 Реклама просмотрена! Майнинг запущен на 1 час.');
-            } else if (currentAdType === 'chests') {
-                // Переходим к игре в сундуки после просмотра серии видео
-                state.chestOpenedToday = true;
-                saveData();
-                document.getElementById('chestLockedContainer').style.display = 'none';
-                document.getElementById('chestGameContainer').style.display = 'block';
-                renderChests(false);
-                tg.showAlert('🎁 Ролики успешно просмотрены! Выберите сундук.');
-            }
-        }
-
-        // Таймер цикла майнинга
-        setInterval(() => {
-            let now = Date.now();
-            let btn = document.getElementById('miningBtn');
-            let statusText = document.getElementById('miningStatusText');
-            let display = document.getElementById('timerDisplay');
-
-            if (state.refCount < 1) {
-                display.innerText = "LOCKED";
-                statusText.innerText = "Нужен 1 друг для разблокировки";
-                btn.innerText = "Заблокировано (Пригласите друга)";
-                btn.disabled = true;
-                return;
-            }
-
-            if (state.miningEndTime && now < state.miningEndTime) {
-                let diff = state.miningEndTime - now;
-                let hours = Math.floor(diff / (1000 * 60 * 60));
-                let minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                let seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                display.innerText = `${hours.toString().padStart(2,'0')}:${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-                statusText.innerText = "Статус: Майнинг активен...";
-                btn.innerText = "Майнинг идет...";
-                btn.disabled = true;
-            } else if (state.miningEndTime && now >= state.miningEndTime) {
-                // Время истекло — начисляем 1 CC
-                state.balance += 1;
-                state.miningEndTime = 0; // Сбрасываем таймер для нового запуска
-                saveData();
-                tg.HapticFeedback.notificationOccurred('success');
-                tg.showAlert('🎉 Поздравляем! Вы добыли +1 CC.');
+            if (timePassed < COOLDOWN_TIME) {
+                widget.classList.add('cooldown');
+                const timeLeft = COOLDOWN_TIME - timePassed;
+                const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                statusText.innerText = `Через ${hours}ч ${minutes}м`;
             } else {
-                display.innerText = "01:00:00";
-                statusText.innerText = "Статус: Готов к запуску";
-                btn.innerText = "Запустить майнинг (Реклама)";
-                btn.disabled = false;
-            }
-        }, 1000);
-
-
-        // --- ЗАДАНИЯ И РЕФЕРАЛЫ ---
-        function shareRefLink() {
-            // Имитация реферального приглашения для теста
-            // В реальном боте здесь формируется ссылка: t.me/your_bot?start=refID
-            state.refCount += 1;
-            saveData();
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showAlert('✅ Друг успешно засчитан! (Тест: счетчик рефералов увеличен на 1)');
-        }
-
-        function completeTask(taskId, reward, btnElement) {
-            if (state.completedTasks[taskId]) return;
-            state.completedTasks[taskId] = true;
-            state.balance += reward;
-            saveData();
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showAlert(`🎁 Задание выполнено! Получено +${reward} CC`);
-        }
-
-        function claimThreeRefsReward() {
-            if (state.threeRefsClaimed) return;
-            if (state.refCount < 3) {
-                tg.showAlert('⚠️ Нужно пригласить минимум 3 друзей, у вас приглашено: ' + state.refCount);
-                return;
-            }
-            state.threeRefsClaimed = true;
-            state.balance += 3;
-            saveData();
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showAlert('🎉 Награда получена! +3 CC за 3 друзей.');
-        }
-
-
-        // --- ЕЖЕДНЕВНЫЕ СУНДУКИ ---
-        function watchAdForChestSession() {
-            // Для открытия сундуков смотрим «три ролики» (в рамках симуляции запустим просмотр)
-            startAdSimulation('chests');
-        }
-
-        function renderChests(isAlreadyOpened) {
-            let grid = document.getElementById('chestsGrid');
-            grid.innerHTML = '';
-
-            // 6 сундуков: распределяем призы (пусто, пусто, пусто, 1 CC, 2 CC, 3 CC)
-            // Чтобы каждый день было честно, зафиксируем или рандомизируем
-            let prizes = [0, 0, 0, 1, 2, 3];
-            
-            prizes.forEach((prize, index) => {
-                let box = document.createElement('div');
-                box.className = 'chest-box';
-                box.innerHTML = '📦';
-                
-                if (isAlreadyOpened) {
-                    box.classList.add('opened');
-                    box.innerHTML = '🔒';
+                widget.classList.remove('cooldown');
+                if ((state.wheelVideosWatched || 0) < 3) {
+                    statusText.innerText = `Смотреть видео (${state.wheelVideosWatched || 0}/3)`;
                 } else {
-                    box.onclick = () => openChest(box, prize);
+                    statusText.innerText = `Крутить колесо! 🎉`;
                 }
-                grid.appendChild(box);
-            });
+            }
         }
 
-        function openChest(element, prize) {
-            element.classList.add('opened');
-            let resultText = document.getElementById('chestResultText');
-
-            if (prize > 0) {
-                element.innerHTML = `🪙+${prize}`;
-                state.balance += prize;
-                resultText.innerText = `Поздравляем! Вы выиграли ${prize} CC!`;
-                tg.HapticFeedback.notificationOccurred('success');
-            } else {
-                element.innerHTML = `❌`;
-                resultText.innerText = `Увы, этот сундук оказался пуст!`;
-                tg.HapticFeedback.notificationOccurred('warning');
+        function handleWheelClick() {
+            const now = Date.now();
+            if (now - (state.wheelLastSpin || 0) < COOLDOWN_TIME) {
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                return;
             }
 
-            saveData();
+            // Если не посмотрел 3 видео — смотрим очередное
+            if ((state.wheelVideosWatched || 0) < 3) {
+                startAdSimulation('wheel_video');
+                return;
+            }
 
-            // Блокируем остальные сундуки после выбора
-            let allBoxes = document.querySelectorAll('.chest-box');
-            allBoxes.forEach(b => b.onclick = null);
+            // Если видео 3/3 — крутим колесо
+            spinTheWheel();
         }
 
-        // Запуск при загрузке страницы
-        initApp();
-    </script>
-</body>
-</html>
+        function spinTheWheel() {
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            
+            // Награда за колесо (например, от 1 до 5
+    
