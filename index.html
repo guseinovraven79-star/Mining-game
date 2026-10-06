@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChronoCoin Mini App</title>
+    <!-- Подключаем Telegram Web App скрипт -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: var(--tg-theme-bg-color, #1f2125);
-            --text-color: var(--tg-theme-text-color, #ffffff);
-            --hint-color: var(--tg-theme-hint-color, #999999);
-            --button-color: var(--tg-theme-button-color, #3390ec);
-            --button-text-color: var(--tg-theme-button-text-color, #ffffff);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --wallet-pink: #ff2d75; /* Розовый цвет для кошелька */
+            --primary-pink: #ff2d75;
+            --bg-color: #f4f5f7;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-secondary: #717171;
         }
 
         body {
@@ -28,53 +27,67 @@
             overflow: hidden;
         }
 
-        .container {
+        /* Контент вкладок */
+        .content {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
-            padding-bottom: 80px;
+            padding: 20px;
+            padding-bottom: 80px; /* Отступ под нижнее меню */
         }
 
         .tab-content {
             display: none;
-            flex-direction: column;
-            align-items: center;
         }
 
         .tab-content.active {
-            display: flex;
+            display: block;
+        }
+
+        /* Стили для вкладки Майнинг */
+        .mining-container {
+            text-align: center;
+            padding-top: 20px;
         }
 
         .balance-card {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 20px;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-            margin-bottom: 15px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .balance-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
         }
 
         .balance-amount {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: bold;
-            margin-top: 8px;
-            color: #ffd700;
+            color: #f5a623;
+        }
+
+        .timer-display {
+            font-size: 28px;
+            font-weight: bold;
+            color: #0088cc;
+            margin: 20px 0;
         }
 
         .btn {
-            background-color: var(--button-color);
-            color: var(--button-text-color);
+            background-color: var(--primary-pink);
+            color: white;
             border: none;
             border-radius: 12px;
-            padding: 14px 24px;
+            padding: 14px 28px;
             font-size: 16px;
-            font-weight: 600;
-            width: 100%;
+            font-weight: bold;
             cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(255, 45, 117, 0.3);
             transition: opacity 0.2s;
-            margin-top: 10px;
         }
 
         .btn:active {
@@ -82,25 +95,12 @@
         }
 
         .btn:disabled {
-            background-color: var(--hint-color);
-            opacity: 0.5;
+            background-color: #ccc;
+            box-shadow: none;
             cursor: not-allowed;
         }
 
-        /* Кнопка в стиле Кошелька (розовая) */
-        .btn-wallet {
-            background-color: var(--wallet-pink);
-            color: #ffffff;
-        }
-
-        .timer-display {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 15px 0;
-            color: var(--button-color);
-        }
-
-        /* Навигация (4 кнопки) */
+        /* Нижнее меню */
         .nav-bar {
             position: fixed;
             bottom: 0;
@@ -108,424 +108,249 @@
             width: 100%;
             height: 65px;
             background: var(--card-bg);
-            backdrop-filter: blur(15px);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid #eaeaea;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.03);
+            z-index: 1000;
         }
 
         .nav-item {
-            background: none;
-            border: none;
-            color: var(--hint-color);
-            font-size: 11px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            cursor: pointer;
+            justify-content: center;
             flex: 1;
+            height: 100%;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 12px;
+            transition: color 0.2s;
         }
 
         .nav-item.active {
-            color: var(--button-color);
+            color: var(--primary-pink);
         }
 
-        /* Активная иконка кошелька в меню тоже может подсвечиваться розовым */
-        .nav-item.wallet-active.active {
-            color: var(--wallet-pink);
-        }
-
-        .nav-icon {
-            font-size: 18px;
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
             margin-bottom: 4px;
+            fill: currentColor;
         }
 
-        /* Стили для заданий */
-        .task-list {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .task-item {
-            background: var(--card-bg);
-            padding: 12px 16px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .task-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .task-title {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .task-reward {
-            font-size: 12px;
-            color: #ffd700;
-            margin-top: 2px;
-        }
-
-        .task-btn {
-            background: var(--button-color);
-            color: var(--button-text-color);
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        /* Блоки карточек */
-        .card-box {
-            background: var(--card-bg);
+        /* Стили для вкладки Кошелек (с розовым акцентом) */
+        .wallet-card {
+            background: linear-gradient(135deg, #ff2d75, #ff75a0);
+            color: white;
             border-radius: 16px;
             padding: 20px;
+            box-shadow: 0 6px 15px rgba(255, 45, 117, 0.3);
             text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Вкладка: Майнинг (Главный экран) -->
-        <div id="tab-mining" class="tab-content active">
-            <div class="balance-card">
-                <div>Ваш баланс ChronoCoin</div>
-                <div class="balance-amount" id="balance">0.00 CC</div>
-            </div>
-
-            <div class="card-box">
-                <div style="font-size: 38px;">⛏️</div>
-                <h3>Фоновый майнинг</h3>
-                <p style="color: var(--hint-color); font-size: 13px;" id="mining-status-text">Запустите добычу и получайте CC каждый час.</p>
-                <div class="timer-display" id="timer">00:00:00</div>
-                
-                <button class="btn" id="watch-mining-video-btn" style="display: none;" onclick="watchMiningVideo()">Смотреть видео для запуска</button>
-                <button class="btn" id="mining-btn" onclick="toggleMining()">Начать майнинг</button>
-            </div>
-        </div>
-
-        <!-- Вкладка: Задания -->
-        <div id="tab-tasks" class="tab-content">
-            <h2>Задания и Бонусы</h2>
-            
-            <div class="card-box" style="border: 1px solid rgba(255, 215, 0, 0.3);">
-                <div style="font-size: 40px;">🎡</div>
-                <h3>Колесо Фортуны</h3>
-                <p style="color: var(--hint-color); font-size: 13px;" id="wheel-status">Чтобы включить это колесо, нужно посмотреть видеоролик из трёх частей.</p>
-                <div style="margin: 10px 0; font-size: 14px; font-weight: bold;" id="wheel-progress">Прогресс видео: 0 / 3</div>
-                <button class="btn" id="wheel-watch-btn" onclick="watchVideoForWheel()">Смотреть видео (+1 часть)</button>
-                <button class="btn" id="wheel-spin-btn" style="background: #28a745; display: none;" onclick="spinWheel()">Крутить колесо!</button>
-            </div>
-
-            <div class="task-list" id="task-list"></div>
-        </div>
-
-        <!-- Вкладка: Профиль -->
-        <div id="tab-profile" class="tab-content">
-            <h2>Профиль</h2>
-            <div class="card-box" style="text-align: left;">
-                <p style="margin: 8px 0;"><strong>Имя:</strong> <span id="user-name">Игрок</span></p>
-                <p style="margin: 8px 0;"><strong>ID:</strong> <span id="user-id">---</span></p>
-                <p style="margin: 8px 0;"><strong>Приглашенные друзья:</strong> <span id="friend-count" style="color: #ffd700;">0</span></p>
-                <button class="btn" style="margin-top: 15px;" onclick="inviteFriend()">Пригласить друга</button>
-            </div>
-
-            <div class="card-box" style="text-align: left;">
-                <div style="font-weight: 600; font-size: 14px; margin-bottom: 10px;">Список ваших друзей:</div>
-                <div id="friends-list" style="display: flex; flex-direction: column; gap: 8px;">
-                    <span style="color: var(--hint-color); font-size: 13px;" id="no-friends-text">Вы еще никого не пригласили</span>
+    <!-- Основное содержимое вкладок -->
+    <div class="content">
+        <!-- Вкладка 1: Майнинг -->
+        <div id="mining" class="tab-content active">
+            <div class="mining-container">
+                <div class="balance-card">
+                    <div class="balance-title">Ваш баланс ChronoCoin</div>
+                    <div id="balance-amount" class="balance-amount">0.00 CC</div>
                 </div>
+
+                <div style="font-size: 40px; margin-bottom: 10px;">⛏️</div>
+                <h3>Фоновый майнинг</h3>
+                <p style="color: var(--text-secondary); font-size: 14px;">Запустите добычу и получайте CC каждый час.</p>
+                
+                <div id="timer-display" class="timer-display">00:00:00</div>
+                
+                <button id="mining-btn" class="btn" onclick="startMining()">Начать майнинг</button>
             </div>
         </div>
 
-        <!-- Вкладка: Кошелек (Розовая тема) -->
-        <div id="tab-wallet" class="tab-content">
+        <!-- Вкладка 2: Задания -->
+        <div id="tasks" class="tab-content">
+            <h2>Задания</h2>
+            <p style="color: var(--text-secondary);">Выполняйте задания и получайте монеты.</p>
+            <div class="balance-card" style="text-align: left;">
+                <h4>Подписка на соцсети</h4>
+                <p style="font-size: 13px; color: var(--text-secondary);">Скоро здесь появятся ссылки на Telegram, Instagram и X.</p>
+            </div>
+        </div>
+
+        <!-- Вкладка 3: Профиль -->
+        <div id="profile" class="tab-content">
+            <h2>Профиль игрока</h2>
+            <div class="balance-card" style="text-align: left;">
+                <p><strong>Telegram ID:</strong> <span id="user-id">Загрузка...</span></p>
+                <p><strong>Статус:</strong> <span style="color: green;">Активен</span></p>
+            </div>
+        </div>
+
+        <!-- Вкладка 4: Кошелек (#ff2d75 розовый акцент) -->
+        <div id="wallet" class="tab-content">
             <h2>Кошелек</h2>
-            <div class="card-box" style="border: 1px solid rgba(255, 45, 117, 0.3);">
-                <div style="font-size: 48px;">👛</div>
-                <h3 style="color: var(--wallet-pink);">Ваш Web3 Кошелек</h3>
-                <p style="color: var(--hint-color); font-size: 14px; margin-bottom: 20px;">Подключите кошелек для вывода и управления вашими токенами ChronoCoin.</p>
-                <button class="btn btn-wallet" disabled>Подключить кошелек (в разработке)</button>
+            <div class="wallet-card">
+                <div style="font-size: 14px; opacity: 0.9;">Доступно к выводу</div>
+                <div id="wallet-balance" style="font-size: 28px; font-weight: bold; margin: 10px 0;">0.00 CC</div>
+                <button style="background: white; color: var(--primary-pink); border: none; border-radius: 8px; padding: 10px 20px; font-weight: bold; cursor: pointer; margin-top: 10px;" onclick="alert('Функция вывода скоро будет доступна!')">Вывести</button>
             </div>
         </div>
     </div>
 
-    <!-- Нижняя навигация (4 кнопки) -->
-    <nav class="nav-bar">
-        <button class="nav-item active" onclick="switchTab('mining', this)">
-            <span class="nav-icon">⛏️</span>Майнинг
-        </button>
-        <button class="nav-item" onclick="switchTab('tasks', this)">
-            <span class="nav-icon">📋</span>Задания
-        </button>
-        <button class="nav-item" onclick="switchTab('profile', this)">
-            <span class="nav-icon">👤</span>Профиль
-        </button>
-        <button class="nav-item wallet-active" onclick="switchTab('wallet', this)">
-            <span class="nav-icon">👛</span>Кошелек
-        </button>
-    </nav>
+    <!-- Нижняя панель навигации -->
+    <div class="nav-bar">
+        <div class="nav-item active" data-tab="mining" onclick="switchTab('mining')">
+            <svg viewBox="0 0 24 24"><path d="M21,3H3C2,3 1,4 1,5V19C1,20 2,21 3,21H21C22,21 23,20 23,19V5C23,4 22,3 21,3M21,19H3V5H21V19Z"/></svg>
+            Майнинг
+        </div>
+        <div class="nav-item" data-tab="tasks" onclick="switchTab('tasks')">
+            <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/></svg>
+            Задания
+        </div>
+        <div class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+            <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>
+            Профиль
+        </div>
+        <div class="nav-item" data-tab="wallet" onclick="switchTab('wallet')">
+            <svg viewBox="0 0 24 24"><path d="M21,18V19A2,2 0 0,1 19,21H5C3.89,21 3,20.1 3,19V5C3,3.89 3.89,3 5,3H19A2,2 0 0,1 21,5V6H12C10.89,6 10,6.89 10,12C10,17.11 10.89,18 12,18H21M12,16H22V8H12A2,2 0 0,0 10,10V14A2,2 0 0,0 12,16M16,11A1,1 0 0,1 15,12A1,1 0 0,1 16,13A1,1 0 0,1 17,12A1,1 0 0,1 16,11Z"/></svg>
+            Кошелек
+        </div>
+    </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
+        // Инициализация Telegram Web App
+        let tg = window.Telegram.WebApp;
         tg.expand();
 
-        let userState = {
-            userId: null,
-            balance: 0,
-            miningEndTime: 0,
-            isMining: false,
-            invitedFriendsCount: 0,
-            friends: [],
-            miningVideoWatched: false,
-            tasksCompleted: {},
-            wheelVideosWatched: 0,
-            wheelReady: false
-        };
-
-        const tasksData = [
-            { id: 1, title: 'Подписаться на Telegram канал', reward: 5.0 },
-            { id: 2, title: 'Подписаться на наш Instagram', reward: 3.0 },
-            { id: 3, title: 'Подписаться на наш X (Twitter)', reward: 3.0 }
-        ];
-
-        function initApp() {
+        // Безопасное получение ID пользователя
+        try {
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                userState.userId = tg.initDataUnsafe.user.id;
-                document.getElementById('user-name').innerText = tg.initDataUnsafe.user.first_name || 'Игрок';
-                document.getElementById('user-id').innerText = userState.userId || '---';
+                document.getElementById('user-id').innerText = tg.initDataUnsafe.user.id;
+            } else {
+                document.getElementById('user-id').innerText = "Test_User";
             }
+        } catch (e) {
+            document.getElementById('user-id').innerText = "Web_Mode";
+        }
 
-            tg.CloudStorage.getItem('userState', (err, value) => {
-                if (!err && value) {
-                    try {
-                        const savedState = JSON.parse(value);
-                        userState = { ...userState, ...savedState };
-                    } catch (e) {
-                        console.error(e);
+        // Данные игры с защитой от сброса (localStorage)
+        let userBalance = parseFloat(localStorage.getItem('chrono_balance')) || 0.00;
+        let miningEndTime = parseInt(localStorage.getItem('chrono_mining_end')) || 0;
+
+        // Инициализация интерфейса при старте
+        updateBalanceDisplay();
+
+        // Защищенная функция переключения вкладок (не зависает при ошибках)
+        function switchTab(tabId) {
+            try {
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                const targetTab = document.getElementById(tabId);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
+
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                const activeNav = document.querySelector(`[data-tab="${tabId}"]`);
+                if (activeNav) {
+                    activeNav.classList.add('active');
+                }
+            } catch (error) {
+                console.error("Ошибка при переключении вкладки:", error);
+            }
+        }
+
+        // Обновление отображения баланса
+        function updateBalanceDisplay() {
+            try {
+                const formattedBalance = userBalance.toFixed(2) + " CC";
+                const bEl = document.getElementById('balance-amount');
+                const wEl = document.getElementById('wallet-balance');
+                if (bEl) bEl.innerText = formattedBalance;
+                if (wEl) wEl.innerText = formattedBalance;
+            } catch (e) {
+                console.error("Ошибка отображения баланса", e);
+            }
+        }
+
+        // Сохранение данных
+        function saveUserData() {
+            try {
+                localStorage.setItem('chrono_balance', userBalance);
+                localStorage.setItem('chrono_mining_end', miningEndTime);
+            } catch (e) {
+                console.error("Ошибка сохранения данных", e);
+            }
+        }
+
+        // Логика майнинга
+        function startMining() {
+            try {
+                const duration = 10 * 60; // 10 минут для тестов (можно изменить на 3600 для часа)
+                miningEndTime = Math.floor(Date.now() / 1000) + duration;
+                saveUserData();
+                checkMiningState();
+            } catch (e) {
+                console.error("Ошибка запуска майнинга", e);
+            }
+        }
+
+        // Проверка таймера майнинга
+        function checkMiningState() {
+            try {
+                const now = Math.floor(Date.now() / 1000);
+                const btn = document.getElementById('mining-btn');
+                const timerDisplay = document.getElementById('timer-display');
+
+                if (miningEndTime > now) {
+                    let timeLeft = miningEndTime - now;
+                    let hours = Math.floor(timeLeft / 3600);
+                    let minutes = Math.floor((timeLeft % 3600) / 60);
+                    let seconds = timeLeft % 60;
+
+                    if (timerDisplay) {
+                        timerDisplay.innerText = 
+                            String(hours).padStart(2, '0') + ":" + 
+                            String(minutes).padStart(2, '0') + ":" + 
+                            String(seconds).padStart(2, '0');
+                    }
+                    if (btn) {
+                        btn.disabled = true;
+                        btn.innerText = "Майнинг идет...";
+                    }
+                } else {
+                    if (miningEndTime > 0) {
+                        // Майнинг завершился, начисляем награду
+                        userBalance += 10.00;
+                        miningEndTime = 0;
+                        saveUserData();
+                        updateBalanceDisplay();
+                    }
+                    if (timerDisplay) {
+                        timerDisplay.innerText = "00:00:00";
+                    }
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerText = "Начать майнинг";
                     }
                 }
-                updateUI();
-                renderTasks();
-                updateWheelUI();
-                setInterval(checkTimer, 1000);
-            });
-        }
-
-        function saveState() {
-            tg.CloudStorage.setItem('userState', JSON.stringify(userState), (err, success) => {
-                if (err) console.error('Ошибка сохранения', err);
-            });
-        }
-
-        function switchTab(tabName, element) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-
-            document.getElementById('tab-' + tabName).classList.add('active');
-            element.classList.add('active');
-        }
-
-        function toggleMining() {
-            if (userState.invitedFriendsCount < 1) {
-                tg.showAlert('Чтобы разблокировать майнинг, перейдите в профиль и пригласите хотя бы одного друга!');
-                return;
-            }
-
-            if (!userState.miningVideoWatched) {
-                tg.showAlert('Чтобы запустить майнинг, необходимо посмотреть видеоролик!');
-                return;
-            }
-
-            const now = Date.now();
-            if (!userState.isMining) {
-                userState.isMining = true;
-                userState.miningEndTime = now + 60 * 60 * 1000; 
-                saveState();
-            }
-            updateUI();
-        }
-
-        function watchMiningVideo() {
-            userState.miningVideoWatched = true;
-            saveState();
-            updateUI();
-            tg.HapticFeedback.notificationOccurred('success');
-            tg.showAlert('Видео просмотрено! Теперь вы можете запустить майнинг.');
-        }
-
-        function checkTimer() {
-            if (!userState.isMining) return;
-
-            const now = Date.now();
-            const timeLeft = userState.miningEndTime - now;
-
-            if (timeLeft <= 0) {
-                userState.isMining = false;
-                userState.miningVideoWatched = false; 
-                userState.balance += 1.0; 
-                saveState();
-                updateUI();
-            } else {
-                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                document.getElementById('timer').innerText = 
-                    String(hours).padStart(2, '0') + ':' + 
-                    String(minutes).padStart(2, '0') + ':' + 
-                    String(seconds).padStart(2, '0');
+            } catch (e) {
+                console.error("Ошибка в таймере", e);
             }
         }
 
-        function updateUI() {
-            document.getElementById('balance').innerText = userState.balance.toFixed(2) + ' CC';
-            document.getElementById('friend-count').innerText = userState.invitedFriendsCount;
-            
-            // Отрисовка списка друзей в профиле
-            const friendsListEl = document.getElementById('friends-list');
-            const noFriendsText = document.getElementById('no-friends-text');
-            
-            if (userState.friends.length > 0) {
-                noFriendsText.style.display = 'none';
-                friendsListEl.innerHTML = '';
-                userState.friends.forEach(friend => {
-                    const friendRow = document.createElement('div');
-                    friendRow.style.cssText = 'display: flex; justify-content: space-between; font-size: 13px; background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px;';
-                    friendRow.innerHTML = `<span>👤 ${friend.name}</span> <span style="color: #28a745;">Активен</span>`;
-                    friendsListEl.appendChild(friendRow);
-                });
-            } else {
-                noFriendsText.style.display = 'block';
-            }
-
-            const btn = document.getElementById('mining-btn');
-            const watchVideoBtn = document.getElementById('watch-mining-video-btn');
-            const statusText = document.getElementById('mining-status-text');
-            
-            if (userState.isMining) {
-                btn.disabled = true;
-                btn.innerText = 'Майнинг идет...';
-                watchVideoBtn.style.display = 'none';
-                statusText.innerText = 'Идет добыча ChronoCoin.';
-            } else {
-                if (userState.invitedFriendsCount < 1) {
-                    btn.disabled = true;
-                    btn.innerText = 'Сначала приглашите друга (вкладка Профиль)';
-                    watchVideoBtn.style.display = 'none';
-                    statusText.innerText = 'Майнинг заблокирован. Нужен минимум 1 друг.';
-                } else if (!userState.miningVideoWatched) {
-                    btn.disabled = true;
-                    btn.style.display = 'none';
-                    watchVideoBtn.style.display = 'block';
-                    statusText.innerText = 'Посмотрите видеоролик перед запуском майнинга.';
-                } else {
-                    btn.disabled = false;
-                    btn.style.display = 'block';
-                    watchVideoBtn.style.display = 'none';
-                    btn.innerText = 'Начать майнинг';
-                    statusText.innerText = 'Запустите добычу и получайте CC каждый час.';
-                    document.getElementById('timer').innerText = '00:00:00';
-                }
-            }
-        }
-
-        function renderTasks() {
-            const listEl = document.getElementById('task-list');
-            listEl.innerHTML = '';
-
-            tasksData.forEach(task => {
-                const isDone = userState.tasksCompleted[task.id];
-                const item = document.createElement('div');
-                item.className = 'task-item';
-                item.innerHTML = `
-                    <div class="task-info">
-                        <span class="task-title">${task.title}</span>
-                        <span class="task-reward">+${task.reward} CC</span>
-                    </div>
-                    <button class="task-btn" ${isDone ? 'disabled style="background:var(--hint-color)"' : ''} onclick="completeTask(${task.id}, ${task.reward})">
-                        ${isDone ? 'Выполнено' : 'Выполнить'}
-                    </button>
-                `;
-                listEl.appendChild(item);
-            });
-        }
-
-        function completeTask(taskId, reward) {
-            userState.tasksCompleted[taskId] = true;
-            userState.balance += reward;
-            saveState();
-            renderTasks();
-            updateUI();
-            tg.HapticFeedback.notificationOccurred('success');
-        }
-
-        function watchVideoForWheel() {
-            if (userState.wheelVideosWatched < 3) {
-                userState.wheelVideosWatched++;
-                if (userState.wheelVideosWatched >= 3) {
-                    userState.wheelReady = true;
-                }
-                saveState();
-                updateWheelUI();
-                tg.HapticFeedback.impactOccurred('medium');
-            }
-        }
-
-        function updateWheelUI() {
-            const watchBtn = document.getElementById('wheel-watch-btn');
-            const spinBtn = document.getElementById('wheel-spin-btn');
-            const progressEl = document.getElementById('wheel-progress');
-            const statusEl = document.getElementById('wheel-status');
-
-            progressEl.innerText = `Прогресс видео: ${userState.wheelVideosWatched} / 3`;
-
-            if (userState.wheelReady) {
-                watchBtn.style.display = 'none';
-                spinBtn.style.display = 'block';
-                statusEl.innerText = 'Колесо активировано! Вы можете сделать прокрутку.';
-            } else {
-                watchBtn.style.display = 'block';
-                spinBtn.style.display = 'none';
-                statusEl.innerText = 'Чтобы включить это колесо, нужно посмотреть видеоролик из трёх частей.';
-            }
-        }
-
-        function spinWheel() {
-            const reward = Math.floor(Math.random() * 5) + 1; 
-            userState.balance += reward;
-            userState.wheelVideosWatched = 0;
-            userState.wheelReady = false;
-            saveState();
-            updateUI();
-            updateWheelUI();
-            tg.showAlert(`Поздравляем! Вы выиграли ${reward} CC в колесе фортуны!`);
-        }
-
-        function inviteFriend() {
-            const newFriendName = 'Друг #' + (userState.friends.length + 1);
-            userState.friends.push({ name: newFriendName });
-            userState.invitedFriendsCount = userState.friends.length;
-            
-            saveState();
-            updateUI();
-
-            const shareUrl = `https://t.me/share/url?url=https://t.me/YourBotName/app?start=ref_${userState.userId}&text=Присоединяйся к майнингу ChronoCoin!`;
-            tg.openTelegramLink(shareUrl);
-        }
-
-        window.onload = initA
+        // Запуск проверки таймера каждую секунду с защитой
+        setInterval(checkMiningState, 1000);
+    </script>
+</body>
+</html>
