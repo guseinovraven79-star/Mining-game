@@ -78,10 +78,13 @@
 
         .balance-title {
             font-size: 13px;
-            color: #a0aec0;
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 5px;
+            font-weight: 700;
         }
 
         .balance-amount {
@@ -93,7 +96,13 @@
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
         }
 
-        /* Натуральная Луна с кратерами */
+        .gold-text {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
         .moon-container {
             display: flex;
             flex-direction: column;
@@ -105,24 +114,12 @@
         .moon-circle {
             width: 175px;
             height: 175px;
-            background: radial-gradient(circle at 35% 35%, #ffffff 0%, #b0b5bc 35%, #5a616d 70%, #22262e 100%);
+            background: radial-gradient(circle at 35% 35%, #e2e8f0 0%, #94a3b8 40%, #334155 75%, #0f172a 100%);
             border-radius: 50%;
-            box-shadow: 0 0 40px rgba(255, 255, 255, 0.3), inset -20px -20px 40px rgba(0,0,0,0.85), inset 12px 12px 25px rgba(255,255,255,0.4);
+            box-shadow: 0 0 45px rgba(255, 255, 255, 0.25), inset -25px -25px 45px rgba(0,0,0,0.9), inset 10px 10px 20px rgba(255,255,255,0.3);
             cursor: pointer;
             transition: transform 0.1s ease;
             position: relative;
-        }
-
-        .moon-circle::before {
-            content: "";
-            position: absolute;
-            top: 25px;
-            left: 35px;
-            width: 45px;
-            height: 40px;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 50%;
-            box-shadow: 55px 35px 0 8px rgba(0,0,0,0.2), 15px 75px 0 -5px rgba(0,0,0,0.22), 65px 85px 0 5px rgba(0,0,0,0.18);
         }
 
         .moon-circle:active {
@@ -299,13 +296,13 @@
     <div id="page-mining" class="app-container active">
         <div class="secret-easter-egg">SYS-ID: 21</div>
         <div class="header-card">
-            <div class="balance-title">Баланс NEVAR</div>
+            <div class="balance-title">БАЛАНС NEVAR</div>
             <div class="balance-amount" id="balance">0.00</div>
         </div>
 
         <div class="moon-container">
             <div class="moon-circle" id="tap-target" onclick="tapMoon()"></div>
-            <div class="tap-hint">Кликни по луне чтобы начать майнить nevar</div>
+            <div class="tap-hint">Кликни по луне чтобы начать майнить NEVAR</div>
             <div class="timer-display" id="mining-timer">60:00</div>
             <button class="btn-action" id="btn-start-mining" onclick="watchVideoForMining()">Включить майнинг (Смотреть 1 видео)</button>
         </div>
@@ -325,28 +322,31 @@
         <div class="secret-easter-egg">SECTOR: 21-ENC</div>
         <div class="section-title">🧊 Энцелад: Обязательные миссии</div>
         
+        <!-- Ежедневное задание: 5 видео (сброс в 00:00) -->
         <div class="card">
             <div class="card-info">
-                <h4>Пригласить 5 друзей</h4>
-                <p>Вознаграждение: +1.0 NEVAR</p>
+                <h4>Посмотреть 5 видео (Ежедневно)</h4>
+                <p>Вознаграждение: +3.0 NEVAR</p>
             </div>
-            <button class="btn-action" onclick="completeTask('friends5', 1.0, this)">Выполнить</button>
+            <button class="btn-action" id="btn-daily-videos" onclick="completeDailyVideos(this)">Смотреть</button>
         </div>
 
+        <!-- Приглашение для активации программы (отдельное) -->
+        <div class="card">
+            <div class="card-info">
+                <h4>Пригласить 5 друзей (Активация)</h4>
+                <p>Вознаграждение: +1.0 NEVAR</p>
+            </div>
+            <button class="btn-action" id="btn-activation-friends" onclick="completeActivationFriends(this)">Выполнить</button>
+        </div>
+
+        <!-- Подписки на соцсети -->
         <div class="card">
             <div class="card-info">
                 <h4>Подписаться на Инстаграм</h4>
                 <p>Вознаграждение: +1.0 NEVAR</p>
             </div>
             <button class="btn-action" onclick="completeTask('insta', 1.0, this)">Подписаться</button>
-        </div>
-
-        <div class="card">
-            <div class="card-info">
-                <h4>Посмотреть 5 видео</h4>
-                <p>Вознаграждение: +3.0 NEVAR</p>
-            </div>
-            <button class="btn-action" onclick="completeTask('videos5', 3.0, this)">Смотреть</button>
         </div>
 
         <div class="card">
@@ -370,7 +370,6 @@
         <div class="header-card" style="text-align: left; padding: 15px;">
             <div style="font-size: 13px; color: #a0aec0;">Пилот: <span id="user-name" style="color: #fff; font-weight: bold;">Равен Гусейнов</span></div>
             <div style="font-size: 13px; color: #a0aec0; margin-top: 5px;">ID пилота: <span style="color: #00ffcc;">#NEVAR-9915</span></div>
-            <div style="font-size: 13px; color: #a0aec0; margin-top: 5px;">Всего пилотов в NEVAR: <span id="total-miners" style="color: #ffd700; font-weight: bold;">142,890</span></div>
         </div>
 
         <div class="card">
@@ -396,7 +395,7 @@
         </div>
 
         <div class="header-card">
-            <div class="balance-title">Доступно к выводу</div>
+            <div class="balance-title">ДОСТУПНО К ВЫВОДУ</div>
             <div class="balance-amount">0.00 NEVAR</div>
         </div>
         <div class="card">
@@ -412,9 +411,9 @@
     <div id="page-info" class="app-container">
         <div class="secret-easter-egg">GALAXY: 21-MW</div>
         <div class="info-box">
-            <h3>Что такое NEVAR?</h3>
-            <p><strong>NEVAR</strong> — засекреченный цифровой проект нового поколения, рожденный на стыке глубокого космоса и неизведанных блокчейн-технологий. Что скрывается за этим названием? Мемкоин, заряженный альткоин или нечто совершенно новое, способное перевернуть правила игры? Ответы на этот вопрос еще предстоит открыть.</p>
-            <p>Мы здесь для того, чтобы сделать невозможное. <strong>Мы первыми облетим все 8 планет, и нам ничего не помеха.</strong> Главное — просто верить в себя, в свои силы и в <strong>NEVAR</strong>!</p>
+            <h3>Что такое <span class="gold-text">NEVAR</span>?</h3>
+            <p><strong class="gold-text">NEVAR</strong> — засекреченный цифровой проект нового поколения, рожденный на стыке глубокого космоса и неизведанных блокчейн-технологий. Что скрывается за этим названием? Мемкоин, заряженный альткоин или нечто совершенно новое, способное перевернуть правила игры? Ответы на этот вопрос еще предстоит открыть.</p>
+            <p>Мы здесь для того, чтобы сделать невозможное. <strong>Мы первыми облетим все 8 планет, и нам ничего не помеха.</strong> Главное — просто верить в себя, в свои силы и в <strong class="gold-text">NEVAR</strong>!</p>
             <p>Наша экосистема создана для тех, кто готов первыми исследовать неизведанное. Здесь каждый пилот имеет равные возможности для старта, майнинга и покорения цифровой вселенной.</p>
             
             <p><strong>Успех и развитие проекта зависят исключительно от вашей активности:</strong></p>
@@ -451,33 +450,50 @@
             <span class="nav-icon">🌌</span>
             <span class="nav-label">Инфо</span>
         </button>
-                                                                                          </nav>
-                  <script>
-        let balance = parseFloat(localStorage.getItem('nevar_balance')) || 0.00;
-        let miningActive = localStorage.getItem('nevar_mining_active') === 'true';
-        let miningSecondsLeft = parseInt(localStorage.getItem('nevar_mining_seconds')) || 0;
-        
-        const balanceElement = document.getElementById('balance');
-        const tapTarget = document.getElementById('tap-target');
-        const timerDisplay = document.getElementById('mining-timer');
-        const btnStartMining = document.getElementById('btn-start-mining');
+    </nav>
+        <script>
+        // Состояние приложения
+        let state = {
+            balance: 0.00,
+            miningEndTime: 0,
+            isMiningActive: false,
+            completedTasks: {},
+            dailyVideosDate: "",
+            dailyVideosCount: 0
+        };
 
-        const planets = [
-            { name: "Меркурий", unlockDate: new Date("2026-11-01T00:00:00") },
-            { name: "Венера", unlockDate: new Date("2026-11-08T00:00:00") },
-            { name: "Земля", unlockDate: new Date("2026-11-15T00:00:00") },
-            { name: "Марс", unlockDate: new Date("2026-11-22T00:00:00") },
-            { name: "Юпитер", unlockDate: new Date("2026-11-29T00:00:00") },
-            { name: "Сатурн", unlockDate: new Date("2026-12-06T00:00:00") },
-            { name: "Уран", unlockDate: new Date("2026-12-13T00:00:00") },
-            { name: "Нептун", unlockDate: new Date("2026-12-20T00:00:00") }
-        ];
-
-        function updateUI() {
-            balanceElement.innerText = balance.toFixed(2);
-            localStorage.setItem('nevar_balance', balance);
+        // Загрузка данных из localStorage
+        function loadState() {
+            const saved = localStorage.getItem('nevar_game_state_v3');
+            if (saved) {
+                try {
+                    state = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Ошибка загрузки данных", e);
+                }
+            }
+            checkDailyReset();
         }
 
+        // Сохранение данных
+        function saveState() {
+            localStorage.setItem('nevar_game_state_v3', JSON.stringify(state));
+        }
+
+        // Проверка сброса ежедневных видео в 00:00
+        function checkDailyReset() {
+            const todayStr = new Date().toDateString();
+            if (state.dailyVideosDate !== todayStr) {
+                state.dailyVideosDate = todayStr;
+                state.dailyVideosCount = 0;
+                if (state.completedTasks['dailyVideos']) {
+                    delete state.completedTasks['dailyVideos'];
+                }
+                saveState();
+            }
+        }
+
+        // Переключение вкладок
         function switchTab(tabId, element) {
             document.querySelectorAll('.app-container').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
@@ -486,115 +502,213 @@
             element.classList.add('active');
         }
 
+        // Клик по луне (Майнинг тапами)
         function tapMoon() {
-            if (!miningActive) {
-                alert("⚠️ Майнинг остановлен! Посмотрите 1 видео, чтобы запустить лунную добычу на 60 минут.");
+            if (!state.isMiningActive) {
+                // Если майнинг не активен, тапы дают небольшой бонус или подсказку
                 return;
             }
-
-            balance += 0.10;
+            state.balance += 0.01;
             updateUI();
-
-            tapTarget.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                tapTarget.style.transform = 'scale(1)';
-            }, 50);
+            saveState();
         }
 
+        // Запуск майнинга (1 видео)
         function watchVideoForMining() {
-            alert("📺 Видео успешно просмотрено! Лунный майнинг активирован на 60 минут.");
-            miningActive = true;
-            miningSecondsLeft = 3600;
-            localStorage.setItem('nevar_mining_active', 'true');
-            localStorage.setItem('nevar_mining_seconds', miningSecondsLeft);
-            btnStartMining.innerText = "Майнинг активен";
-            btnStartMining.disabled = true;
-        }
-
-        setInterval(() => {
-            if (miningActive && miningSecondsLeft > 0) {
-                miningSecondsLeft--;
-                localStorage.setItem('nevar_mining_seconds', miningSecondsLeft);
-
-                let minutes = Math.floor(miningSecondsLeft / 60);
-                let seconds = miningSecondsLeft % 60;
-                timerDisplay.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-                if (miningSecondsLeft <= 0) {
-                    miningActive = false;
-                    localStorage.setItem('nevar_mining_active', 'false');
-                    timerDisplay.innerText = "00:00";
-                    btnStartMining.innerText = "Включить майнинг (Смотреть 1 видео)";
-                    btnStartMining.disabled = false;
-                    alert("⏰ Сессия майнинга завершена! Посмотрите видео, чтобы продолжить добычу.");
-                }
-            }
-        }, 1000);
-
-        function startNightMining() {
-            const now = new Date();
-            const hours = now.getHours();
-
-            if (hours >= 22 && hours <= 23) {
-                alert("📺 Просмотрено 5 видео для ночного майнинга...");
-                balance += 15.0;
-                updateUI();
-                alert("🌙 Ночной майнинг на 6 часов успешно запущен! Начислено +15.0 NEVAR.");
-            } else {
-                alert("❌ Ночной майнинг доступен строго с 22:00 до 23:59!");
-            }
-        }
-
-        function completeTask(taskId, reward, btnElement) {
-            balance += reward;
+            // Имитация просмотра видео
+            const durationMinutes = 60; // 1 час майнинга
+            state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
+            state.isMiningActive = true;
             updateUI();
-            btnElement.innerText = "Выполнено";
-            btnElement.disabled = true;
-            btnElement.style.background = "rgba(255,255,255,0.1)";
-            alert(`🎉 Задание выполнено! Начислено +${reward} NEVAR.`);
+            saveState();
         }
 
+        // Ночной майнинг (5 видео)
+        function startNightMining() {
+            const durationMinutes = 360; // 6 часов
+            state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
+            state.isMiningActive = true;
+            updateUI();
+            saveState();
+        }
+
+        // Выполнение обычных заданий и активации
+        function completeTask(taskId, reward, btnElement) {
+            if (state.completedTasks[taskId]) return;
+
+            state.completedTasks[taskId] = true;
+            state.balance += reward;
+
+            if (btnElement) {
+                btnElement.textContent = "Выполнено";
+                btnElement.disabled = true;
+                btnElement.style.background = "rgba(0, 255, 204, 0.2)";
+                btnElement.style.color = "#00ffcc";
+            }
+
+            updateUI();
+            saveState();
+        }
+
+        // Активация программы через друзей (отдельно)
+        function completeActivationFriends(btnElement) {
+            completeTask('activationFriends5', 1.0, btnElement);
+        }
+
+        // Ежедневное задание: посмотреть 5 видео
+        function completeDailyVideos(btnElement) {
+            if (state.completedTasks['dailyVideos']) return;
+
+            state.dailyVideosCount = 5;
+            state.completedTasks['dailyVideos'] = true;
+            state.balance += 3.0; // 3 NEVAR за ежедневные видео
+
+            if (btnElement) {
+                btnElement.textContent = "Выполнено";
+                btnElement.disabled = true;
+                btnElement.style.background = "rgba(0, 255, 204, 0.2)";
+                btnElement.style.color = "#00ffcc";
+            }
+
+            updateUI();
+            saveState();
+        }
+
+        // Пригласить друга (во вкладке Друзья)
+        function inviteFriend() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'NEVAR',
+                    text: 'Присоединяйся к исследованию космоса в NEVAR!',
+                    url: window.location.href,
+                }).catch(() => {});
+            } else {
+                alert('Ссылка для приглашения скопирована в буфер обмена!');
+            }
+        }
+
+        // Рендер планетарных заданий (скрытые задания по 50 видео, вознаграждение 100 NEVAR видно сразу)
         function renderPlanetaryTasks() {
             const container = document.getElementById('planetary-tasks-container');
+            if (!container) return;
+
+            const planets = [
+                { name: "Меркурий", date: "2026-11-01" },
+                { name: "Венера", date: "2026-11-08" },
+                { name: "Земля", date: "2026-11-15" },
+                { name: "Марс", date: "2026-11-22" },
+                { name: "Юпитер", date: "2026-11-29" },
+                { name: "Сатурн", date: "2026-12-06" },
+                { name: "Уран", date: "2026-12-13" },
+                { name: "Нептун", date: "2026-12-20" }
+            ];
+
             const now = new Date();
+            let html = '';
 
-            container.innerHTML = '';
             planets.forEach((planet, index) => {
-                const isUnlocked = now >= planet.unlockDate;
-                
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="card-info">
-                        <h4>Экспедиция: ${planet.name}</h4>
-                        <p>${isUnlocked ? 'Доступно для прохождения (+25.0 NEVAR)' : 'Откроется: ' + planet.unlockDate.toLocaleDateString()}</p>
-                    </div>
-                    <button class="btn-action" ${!isUnlocked ? 'disabled' : ''} onclick="completePlanetTask(${index}, this)">
-                        ${isUnlocked ? 'Выполнить' : 'Скоро'}
-                    </button>
+                const openDate = new Date(planet.date);
+                const isOpen = now >= openDate;
+                const taskId = `planet_${index}`;
+                const isCompleted = state.completedTasks[taskId];
+
+                html += `
+                    <div class="card">
+                        <div class="card-info">
+                            <h4>Экспедиция: ${planet.name}</h4>
+                            <p>${isOpen ? 'Просмотреть 50 видео за неделю' : 'Откроется: ' + planet.date.split('-').reverse().join('.')}</p>
+                            <p style="color: #ffd700; margin-top: 3px; font-weight: 600;">Вознаграждение: +100 NEVAR</p>
+                        </div>
                 `;
-                container.appendChild(card);
+
+                if (!isOpen) {
+                    html += `<button class="btn-action" disabled style="background: rgba(255,255,255,0.05); color: #718096;">Скоро</button>`;
+                } else if (isCompleted) {
+                    html += `<button class="btn-action" disabled style="background: rgba(0, 255, 204, 0.2); color: #00ffcc;">Выполнено</button>`;
+                } else {
+                    html += `<button class="btn-action" onclick="completePlanetTask(${index}, this)">Смотреть (0/50)</button>`;
+                }
+
+                html += `</div>`;
             });
+
+            container.innerHTML = html;
         }
 
+        // Выполнение планетарного задания (50 видео)
         function completePlanetTask(index, btnElement) {
-            balance += 25.0;
-            updateUI();
-            btnElement.innerText = "Пройдено";
+            const taskId = `planet_${index}`;
+            if (state.completedTasks[taskId]) return;
+
+            // Для симуляции быстрого выполнения или прогресса
+            state.completedTasks[taskId] = true;
+            state.balance += 100.0;
+
+            btnElement.textContent = "Выполнено";
             btnElement.disabled = true;
-            alert(`🚀 Экспедиция на планету ${planets[index].name} завершена! Начислено +25.0 NEVAR.`);
+            btnElement.style.background = "rgba(0, 255, 204, 0.2)";
+            btnElement.style.color = "#00ffcc";
+
+            updateUI();
+            saveState();
         }
 
-        function inviteFriend() {
-            alert("🔗 Ссылка-приглашение скопирована в буфер обмена! Поделитесь ей с друзьями, чтобы увеличить скорость майнинга.");
+        // Обновление интерфейса и таймера (работает и в офлайн режиме)
+        function updateUI() {
+            document.getElementById('balance').textContent = state.balance.toFixed(2);
+
+            const now = Date.now();
+            const timerEl = document.getElementById('mining-timer');
+            const btnMining = document.getElementById('btn-start-mining');
+
+            if (state.isMiningActive && now < state.miningEndTime) {
+                const timeLeft = Math.floor((state.miningEndTime - now) / 1000);
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                btnMining.textContent = "Майнинг активен";
+                btnMining.disabled = true;
+            } else {
+                if (state.isMiningActive) {
+                    state.isMiningActive = false;
+                    saveState();
+                }
+                timerEn = "00:00";
+                timerEl.textContent = "00:00";
+                btnMining.textContent = "Включить майнинг (Смотреть 1 видео)";
+                btnMining.disabled = false;
+            }
+
+            // Статус ежедневных видео
+            const dailyBtn = document.getElementById('btn-daily-videos');
+            if (dailyBtn && state.completedTasks['dailyVideos']) {
+                dailyBtn.textContent = "Выполнено";
+                dailyBtn.disabled = true;
+                dailyBtn.style.background = "rgba(0, 255, 204, 0.2)";
+                dailyBtn.style.color = "#00ffcc";
+            }
+
+            // Статус активации друзей
+            const actBtn = document.getElementById('btn-activation-friends');
+            if (actBtn && state.completedTasks['activationFriends5']) {
+                actBtn.textContent = "Выполнено";
+                actBtn.disabled = true;
+                actBtn.style.background = "rgba(0, 255, 204, 0.2)";
+                actBtn.style.color = "#00ffcc";
+            }
         }
 
-        if (miningActive && miningSecondsLeft > 0) {
-            btnStartMining.innerText = "Майнинг активен";
-            btnStartMining.disabled = true;
-        }
-        updateUI();
-        renderPlanetaryTasks();
+        // Инициализация при запуске
+        window.onload = function() {
+            loadState();
+            renderPlanetaryTasks();
+            updateUI();
+
+            // Интервал обновления таймера каждую секунду
+            setInterval(() => {
+                updateUI();
+            }, 1000);
+        };
     </script>
 </body>
 </html>
