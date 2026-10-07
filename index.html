@@ -3,672 +3,464 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ChronoCoin</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>NEVAR - Космическая экспансия</title>
     <style>
-        :root {
-            --bg-color: #0b1f15;
-            --text-color: #f4f6f9;
-            --hint-color: #8fa396;
-            --primary-color: #34c759;
-            --night-color: #5856d6;
-            --card-bg: #112e20;
-            --border-color: #1a4731;
-            --gold-color: #f5a623;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
+            background-color: #0b0f19;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
+            position: relative;
         }
 
-        .content {
+        /* Звездный фон */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            z-index: -1;
+        }
+
+        /* Контейнер страниц */
+        .app-container {
             flex: 1;
             overflow-y: auto;
-            padding: 16px;
-            padding-bottom: 80px;
-        }
-
-        .tab-content {
+            padding: 20px 16px 90px 16px;
             display: none;
+            position: relative;
         }
 
-        .tab-content.active {
+        .app-container.active {
             display: block;
         }
 
-        h1, h2 {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #ffffff;
+        /* Скрытая пасхалка 21 */
+        .secret-easter-egg {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 2px;
+            pointer-events: none;
         }
 
-        p {
-            color: var(--hint-color);
-            font-size: 15px;
-            line-height: 1.4;
-            margin-top: 0;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 20px;
+        /* Шапка профиля / баланса */
+        .header-card {
+            background: linear-gradient(135deg, rgba(20, 30, 48, 0.8), rgba(36, 59, 85, 0.8));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             padding: 20px;
             text-align: center;
-            margin-bottom: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-            border: 1px solid var(--border-color);
-        }
-
-        .info-card {
-            text-align: left;
-            background: linear-gradient(135deg, #112e20 0%, #163b2a 100%);
-            border-left: 5px solid var(--primary-color);
-            padding: 22px;
-        }
-
-        .info-card p, .info-card li {
-            color: #d1dcd4;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
         .balance-title {
-            font-size: 14px;
-            color: var(--hint-color);
-            margin-bottom: 4px;
+            font-size: 13px;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
         }
 
-        .balance-value {
-            font-size: 34px;
+        .balance-amount {
+            font-size: 32px;
             font-weight: 800;
-            color: var(--gold-color);
-            margin-bottom: 16px;
+            color: #00ffcc;
+            text-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
         }
 
-        .btn {
-            background-color: var(--primary-color);
+        /* Луна (Главная) */
+        .moon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .moon-circle {
+            width: 220px;
+            height: 220px;
+            background: radial-gradient(circle at 30% 30%, #e0e0e0, #757575 60%, #303030);
+            border-radius: 50%;
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.2), inset -20px -20px 40px rgba(0,0,0,0.8);
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            position: relative;
+        }
+
+        .moon-circle:active {
+            transform: scale(0.95);
+        }
+
+        .tap-hint {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #a0aec0;
+            text-align: center;
+        }
+
+        /* Карточки контента */
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-info h4 {
+            font-size: 15px;
+            margin-bottom: 4px;
+            color: #fff;
+        }
+
+        .card-info p {
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
             color: white;
             border: none;
-            border-radius: 14px;
-            padding: 14px 20px;
-            font-size: 16px;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-weight: 600;
-            width: 100%;
+            font-size: 13px;
             cursor: pointer;
             transition: opacity 0.2s;
-            margin-top: 8px;
-            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
         }
 
-        .btn:active {
-            opacity: 0.8;
-        }
-
-        .btn:disabled {
-            background-color: #2a3d31;
-            color: #6c7d72;
-            box-shadow: none;
+        .btn-action:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: #718096;
             cursor: not-allowed;
         }
 
-        .timer-display {
-            font-size: 30px;
-            font-weight: 700;
-            color: var(--gold-color);
-            margin: 16px 0;
-            font-family: monospace;
-        }
-
-        .task-item {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            padding: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .task-info {
-            text-align: left;
-            flex: 1;
-            padding-right: 10px;
-        }
-
-        .task-title {
-            font-weight: 600;
-            font-size: 15px;
-            margin-bottom: 4px;
-            color: #ffffff;
-        }
-
-        .task-reward {
-            font-size: 13px;
-            color: var(--gold-color);
-            font-weight: bold;
-        }
-
-        .task-btn {
-            background-color: #007aff;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 8px 16px;
-            font-size: 14px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .task-btn.completed {
-            background-color: #2a3d31;
-            color: #6c7d72;
-            cursor: default;
-        }
-
+        /* Нижняя навигация */
         .nav-bar {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             left: 0;
-            right: 0;
-            height: 60px;
-            background: #081710;
-            border-top: 1px solid var(--border-color);
+            width: 100%;
+            height: 75px;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-around;
             align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
             z-index: 100;
         }
 
         .nav-item {
-            flex: 1;
-            text-align: center;
-            background: none;
-            border: none;
-            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
-            color: var(--hint-color);
-            font-size: 11px;
-        }
-
-        .nav-item svg {
-            width: 22px;
-            height: 22px;
-            margin-bottom: 2px;
-            fill: currentColor;
+            justify-content: center;
+            background: none;
+            border: none;
+            color: #718096;
+            cursor: pointer;
+            flex: 1;
+            height: 100%;
+            transition: color 0.2s;
         }
 
         .nav-item.active {
-            color: var(--gold-color);
+            color: #00ffcc;
         }
 
-        #activation-modal {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* Инфо контент */
+        .info-box {
+            background: rgba(20, 30, 48, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
             padding: 20px;
-        }
-        .modal-content {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 320px;
-            width: 100%;
+            line-height: 1.6;
+            font-size: 14px;
+            color: #cbd5e0;
         }
 
-        .referral-list {
-            text-align: left;
-            background: #081710;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px;
-            margin-top: 10px;
-            max-height: 120px;
-            overflow-y: auto;
-            font-size: 13px;
+        .info-box h3 {
+            color: #00ffcc;
+            margin-bottom: 12px;
+            font-size: 18px;
+        }
+
+        .info-box p {
+            margin-bottom: 12px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .info-box li {
+            margin-bottom: 6px;
         }
     </style>
 </head>
 <body>
 
-    <div class="content">
-        <!-- TAB 1: MINING -->
-        <div id="tab-mining" class="tab-content active">
-            <h2>Chrono Mining</h2>
-            <div class="card">
-                <div class="balance-title">Ваш баланс</div>
-                <div class="balance-value" id="balance">0.00 CC</div>
-                
-                <div id="timer-container" style="display: none;">
-                    <div class="timer-display" id="timer">01:00:00</div>
-                    <p id="mining-status" style="font-weight: 600; color: #ffffff; margin-bottom: 12px;">Идет обычный майнинг...</p>
-                </div>
+    <div class="stars"></div>
 
-                <!-- Кнопка обычного майнинга -->
-                <button class="btn" id="start-mining-btn" onclick="requestStartMining()">Запустить майнинг (1 час)</button>
-                
-                <!-- Кнопка ночного майнинга всегда под ней -->
-                <div style="margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
-                    <button class="btn" id="start-night-mining-btn" style="background-color: var(--night-color); box-shadow: 0 4px 12px rgba(88, 86, 214, 0.3);" onclick="requestStartNightMining()">Ночной майнинг (6 часов)</button>
-                    <p style="font-size: 12px; margin-top: 6px; color: var(--hint-color);">Доступно с 22:00 до 23:59 (Требуется 5 видео)</p>
-                </div>
-            </div>
-
-            <div class="card" style="text-align: left; padding: 16px;">
-                <h3 style="font-size: 16px; margin-bottom: 8px; color: #fff;">Статистика скорости</h3>
-                <p style="font-size: 14px; margin: 0;">Текущая базовая скорость: <strong id="current-speed" style="color: var(--gold-color);">1 CC/ч</strong></p>
-                <p style="font-size: 13px; margin-top: 4px; color: var(--hint-color);">Приглашайте друзей, чтобы увеличить скорость добычи!</p>
-            </div>
+    <!-- 1. ГЛАВНАЯ (ЛУНА) -->
+    <div id="page-mining" class="app-container active">
+        <div class="secret-easter-egg">SYS-ID: 21</div>
+        <div class="header-card">
+            <div class="balance-title">Баланс NEVAR</div>
+            <div class="balance-amount" id="balance">0.00</div>
         </div>
 
-        <!-- TAB 2: TASKS -->
-        <div id="tab-tasks" class="tab-content">
-            <h2>Ежедневные задания</h2>
-            
-            <div class="task-item">
-                <div class="task-info">
-                    <div class="task-title">Колесо фортуны</div>
-                    <div class="task-reward">+ Награда / 12 часов (3 видео)</div>
-                    <div id="wheel-timer" style="font-size: 12px; color: var(--gold-color); margin-top: 4px; font-weight: bold;"></div>
-                </div>
-                <button class="task-btn" id="wheel-btn" onclick="openWheelTask()">Крутить</button>
-            </div>
-
-            <div class="task-item">
-                <div class="task-info">
-                    <div class="task-title">Посмотреть 5 видео</div>
-                    <div class="task-reward">+10.0 CC</div>
-                </div>
-                <button class="task-btn" id="task-5video-btn" onclick="completeVideoTask5(this)">Смотреть</button>
-            </div>
-
-            <div class="task-item">
-                <div class="task-info">
-                    <div class="task-title">Посмотреть 1 видео</div>
-                    <div class="task-reward">+1.0 CC</div>
-                </div>
-                <button class="task-btn" id="task-1video-btn" onclick="completeVideoTask1(this)">Смотреть</button>
-            </div>
-
-            <div class="task-item">
-                <div class="task-info">
-                    <div class="task-title">Подписаться на Telegram</div>
-                    <div class="task-reward">+10.0 CC</div>
-                </div>
-                <button class="task-btn" onclick="completeTask(this, 10.0)">Подписаться</button>
-            </div>
-            <div class="task-item">
-                <div class="task-info">
-                    <div class="task-title">Подписаться на Instagram</div>
-                    <div class="task-reward">+10.0 CC</div>
-                </div>
-                <button class="task-btn" onclick="completeTask(this, 10.0)">Подписаться</button>
-            </div>
-
-            <h2 style="margin-top: 24px;">Специальные задания</h2>
-            <div class="task-item" style="opacity: 0.6;">
-                <div class="task-info">
-                    <div class="task-title">Еженедельное задание</div>
-                    <div class="task-reward">Скоро</div>
-                </div>
-                <button class="task-btn" style="background-color: #2a3d31; color: #6c7d72;" disabled>Скоро</button>
-            </div>
-        </div>
-
-        <!-- TAB 3: FRIENDS -->
-        <div id="tab-friends" class="tab-content">
-            <h2>Друзья</h2>
-            <div class="card" style="text-align: left;">
-                <p style="font-size: 14px; margin-bottom: 12px;">Приглашайте друзей и увеличивайте скорость майнинга:</p>
-                <ul style="padding-left: 18px; font-size: 13px; color: #d1dcd4; margin-bottom: 16px; line-height: 1.5;">
-                    <li>10 друзей = 2 CC/ч</li>
-                    <li>20 друзей = 3 CC/ч</li>
-                    <li>30 друзей = 4 CC/ч</li>
-                    <li>50 друзей = 20 CC/ч</li>
-                    <li>100 друзей = 50 CC/ч</li>
-                </ul>
-                <button class="btn" onclick="inviteFriend()">Пригласить друга</button>
-            </div>
-            <div class="card" style="text-align: left;">
-                <h3 style="font-size: 15px; margin-bottom: 8px; color: #fff;">Список приглашенных (<span id="friend-count">0</span>)</h3>
-                <div class="referral-list" id="friend-list-container">
-                    Никого еще не приглашено
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 4: WALLET -->
-        <div id="tab-wallet" class="tab-content">
-            <h2>Кошелек</h2>
-            <div class="card">
-                <div class="balance-title">Доступно к выводу</div>
-                <div class="balance-value" id="wallet-balance">0.00 CC</div>
-                <button class="btn" style="background-color: #2a3d31; color: #6c7d72; margin-top: 5px;" disabled>Подключить кошелек (Скоро)</button>
-            </div>
-        </div>
-
-        <!-- TAB 5: INFO -->
-        <div id="tab-info" class="tab-content">
-            <h2>О проекте</h2>
-            <div class="card info-card">
-                <p><strong>Что такое ChronoCoin?</strong> Это уникальный цифровой проект, созданный с нуля на стыке концепции времени и криптовалюты. Наша идея родилась из стремления создать по-настоящему честную экосистему, где каждый участник имеет равные возможности для старта и развития.</p>
-                <p>Успех и развитие проекта зависят исключительно от вашей активности.</p>
-                <ul>
-                    <li><strong>Активность:</strong> Самым активным участникам в будущем будут начисляться эксклюзивные аирдропы.</li>
-                    <li><strong>Друзья:</strong> Скорость майнинга растет от приглашений (от 2 до 50 CC/ч).</li>
-                    <li><strong>Задания:</strong> Прохождение ежедневных заданий и колеса фортуны обязательно для будущего проекта.</li>
-                </ul>
-                <p><strong>Партнерство и сотрудничество:</strong> Мы всегда открыты к новым предложениям! Вы можете связаться с нами через наши социальные сети.</p>
-            </div>
+        <div class="moon-container">
+            <div class="moon-circle" id="tap-target"></div>
+            <div class="tap-hint">Тапай по Луне, чтобы добывать NEVAR</div>
         </div>
     </div>
-        <!-- NAVIGATION BAR -->
+
+    <!-- 2. ЗАДАНИЯ (ЭНЦЕЛАД) -->
+    <div id="page-tasks" class="app-container">
+        <div class="secret-easter-egg">SECTOR: 21-ENC</div>
+        <div class="section-title">🧊 Энцелад: Ежедневные миссии</div>
+        
+        <div class="card">
+            <div class="card-info">
+                <h4>Колесо фортуны</h4>
+                <p>+ Награда / 12 часов (3 видео)</p>
+            </div>
+            <button class="btn-action">Крутить</button>
+        </div>
+
+        <div class="card">
+            <div class="card-info">
+                <h4>Посмотреть 5 видео</h4>
+                <p>+10.0 NEVAR</p>
+            </div>
+            <button class="btn-action">Смотреть</button>
+        </div>
+
+        <div class="card">
+            <div class="card-info">
+                <h4>Подписаться на Telegram</h4>
+                <p>+10.0 NEVAR</p>
+            </div>
+            <button class="btn-action">Подписаться</button>
+        </div>
+
+        <div class="section-title" style="margin-top: 25px;">🪐 Планетарные задания (с 1 ноября)</div>
+        <div id="planetary-tasks-container">
+            <!-- Динамические 8 планет сгенерируются во второй части кода -->
+        </div>
+    </div>
+
+    <!-- 3. ДРУЗЬЯ (ФОБОС) -->
+    <div id="page-friends" class="app-container">
+        <div class="secret-easter-egg">ORBIT: 21-PHB</div>
+        <div class="section-title">🔴 Фобос: Космический экипаж</div>
+        <div class="card">
+            <div class="card-info">
+                <h4>Пригласи пилота</h4>
+                <p>+5.0 NEVAR за каждого друга</p>
+            </div>
+            <button class="btn-action">Пригласить</button>
+        </div>
+    </div>
+
+    <!-- 4. КОШЕЛЕК (ЕВРОПА) -->
+    <div id="page-wallet" class="app-container">
+        <div class="secret-easter-egg">VAULT: 21-EUR</div>
+        <div class="section-title">🌀 Европа: Хранилище активов</div>
+        <div class="header-card">
+            <div class="balance-title">Доступно к выводу</div>
+            <div class="balance-amount">0.00 NEVAR</div>
+        </div>
+        <div class="card">
+            <div class="card-info">
+                <h4>Подключить кошелек</h4>
+                <p>Интеграция с блокчейном</p>
+            </div>
+            <button class="btn-action">Связь</button>
+        </div>
+    </div>
+
+    <!-- 5. ИНФО (МЛЕЧНЫЙ ПУТЬ) -->
+    <div id="page-info" class="app-container">
+        <div class="secret-easter-egg">GALAXY: 21-MW</div>
+        <div class="info-box">
+            <h3>Что такое NEVAR?</h3>
+            <p><strong>NEVAR</strong> — засекреченный цифровой проект нового поколения, рожденный на стыке глубокого космоса и неизведанных блокчейн-технологий. Что скрывается за этим названием? Мемкоин, заряженный альткоин или нечто совершенно новое, способное перевернуть правила игры? Ответы на этот вопрос еще предстоит открыть.</p>
+            <p>Мы здесь для того, чтобы сделать невозможное. <strong>Мы первыми облетим все 8 планет, и нам ничего не помеха.</strong> Главное — просто верить в себя, в свои силы и в <strong>NEVAR</strong>!</p>
+            <p>Наша экосистема создана для тех, кто готов первыми исследовать неизведанное. Здесь каждый пилот имеет равные возможности для старта, майнинга и покорения цифровой вселенной.</p>
+            
+            <p><strong>Успех и развитие проекта зависят исключительно от вашей активности:</strong></p>
+            <ul>
+                <li><strong>Активность (Луна):</strong> Майнинг и тапы на лунной базе.</li>
+                <li><strong>Друзья (Фобос):</strong> Приглашение новых пилотов на марсианском спутнике.</li>
+                <li><strong>Задания (Энцелад):</strong> Ежедневные миссии и еженедельные экспедиции.</li>
+                <li><strong>Планетарные миссии:</strong> 8 еженедельных заданий, названных в честь планет, открываются автоматически с 1 ноября.</li>
+            </ul>
+
+            <p><strong>Партнерство и сотрудничество:</strong> Мы всегда открыты к новым межгалактическим предложениям через официальные каналы связи.</p>
+        </div>
+    </div>
+
+    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
     <nav class="nav-bar">
         <button class="nav-item active" onclick="switchTab('mining', this)">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.03-.42 1.98-1.07 2.75z"/></svg>
-            <span>Майнинг</span>
+            <span class="nav-icon">🌕</span>
+            <span class="nav-label">Майнинг</span>
         </button>
         <button class="nav-item" onclick="switchTab('tasks', this)">
-            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-            <span>Задания</span>
+            <span class="nav-icon">🧊</span>
+            <span class="nav-label">Задания</span>
         </button>
         <button class="nav-item" onclick="switchTab('friends', this)">
-            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-            <span>Друзья</span>
+            <span class="nav-icon">🔴</span>
+            <span class="nav-label">Друзья</span>
         </button>
         <button class="nav-item" onclick="switchTab('wallet', this)">
-            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-            <span>Кошелек</span>
+            <span class="nav-icon">🌀</span>
+            <span class="nav-label">Кошелек</span>
         </button>
         <button class="nav-item" onclick="switchTab('info', this)">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-            <span>Инфо</span>
+            <span class="nav-icon">🌌</span>
+            <span class="nav-label">Инфо</span>
         </button>
     </nav>
+        <script>
+        // Игровая логика NEVAR
+        let balance = parseFloat(localStorage.getItem('nevar_balance')) || 0.00;
+        let miningActive = localStorage.getItem('nevar_mining_active') === 'true';
+        let friendInvited = localStorage.getItem('nevar_friend_invited') === 'true';
+        let dailyVideosWatched = parseInt(localStorage.getItem('nevar_daily_videos')) || 0;
 
-    <!-- MODAL FOR WATCHING VIDEOS -->
-    <div id="activation-modal" style="display: none;">
-        <div class="modal-content">
-            <h3 id="modal-title" style="margin-top:0; font-size:18px; color: #fff;">Просмотр видео</h3>
-            <p id="modal-desc" style="font-size: 14px; margin: 15px 0;">Пожалуйста, просмотрите видео для активации функции.</p>
-            <div id="modal-progress" style="font-weight: bold; font-size: 16px; color: var(--gold-color); margin-bottom: 15px;">Видео 1 из 1</div>
-            <button class="btn" id="modal-watch-btn" onclick="simulateVideoWatch()">Смотреть видео</button>
-            <button class="btn" id="modal-close-btn" style="background-color: #2a3d31; color: #6c7d72; margin-top: 8px; display: none;" onclick="closeModal()">Закрыть</button>
-        </div>
-    </div>
+        const balanceElement = document.getElementById('balance');
+        const tapTarget = document.getElementById('tap-target');
 
-    <script>
-        let state = {
-            balance: 0,
-            speed: 1,
-            miningEndTime: null,
-            miningDuration: 0,
-            wheelNextAvailable: 0,
-            friends: [],
-            completedTasks: {}
-        };
+        // Список 8 планет для еженедельных заданий
+        const planets = [
+            { name: "Меркурий", unlockDate: new Date("2026-11-01T00:00:00") },
+            { name: "Венера", unlockDate: new Date("2026-11-08T00:00:00") },
+            { name: "Земля", unlockDate: new Date("2026-11-15T00:00:00") },
+            { name: "Марс", unlockDate: new Date("2026-11-22T00:00:00") },
+            { name: "Юпитер", unlockDate: new Date("2026-11-29T00:00:00") },
+            { name: "Сатурн", unlockDate: new Date("2026-12-06T00:00:00") },
+            { name: "Уран", unlockDate: new Date("2026-12-13T00:00:00") },
+            { name: "Нептун", unlockDate: new Date("2026-12-20T00:00:00") }
+        ];
 
-        let modalCallback = null;
-        let videoRequiredTotal = 0;
-        let videoCurrentWatched = 0;
-
-        function loadState() {
-            const saved = localStorage.getItem('chronocoin_state');
-            if (saved) {
-                try {
-                    state = JSON.parse(saved);
-                } catch(e) { console.error(e); }
-            }
-            updateUI();
+        function updateUI() {
+            balanceElement.innerText = balance.toFixed(2);
+            localStorage.setItem('nevar_balance', balance);
         }
 
-        function saveState() {
-            localStorage.setItem('chronocoin_state', JSON.stringify(state));
-        }
-
+        // Переключение вкладок
         function switchTab(tabId, element) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.app-container').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            
-            document.getElementById('tab-' + tabId).classList.add('active');
+
+            document.getElementById('page-' + tabId).classList.add('active');
             element.classList.add('active');
         }
 
-        function updateUI() {
-            document.getElementById('balance').innerText = state.balance.toFixed(2) + ' CC';
-            document.getElementById('wallet-balance').innerText = state.balance.toFixed(2) + ' CC';
-            document.getElementById('current-speed').innerText = state.speed + ' CC/ч';
-            
-            const friendListContainer = document.getElementById('friend-list-container');
-            if (friendListContainer) {
-                document.getElementById('friend-count').innerText = state.friends.length;
-                if (state.friends.length > 0) {
-                    friendListContainer.innerHTML = state.friends.map(f => `<div>• ${f}</div>`).join('');
-                } else {
-                    friendListContainer.innerHTML = 'Никого еще не приглашено';
-                }
+        // Тапы по Луне (требуется активный майнинг и приглашенный друг)
+        tapTarget.addEventListener('click', () => {
+            if (!friendInvited) {
+                alert("⚠️ Внимание, пилот! Чтобы активировать программу и добывать NEVAR, необходимо пригласить друга на Фобосе!");
+                return;
+            }
+            if (!miningActive) {
+                alert("⚠️ Майнинг остановлен! Посмотрите видео для запуска лунной добычи.");
+                return;
             }
 
-            checkMiningTimer();
-            checkWheelTimer();
-        }
+            balance += 0.10;
+            updateUI();
 
-        function requestStartMining() {
-            openModal("Обычный майнинг (1 час)", 1, function() {
-                state.miningEndTime = Date.now() + 1 * 60 * 60 * 1000;
-                state.miningDuration = 1;
-                saveState();
-                updateUI();
-                alert('Обычный майнинг успешно запущен на 1 час!');
-            });
-        }
+            // Эффект нажатия
+            tapTarget.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                tapTarget.style.transform = 'scale(1)';
+            }, 50);
+        });
 
-        function requestStartNightMining() {
+        // Генерация 8 планетарных заданий
+        function renderPlanetaryTasks() {
+            const container = document.getElementById('planetary-tasks-container');
             const now = new Date();
-            const hours = now.getHours();
-            
-            if (hours < 22 || hours >= 24) {
-                alert('Ночной майнинг доступен строго с 22:00 до 23:59!');
-                return;
-            }
 
-            openModal("Ночной майнинг (6 часов)", 5, function() {
-                state.miningEndTime = Date.now() + 6 * 60 * 60 * 1000;
-                state.miningDuration = 6;
-                saveState();
-                updateUI();
-                alert('Ночной майнинг успешно активирован на 6 часов!');
-            });
-        }
-
-        function checkMiningTimer() {
-            const timerContainer = document.getElementById('timer-container');
-            const startBtn = document.getElementById('start-mining-btn');
-            const miningStatus = document.getElementById('mining-status');
-
-            if (!state.miningEndTime) {
-                if (timerContainer) timerContainer.style.display = 'none';
-                if (startBtn) startBtn.style.display = 'block';
-                return;
-            }
-            
-            const now = Date.now();
-            const diff = state.miningEndTime - now;
-
-            if (diff > 0) {
-                if (timerContainer) timerContainer.style.display = 'block';
-                if (startBtn) startBtn.style.display = 'none';
-
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-                const timerEl = document.getElementById('timer');
-                if (timerEl) {
-                    timerEl.innerText = 
-                        String(hours).padStart(2, '0') + ':' + 
-                        String(minutes).padStart(2, '0') + ':' + 
-                        String(seconds).padStart(2, '0');
-                }
-
-                if (miningStatus) {
-                    miningStatus.innerText = state.miningDuration === 6 ? 'Ночной майнинг (6 часов)' : 'Идет обычный майнинг (1ч)...';
-                }
-            } else {
-                const reward = state.miningDuration * state.speed;
-                state.balance += reward;
-                state.miningEndTime = null;
-                saveState();
-
-                if (timerContainer) timerContainer.style.display = 'none';
-                if (startBtn) startBtn.style.display = 'block';
-                updateUI();
-            }
-        }
-
-        function openWheelTask() {
-            const now = Date.now();
-            if (now < state.wheelNextAvailable) {
-                alert('Колесо фортуны будет доступно позже!');
-                return;
-            }
-
-            openModal("Колесо фортуны", 3, function() {
-                const randomReward = Math.floor(Math.random() * 5) + 1;
-                state.balance += randomReward;
-                state.wheelNextAvailable = Date.now() + 12 * 60 * 60 * 1000;
-                saveState();
-                updateUI();
-                alert(`Поздравляем! Вы выиграли ${randomReward} CC в Колесе фортуны!`);
-            });
-        }
-
-        function checkWheelTimer() {
-            const now = Date.now();
-            const wheelBtn = document.getElementById('wheel-btn');
-            const wheelTimer = document.getElementById('wheel-timer');
-
-            if (now < state.wheelNextAvailable) {
-                wheelBtn.disabled = true;
-                wheelBtn.classList.add('completed');
-                wheelBtn.innerText = 'Ожидание';
+            container.innerHTML = '';
+            planets.forEach((planet, index) => {
+                const isUnlocked = now >= planet.unlockDate;
                 
-                const diff = state.wheelNextAvailable - now;
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                wheelTimer.innerText = `Доступно через: ${hours}ч ${minutes}м`;
-            } else {
-                wheelBtn.disabled = false;
-                wheelBtn.classList.remove('completed');
-                wheelBtn.innerText = 'Крутить';
-                wheelTimer.innerText = '';
-            }
-        }
-
-        function completeVideoTask5(btn) {
-            openModal("Просмотр 5 видео", 5, function() {
-                state.balance += 10.0;
-                btn.innerText = 'Выполнено';
-                btn.classList.add('completed');
-                btn.disabled = true;
-                saveState();
-                updateUI();
-                alert('Задание выполнено! Начислено +10.0 CC');
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-info">
+                        <h4>Экспедиция: ${planet.name}</h4>
+                        <p>${isUnlocked ? 'Доступно для прохождения (+25.0 NEVAR)' : 'Откроется: ' + planet.unlockDate.toLocaleDateString()}</p>
+                    </div>
+                    <button class="btn-action" ${!isUnlocked ? 'disabled' : ''} onclick="completePlanetTask(${index})">
+                        ${isUnlocked ? 'Выполнить' : 'Скоро'}
+                    </button>
+                `;
+                container.appendChild(card);
             });
         }
 
-        function completeVideoTask1(btn) {
-            openModal("Просмотр 1 видео", 1, function() {
-                state.balance += 1.0;
-                btn.innerText = 'Выполнено';
-                btn.classList.add('completed');
-                btn.disabled = true;
-                saveState();
-                updateUI();
-                alert('Задание выполнено! Начислено +1.0 CC');
-            });
-        }
-
-        function completeTask(btn, reward) {
-            state.balance += reward;
-            btn.innerText = 'Выполнено';
-            btn.classList.add('completed');
-            btn.disabled = true;
-            saveState();
+        function completePlanetTask(index) {
+            balance += 25.0;
             updateUI();
+            alert(`🎉 Экспедиция на планету ${planets[index].name} успешно завершена! Начислено +25.0 NEVAR.`);
         }
 
-        function openModal(title, videoCount, callback) {
-            document.getElementById('modal-title').innerText = title;
-            modalCallback = callback;
-            videoRequiredTotal = videoCount;
-            videoCurrentWatched = 0;
-            
-            document.getElementById('modal-progress').innerText = `Видео 1 из ${videoRequiredTotal}`;
-            document.getElementById('modal-watch-btn').style.display = 'block';
-            document.getElementById('modal-close-btn').style.display = 'none';
-            document.getElementById('activation-modal').style.display = 'flex';
-        }
-
-        function simulateVideoWatch() {
-            videoCurrentWatched++;
-            if (videoCurrentWatched < videoRequiredTotal) {
-                document.getElementById('modal-progress').innerText = `Видео ${videoCurrentWatched + 1} из ${videoRequiredTotal}`;
-            } else {
-                document.getElementById('modal-progress').innerText = 'Все видео просмотрены!';
-                document.getElementById('modal-watch-btn').style.display = 'none';
-                document.getElementById('modal-close-btn').style.display = 'block';
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('activation-modal').style.display = 'none';
-            if (modalCallback) {
-                modalCallback();
-                modalCallback = null;
-            }
-        }
-
-        function inviteFriend() {
-            const fakeName = 'Друг #' + Math.floor(Math.random() * 1000);
-            state.friends.push(fakeName);
-            
-            const count = state.friends.length;
-            if (count >= 100) state.speed = 50;
-            else if (count >= 50) state.speed = 20;
-            else if (count >= 30) state.speed = 4;
-            else if (count >= 20) state.speed = 3;
-            else if (count >= 10) state.speed = 2;
-            else state.speed = 1;
-
-            saveState();
-            updateUI();
-            alert('Приглашение отправлено! (Тестовый друг добавлен)');
-        }
-
-        setInterval(() => {
-            checkMiningTimer();
-            checkWheelTimer();
-        }, 1000);
-
-        loadState();
+        // Инициализация при загрузке
+        updateUI();
+        renderPlanetaryTasks();
     </script>
 </body>
-    </html>
-    
+</html>
