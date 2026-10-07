@@ -307,7 +307,7 @@
         <div class="moon-container">
             <div class="moon-circle" id="tap-target" onclick="tapMoon()"></div>
             <div class="tap-hint">Кликни по луне чтобы начать майнить NEVAR</div>
-            <div class="timer-display" id="mining-timer">60:00</div>
+            <div class="timer-display" id="mining-timer">00:00</div>
             <button class="btn-action" id="btn-start-mining" onclick="watchVideoForMining()">Включить майнинг (Смотреть 1 видео)</button>
         </div>
 
@@ -498,8 +498,8 @@
 
             <p><strong>Партнерство и сотрудничество:</strong> Мы всегда открыты к новым межгалактическим предложениям через официальные каналы связи.</p>
         </div>
-    </div>
-        <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
+                   </div>
+                       <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ -->
     <nav class="nav-bar">
         <button class="nav-item active" onclick="switchTab('mining', this)">
             <span class="nav-icon">🌕</span>
@@ -567,6 +567,13 @@
                 console.log("Browser Demo Mode");
             }
 
+            // Проверяем состояние майнинга при старте
+            if (state.isMiningActive && Date.now() >= state.miningEndTime) {
+                state.isMiningActive = false;
+                state.balance += 1.0; // Бонус за завершенный майнинг
+                saveState();
+            }
+
             updateUI();
         });
 
@@ -609,6 +616,50 @@
             }
         }
 
+        // Таймер обратного отсчета для майнинга каждую секунду
+        setInterval(() => {
+            if (state.isMiningActive) {
+                const timeLeft = state.miningEndTime - Date.now();
+                const timerEl = document.getElementById('mining-timer');
+                const btnMining = document.getElementById('btn-start-mining');
+
+                if (timeLeft <= 0) {
+                    // Время майнинга вышло!
+                    state.isMiningActive = false;
+                    state.balance += 1.0; // Начисляем монеты за завершенный майнинг
+                    
+                    if (timerEl) timerEl.textContent = "00:00";
+                    if (btnMining) {
+                        btnMining.disabled = false;
+                        btnMining.textContent = "Включить майнинг (Смотреть 1 видео)";
+                    }
+                    updateUI();
+                    saveState();
+                } else {
+                    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                    
+                    if (timerEl) {
+                        timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                    }
+                    if (btnMining) {
+                        btnMining.disabled = true;
+                        btnMining.textContent = "Майнинг активен...";
+                    }
+                }
+            } else {
+                const btnMining = document.getElementById('btn-start-mining');
+                const timerEl = document.getElementById('mining-timer');
+                if (btnMining && !btnMining.disabled && btnMining.textContent.includes("Активен")) {
+                    btnMining.disabled = false;
+                    btnMining.textContent = "Включить майнинг (Смотреть 1 видео)";
+                }
+                if (timerEl && timerEl.textContent === "00:00" && !state.isMiningActive) {
+                    // Оставляем нули или убираем если неактивно
+                }
+            }
+        }, 1000);
+
         // Переключение вкладок
         function switchTab(tabId, element) {
             document.querySelectorAll('.app-container').forEach(el => el.classList.remove('active'));
@@ -628,20 +679,32 @@
             saveState();
         }
 
-        // Запуск майнинга (1 видео)
+        // Запуск майнинга (1 видео) на 1 час
         function watchVideoForMining() {
-            const durationMinutes = 60; // 1 час майнинга
+            if (state.isMiningActive) return;
+
+            const durationMinutes = 60; // 1 час
             state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
             state.isMiningActive = true;
+
+            const btnMining = document.getElementById('btn-start-mining');
+            if (btnMining) {
+                btnMining.disabled = true;
+                btnMining.textContent = "Майнинг активен...";
+            }
+
             updateUI();
             saveState();
         }
 
-        // Ночной майнинг (5 видео)
+        // Ночной майнинг (6 часов)
         function startNightMining() {
+            if (state.isMiningActive) return;
+
             const durationMinutes = 360; // 6 часов
             state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
             state.isMiningActive = true;
+
             updateUI();
             saveState();
         }
