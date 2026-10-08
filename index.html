@@ -314,7 +314,7 @@
 
         <div class="visible-21">★ 21 ★</div>
     </div>
-    <!-- 2. ЗАДАНИЯ -->
+        <!-- 2. ЗАДАНИЯ -->
     <div id="page-tasks" class="app-container">
         <div class="section-title">🧊 Энцелад: Обязательные миссии</div>
         
@@ -337,7 +337,7 @@
         <div class="card">
             <div class="card-info">
                 <h4>Просмотр видео по усмотрению</h4>
-                <p>Свободный просмотр • <span class="gold-text">+1.0 NEVAR</span></p>
+                <p>Свободный просмотр • <span class="gold-text">+0.25 NEVAR</span></p>
             </div>
             <button class="btn-action" onclick="watchOptionalVideo(this)">Смотреть</button>
         </div>
@@ -366,78 +366,102 @@
             <button class="btn-action" id="task-subTg" onclick="completeTask('subTg', 1.0, this)">Подписаться</button>
         </div>
 
-        <div class="section-title" style="margin-top: 25px;">🪐 Планетарные задания (с 1 ноября)</div>
+        <div class="section-title" style="margin-top: 25px;">🪐 Планетарные задания</div>
 
+        <!-- МЕРКУРИЙ -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Меркурий</h4>
-                <p>Откроется: 01.11.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-mercury">Откроется: 01.11.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-mercury" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
 
+        <!-- ВЕНЕРА -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Венера</h4>
-                <p>Откроется: 08.11.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-venus">Откроется: 08.11.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-venus" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
 
+        <!-- ЗЕМЛЯ -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Земля</h4>
-                <p>Откроется: 15.11.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-earth">Откроется: 15.11.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-earth" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
 
+        <!-- МАРС -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Марс</h4>
-                <p>Откроется: 22.11.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-mars">Откроется: 22.11.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-mars" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
 
+        <!-- ЮПИТЕР -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Юпитер</h4>
-                <p>Откроется: 29.11.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-jupiter">Откроется: 29.11.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-jupiter" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
 
+        <!-- САТУРН -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Сатурн</h4>
-                <p>Откроется: 06.12.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-saturn">Откроется: 06.12.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-saturn" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
 
+        <!-- УРАН -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Уран</h4>
-                <p>Откроется: 13.12.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-uranus">Откроется: 13.12.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-uranus" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
 
+        <!-- НЕПТУН -->
         <div class="card">
             <div class="card-info">
                 <h4>Экспедиция: Нептун</h4>
-                <p>Откроется: 20.12.2026 (100 видео за неделю)</p>
-                <p style="margin-top: 3px;"><span class="gold-text">Вознаграждение: +150 NEVAR</span></p>
+                <p id="weekly-neptune">Откроется: 20.12.2026</p>
+                <p style="margin-top: 3px;">
+                    <span class="gold-text">Вознаграждение: +150 NEVAR</span>
+                </p>
             </div>
-            <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
+            <button class="btn-action" id="btn-neptune" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
     </div>
         <!-- 3. ДРУЗЬЯ -->
@@ -698,13 +722,108 @@
             updateUI();
         }
 
+        // Планетарные задания
+        const weeklyPlanetTasks = [
+            {
+                id: "mercury",
+                date: "2026-11-01T00:00:00",
+                element: "weekly-mercury",
+                button: "btn-mercury"
+            },
+            {
+                id: "venus",
+                date: "2026-11-08T00:00:00",
+                element: "weekly-venus",
+                button: "btn-venus"
+            },
+            {
+                id: "earth",
+                date: "2026-11-15T00:00:00",
+                element: "weekly-earth",
+                button: "btn-earth"
+            },
+            {
+                id: "mars",
+                date: "2026-11-22T00:00:00",
+                element: "weekly-mars",
+                button: "btn-mars"
+            },
+            {
+                id: "jupiter",
+                date: "2026-11-29T00:00:00",
+                element: "weekly-jupiter",
+                button: "btn-jupiter"
+            },
+            {
+                id: "saturn",
+                date: "2026-12-06T00:00:00",
+                element: "weekly-saturn",
+                button: "btn-saturn"
+            },
+            {
+                id: "uranus",
+                date: "2026-12-13T00:00:00",
+                element: "weekly-uranus",
+                button: "btn-uranus"
+            },
+            {
+                id: "neptune",
+                date: "2026-12-20T00:00:00",
+                element: "weekly-neptune",
+                button: "btn-neptune"
+            }
+        ];
+
+        function updateWeeklyPlanetTasks() {
+            const now = new Date();
+
+            weeklyPlanetTasks.forEach(task => {
+                const textElement = document.getElementById(task.element);
+                const buttonElement = document.getElementById(task.button);
+
+                if (!textElement || !buttonElement) return;
+
+                const openDate = new Date(task.date);
+
+                if (now >= openDate) {
+                    // После открытия показываем требование 100 видео
+                    textElement.innerHTML =
+                        'Посмотреть <b class="gold-text">100 видео за неделю</b>';
+
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = "В процессе";
+                    buttonElement.style.background = "linear-gradient(135deg, #00b4db, #0083b0)";
+                    buttonElement.style.color = "#ffffff";
+                } else {
+                    // До открытия количество видео НЕ показываем
+                    const dateText = openDate.toLocaleDateString('ru-RU', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                    });
+
+                    textElement.textContent = `Откроется: ${dateText}`;
+
+                    buttonElement.disabled = true;
+                    buttonElement.textContent = "Скоро";
+                    buttonElement.style.background = "rgba(255,255,255,0.08)";
+                    buttonElement.style.color = "#a0aec0";
+                }
+            });
+        }
+
         function updateUI() {
             checkDailyReset();
+
             document.getElementById('balance').textContent = state.balance.toFixed(2);
             document.getElementById('wallet-balance').textContent = state.balance.toFixed(2) + " NEVAR";
 
+            // Обновляем планетарные задания
+            updateWeeklyPlanetTasks();
+
             const dailyVideosBtn = document.getElementById('btn-daily-videos');
             const descDaily = document.getElementById('desc-daily-videos');
+
             if (state.completedTasks['dailyVideos']) {
                 dailyVideosBtn.textContent = "Выполнено";
                 dailyVideosBtn.disabled = true;
@@ -719,6 +838,7 @@
 
             const total21Btn = document.getElementById('btn-total-21');
             const desc21 = document.getElementById('desc-total-21');
+
             if (state.completedTasks['total21']) {
                 total21Btn.textContent = "Выполнено";
                 total21Btn.disabled = true;
@@ -743,31 +863,41 @@
 
                 if (timeLeft <= 0) {
                     state.isMiningActive = false;
-                    state.balance += state.miningRate; 
+                    state.balance += state.miningRate;
+
                     const btnMining = document.getElementById('btn-start-mining');
+
                     if (btnMining && !isAdCooldown) {
                         btnMining.disabled = false;
                         btnMining.textContent = "Включить майнинг (Смотреть 1 видео)";
                     }
+
                     document.getElementById('mining-timer').textContent = "00:00";
                     saveState();
+
                 } else {
                     const hours = Math.floor(timeLeft / (1000 * 60 * 60));
                     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                    
-                    let timeStr = String(minutes).padStart(2, '0') + ":" + String(seconds).padStart(2, '0');
+
+                    let timeStr =
+                        String(minutes).padStart(2, '0') + ":" +
+                        String(seconds).padStart(2, '0');
+
                     if (hours > 0) {
                         timeStr = hours + ":" + timeStr;
                     }
+
                     document.getElementById('mining-timer').textContent = timeStr;
-                    
+
                     const btnMining = document.getElementById('btn-start-mining');
+
                     if (btnMining && !isAdCooldown) {
                         btnMining.disabled = true;
                         btnMining.textContent = "Майнинг активен...";
                     }
                 }
+
             } else {
                 document.getElementById('mining-timer').textContent = "00:00";
             }
@@ -776,7 +906,7 @@
         function renderFriendsList() {
             const container = document.getElementById('friends-list-container');
             const countElem = document.getElementById('friends-count');
-            
+
             countElem.textContent = state.friendsList.length;
 
             if (state.friendsList.length === 0) {
@@ -785,6 +915,7 @@
             }
 
             let html = '';
+
             state.friendsList.forEach((friend) => {
                 html += `
                     <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
@@ -793,11 +924,13 @@
                     </div>
                 `;
             });
+
             container.innerHTML = html;
         }
 
         function updateTaskButton(elemId, taskId) {
             const btn = document.getElementById(elemId);
+
             if (btn && state.completedTasks[taskId]) {
                 btn.textContent = "Выполнено";
                 btn.disabled = true;
@@ -810,13 +943,18 @@
             if (!adController) {
                 console.warn("Adsgram контроллер не найден. Режим отладки.");
                 registerAdWatch();
-                if (typeof onSuccess === 'function') onSuccess();
+
+                if (typeof onSuccess === 'function') {
+                    onSuccess();
+                }
+
                 return;
             }
 
             adController.show()
                 .then((result) => {
                     registerAdWatch();
+
                     if (typeof onSuccess === 'function') {
                         onSuccess();
                     }
@@ -828,38 +966,57 @@
 
         function watchVideoForMining() {
             if (state.isMiningActive || isAdCooldown) return;
+
             const btn = document.getElementById('btn-start-mining');
 
-            startCooldownForButton(btn, "Включить майнинг (Смотреть 1 видео)", () => {
-                showAdsgramReward(() => {
-                    const durationMinutes = 60;
-                    state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
-                    state.isMiningActive = true;
+            startCooldownForButton(
+                btn,
+                "Включить майнинг (Смотреть 1 видео)",
+                () => {
+                    showAdsgramReward(() => {
+                        const durationMinutes = 60;
 
-                    updateUI();
-                    saveState();
-                });
-            });
+                        state.miningEndTime =
+                            Date.now() + durationMinutes * 60 * 1000;
+
+                        state.isMiningActive = true;
+
+                        updateUI();
+                        saveState();
+                    });
+                }
+            );
         }
 
         function startNightMining() {
             if (state.isMiningActive || isAdCooldown) return;
+
             const btn = document.getElementById('btn-night-mining');
 
-            startCooldownForButton(btn, "Запустить ночной майнинг (Смотреть 5 видео)", () => {
-                showAdsgramReward(() => {
-                    for(let i = 0; i < 4; i++) {
-                        state.totalAdsWatchedToday += 1;
-                    }
-                    const durationMinutes = 360;
-                    state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
-                    state.isMiningActive = true;
+            startCooldownForButton(
+                btn,
+                "Запустить ночной майнинг (Смотреть 5 видео)",
+                () => {
+                    showAdsgramReward(() => {
 
-                    updateUI();
-                    saveState();
-                    alert("🌙 Ночной майнинг успешно запущен (учтено 5 видео)!");
-                });
-            });
+                        for (let i = 0; i < 4; i++) {
+                            state.totalAdsWatchedToday += 1;
+                        }
+
+                        const durationMinutes = 360;
+
+                        state.miningEndTime =
+                            Date.now() + durationMinutes * 60 * 1000;
+
+                        state.isMiningActive = true;
+
+                        updateUI();
+                        saveState();
+
+                        alert("🌙 Ночной майнинг успешно запущен (учтено 5 видео)!");
+                    });
+                }
+            );
         }
 
         function completeDailyVideos(btnElement) {
@@ -867,13 +1024,17 @@
 
             startCooldownForButton(btnElement, "Смотреть", () => {
                 showAdsgramReward(() => {
+
                     state.dailyVideosCount += 1;
+
                     if (state.dailyVideosCount >= 5) {
                         state.dailyVideosCount = 5;
                         state.completedTasks['dailyVideos'] = true;
                         state.balance += 3.0;
+
                         alert("Награда +3.0 NEVAR за ежедневные видео получена!");
                     }
+
                     updateUI();
                     saveState();
                 });
@@ -882,14 +1043,19 @@
 
         function watchOptionalVideo(btnElement) {
             if (isAdCooldown) return;
+
             const targetBtn = btnElement || event.target;
 
             startCooldownForButton(targetBtn, "Смотреть", () => {
                 showAdsgramReward(() => {
-                    state.balance += 1.0;
+
+                    // Награда изменена с 1.0 на 0.25 NEVAR
+                    state.balance += 0.25;
+
                     updateUI();
                     saveState();
-                    alert("Получено +1.0 NEVAR за просмотр видео!");
+
+                    alert("Получено +0.25 NEVAR за просмотр видео!");
                 });
             });
         }
@@ -912,14 +1078,27 @@
         }
 
         function inviteFriend() {
-            const botUsername = "Nevar_mining_bot"; 
+            const botUsername = "Nevar_mining_bot";
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
-            
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
-                const inviteUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=` + encodeURIComponent("🚀 Присоединяйся к космической экспансии NEVAR! Будем майнить вместе!");
+
+            if (
+                window.Telegram &&
+                window.Telegram.WebApp &&
+                window.Telegram.WebApp.openTelegramLink
+            ) {
+                const inviteUrl =
+                    `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=` +
+                    encodeURIComponent(
+                        "🚀 Присоединяйся к космической экспансии NEVAR! Будем майнить вместе!"
+                    );
+
                 window.Telegram.WebApp.openTelegramLink(inviteUrl);
+
             } else {
-                prompt("Скопируйте вашу персональную реферальную ссылку:", refLink);
+                prompt(
+                    "Скопируйте вашу персональную реферальную ссылку:",
+                    refLink
+                );
             }
         }
 
@@ -927,6 +1106,7 @@
             document.querySelectorAll('.app-container').forEach(cont => {
                 cont.classList.remove('active');
             });
+
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
@@ -937,7 +1117,9 @@
 
         window.onload = async function() {
             await loadStateFromServer();
+
             updateUI();
+
             setInterval(updateUI, 1000);
         };
     </script>
