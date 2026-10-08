@@ -597,7 +597,6 @@
             const currentDate = new Date().toDateString();
             if (appData.lastActiveDate !== currentDate) {
                 appData.dailyVideosCount = 0;
-                // Сброс ежедневных заданий
                 delete appData.completedTasks['dailyVideos'];
                 appData.lastActiveDate = currentDate;
                 saveData();
@@ -622,31 +621,25 @@
             }
         }
 
-        // --- ADSGRAM SDK (ПОКАЗ РЕКЛАМЫ) ---
-        // Замените 'YOUR_ADSGRAM_BLOCK_ID' на ваш реальный ID блока из кабинета Adsgram
-        const ADSGRAM_BLOCK_ID = "YOUR_ADSGRAM_BLOCK_ID";
+        // --- ADSGRAM SDK (ИСПРАВЛЕННЫЙ BLOCK ID) ---
         let adsgramController = null;
-
-        if (typeof Adsgram !== 'undefined') {
-            try {
-                adsgramController = Adsgram.init({ blockId: ADSGRAM_BLOCK_ID });
-            } catch (e) {
-                console.error('Ошибка инициализации Adsgram:', e);
+        try {
+            if (typeof Adsgram !== 'undefined' && window.Adsgram) {
+                adsgramController = window.Adsgram.init({ blockId: "52498" });
             }
+        } catch (e) {
+            console.error('Ошибка инициализации Adsgram:', e);
         }
 
         function showAd(onSuccessCallback) {
             if (adsgramController) {
                 adsgramController.show().then(() => {
-                    // Реклама успешно просмотрена до конца
                     onSuccessCallback();
                 }).catch((result) => {
-                    // Ошибка или пользователь закрыл рекламу досрочно
                     console.warn('Реклама не была досмотрена:', result);
                     alert('Для получения награды необходимо полностью посмотреть видеоролик!');
                 });
             } else {
-                // Запасной режим (Fallback), если SDK не загрузился локально в браузере
                 console.log('Adsgram SDK недоступен, засчитываем просмотр в тестовом режиме');
                 onSuccessCallback();
             }
@@ -656,7 +649,6 @@
         function watchVideoForMining() {
             showAd(() => {
                 const now = Date.now();
-                // 4 часа майнинга (в миллисекундах)
                 const miningDuration = 4 * 60 * 60 * 1000; 
                 appData.miningEndTime = now + miningDuration;
                 
@@ -667,11 +659,8 @@
         }
 
         function startNightMining() {
-            // Ночной майнинг требует просмотра 5 видео подряд или по очереди
-            // Для примера запускаем цепочку с первым просмотром
             showAd(() => {
                 const now = Date.now();
-                // 6 часов ночного майнинга
                 const nightDuration = 6 * 60 * 60 * 1000;
                 appData.miningEndTime = now + nightDuration;
 
@@ -713,14 +702,12 @@
         function incrementVideoProgress() {
             appData.dailyVideosCount++;
             
-            // Проверка выполнения задачи "Суммарно 21 видео за день"
             if (appData.dailyVideosCount >= 21 && !appData.completedTasks['total21']) {
                 appData.completedTasks['total21'] = true;
                 appData.balance += 10.0;
                 alert('Поздравляем! Вы выполнили норму в 21 видео и получили +10.0 NEVAR!');
             }
 
-            // Проверка ежедневных 5 видео
             if (appData.dailyVideosCount >= 5 && !appData.completedTasks['dailyVideos']) {
                 const btnDaily = document.getElementById('btn-daily-videos');
                 if (btnDaily) {
@@ -759,7 +746,6 @@
             if (appData.completedTasks[taskId]) return;
 
             if (taskId === 'subIg' || taskId === 'subTg') {
-                // Симуляция подписки
                 appData.completedTasks[taskId] = true;
                 appData.balance += reward;
                 btn.disabled = true;
@@ -818,11 +804,9 @@
 
         // --- ОБНОВЛЕНИЕ ИНТЕРФЕЙСА ---
         function updateUI() {
-            // Баланс
             document.getElementById('balance').textContent = appData.balance.toFixed(2);
             document.getElementById('wallet-balance').textContent = appData.balance.toFixed(2) + ' NEVAR';
 
-            // Прогресс ежедневных видео
             const descDaily = document.getElementById('desc-daily-videos');
             if (descDaily) {
                 descDaily.innerHTML = `Прогресс: ${Math.min(appData.dailyVideosCount, 5)}/5 • <span class="gold-text">+3.0 NEVAR</span>`;
@@ -859,10 +843,8 @@
                 }
             }
 
-            // Друзья
             document.getElementById('friends-count').textContent = appData.friends.length;
         }
     </script>
 </body>
-    </html>
-    
+</html>
