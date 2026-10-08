@@ -108,7 +108,8 @@
             -webkit-text-fill-color: transparent;
             font-weight: 700;
         }
-                .moon-container {
+
+        .moon-container {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -338,7 +339,7 @@
                 <h4>Просмотр видео по усмотрению</h4>
                 <p>Свободный просмотр • <span class="gold-text">+1.0 NEVAR</span></p>
             </div>
-            <button class="btn-action" onclick="watchOptionalVideo()">Смотреть</button>
+            <button class="btn-action" onclick="watchOptionalVideo(this)">Смотреть</button>
         </div>
 
         <div class="card">
@@ -438,8 +439,8 @@
             </div>
             <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
-    </div>
-        <!-- 3. ДРУЗЬЯ -->
+            </div>
+                <!-- 3. ДРУЗЬЯ -->
     <div id="page-friends" class="app-container">
         <div class="section-title">🔴 Экипаж (Друзья)</div>
         
@@ -576,6 +577,37 @@
             friendsList: []
         };
 
+        // Переменные для 10-секундного кулдауна
+        let isAdCooldown = false;
+        let adCooldownTimer = 10;
+        let adCooldownInterval = null;
+
+        function startCooldownForButton(btnElement, defaultText, callback) {
+            if (isAdCooldown || (btnElement && btnElement.disabled)) return;
+            
+            isAdCooldown = true;
+            adCooldownTimer = 10;
+            
+            if (btnElement) btnElement.disabled = true;
+            
+            adCooldownInterval = setInterval(() => {
+                adCooldownTimer--;
+                if (adCooldownTimer > 0) {
+                    if (btnElement) btnElement.textContent = `Подождите ${adCooldownTimer}с...`;
+                } else {
+                    clearInterval(adCooldownInterval);
+                    isAdCooldown = false;
+                    if (btnElement) {
+                        btnElement.disabled = false;
+                        btnElement.textContent = defaultText;
+                    }
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
+                }
+            }, 1000);
+        }
+
         function checkDailyReset() {
             const todayStr = new Date().toDateString();
             if (state.lastResetDate !== todayStr) {
@@ -678,8 +710,10 @@
                 dailyVideosBtn.disabled = true;
                 descDaily.innerHTML = `Прогресс: 5/5 • <span class="gold-text">+3.0 NEVAR</span>`;
             } else {
-                dailyVideosBtn.textContent = "Смотреть";
-                dailyVideosBtn.disabled = false;
+                if (!isAdCooldown) {
+                    dailyVideosBtn.textContent = "Смотреть";
+                    dailyVideosBtn.disabled = false;
+                }
                 descDaily.innerHTML = `Прогресс: ${state.dailyVideosCount}/5 • <span class="gold-text">+3.0 NEVAR</span>`;
             }
 
@@ -711,7 +745,7 @@
                     state.isMiningActive = false;
                     state.balance += state.miningRate; 
                     const btnMining = document.getElementById('btn-start-mining');
-                    if (btnMining) {
+                    if (btnMining && !isAdCooldown) {
                         btnMining.disabled = false;
                         btnMining.textContent = "Включить майнинг (Смотреть 1 видео)";
                     }
@@ -729,7 +763,7 @@
                     document.getElementById('mining-timer').textContent = timeStr;
                     
                     const btnMining = document.getElementById('btn-start-mining');
-                    if (btnMining) {
+                    if (btnMining && !isAdCooldown) {
                         btnMining.disabled = true;
                         btnMining.textContent = "Майнинг активен...";
                     }
@@ -772,7 +806,6 @@
             }
         }
 
-        // Функция показа рекламы БЕЗ защитного таймера (ожидает callback от Adsgram)
         function showAdsgramReward(onSuccess) {
             if (!adController) {
                 console.warn("Adsgram контроллер не найден. Режим отладки.");
@@ -794,57 +827,70 @@
         }
 
         function watchVideoForMining() {
-            if (state.isMiningActive) return;
+            if (state.isMiningActive || isAdCooldown) return;
+            const btn = document.getElementById('btn-start-mining');
 
-            showAdsgramReward(() => {
-                const durationMinutes = 60;
-                state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
-                state.isMiningActive = true;
+            startCooldownForButton(btn, "Включить майнинг (Смотреть 1 видео)", () => {
+                showAdsgramReward(() => {
+                    const durationMinutes = 60;
+                    state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
+                    state.isMiningActive = true;
 
-                updateUI();
-                saveState();
+                    updateUI();
+                    saveState();
+                });
             });
         }
 
         function startNightMining() {
-            if (state.isMiningActive) return;
+            if (state.isMiningActive || isAdCooldown) return;
+            const btn = document.getElementById('btn-night-mining');
 
-            showAdsgramReward(() => {
-                for(let i = 0; i < 4; i++) {
-                    state.totalAdsWatchedToday += 1;
-                }
-                const durationMinutes = 360;
-                state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
-                state.isMiningActive = true;
+            startCooldownForButton(btn, "Запустить ночной майнинг (Смотреть 5 видео)", () => {
+                showAdsgramReward(() => {
+                    for(let i = 0; i < 4; i++) {
+                        state.totalAdsWatchedToday += 1;
+                    }
+                    const durationMinutes = 360;
+                    state.miningEndTime = Date.now() + durationMinutes * 60 * 1000;
+                    state.isMiningActive = true;
 
-                updateUI();
-                saveState();
-                alert("🌙 Ночной майнинг успешно запущен (учтено 5 видео)!");
+                    updateUI();
+                    saveState();
+                    alert("🌙 Ночной майнинг успешно запущен (учтено 5 видео)!");
+                });
             });
         }
 
         function completeDailyVideos(btnElement) {
-            if (state.completedTasks['dailyVideos']) return;
+            if (state.completedTasks['dailyVideos'] || isAdCooldown) return;
 
-            showAdsgramReward(() => {
-                state.dailyVideosCount += 1;
-                if (state.dailyVideosCount >= 5) {
-                    state.dailyVideosCount = 5;
-                    state.completedTasks['dailyVideos'] = true;
-                    state.balance += 3.0;
-                    alert("Награда +3.0 NEVAR за ежедневные видео получена!");
-                }
-                updateUI();
-                saveState();
+            startCooldownForButton(btnElement, "Смотреть", () => {
+                showAdsgramReward(() => {
+                    state.dailyVideosCount += 1;
+                    if (state.dailyVideosCount >= 5) {
+                        state.dailyVideosCount = 5;
+                        state.completedTasks['dailyVideos'] = true;
+                        state.balance += 3.0;
+                        alert("Награда +3.0 NEVAR за ежедневные видео получена!");
+                    }
+                    updateUI();
+                    saveState();
+                });
             });
         }
 
-        function watchOptionalVideo() {
-            showAdsgramReward(() => {
-                state.balance += 1.0;
-                updateUI();
-                saveState();
-                alert("Получено +1.0 NEVAR за просмотр видео!");
+        function watchOptionalVideo(btnElement) {
+            if (isAdCooldown) return;
+            const targetBtn = btnElement || event.target;
+
+            startCooldownForButton(targetBtn, "Смотреть", () => {
+                showAdsgramReward(() => {
+                    state.balance += 1.0;
+                    updateUI();
+                    saveState();
+                    alert("Получено +1.0 NEVAR за просмотр видео!");
+                });
             });
         }
 
