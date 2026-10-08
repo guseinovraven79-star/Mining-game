@@ -108,8 +108,7 @@
             -webkit-text-fill-color: transparent;
             font-weight: 700;
         }
-
-        .moon-container {
+                .moon-container {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -314,8 +313,7 @@
 
         <div class="visible-21">★ 21 ★</div>
     </div>
-
-    <!-- 2. ЗАДАНИЯ -->
+        <!-- 2. ЗАДАНИЯ -->
     <div id="page-tasks" class="app-container">
         <div class="section-title">🧊 Энцелад: Обязательные миссии</div>
         
@@ -543,10 +541,8 @@
         let userId = "---";
         let userName = "Пилот";
 
-        // Адрес вашего будущего бэкенда (измените на реальный URL сервера при публикации)
         const API_BASE_URL = "https://your-backend-domain.com/api";
 
-        // Инициализация Telegram WebApp
         let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
         if (tg) {
             tg.expand();
@@ -559,7 +555,6 @@
             }
         }
 
-        // Безопасная инициализация Adsgram SDK
         let adController = null;
         try {
             if (typeof Adsgram !== 'undefined' && window.Adsgram) {
@@ -569,7 +564,6 @@
             console.error("Ошибка инициализации Adsgram:", e);
         }
 
-        // Состояние игры
         let state = {
             balance: 0.00,
             isMiningActive: false,
@@ -594,7 +588,6 @@
             }
         }
 
-        // Загрузка данных с сервера (с резервом на localStorage)
         async function loadStateFromServer() {
             if (userId === "---") {
                 loadFromLocalStorage();
@@ -620,7 +613,6 @@
             }
         }
 
-        // Отправка данных на сервер при любых изменениях
         async function saveState() {
             checkDailyReset();
             saveToLocalStorage();
@@ -780,6 +772,7 @@
             }
         }
 
+        // Функция показа рекламы БЕЗ защитного таймера (ожидает callback от Adsgram)
         function showAdsgramReward(onSuccess) {
             if (!adController) {
                 console.warn("Adsgram контроллер не найден. Режим отладки.");
@@ -788,32 +781,15 @@
                 return;
             }
 
-            let isFinished = false;
-
-            const safetyTimeout = setTimeout(() => {
-                if (!isFinished) {
-                    isFinished = true;
-                    alert("Время ожидания рекламы истекло. Проверьте интернет-соединение.");
-                }
-            }, 10000);
-
             adController.show()
                 .then((result) => {
-                    if (isFinished) return;
-                    isFinished = true;
-                    clearTimeout(safetyTimeout);
-
                     registerAdWatch();
                     if (typeof onSuccess === 'function') {
                         onSuccess();
                     }
                 })
                 .catch((result) => {
-                    if (isFinished) return;
-                    isFinished = true;
-                    clearTimeout(safetyTimeout);
-
-                    alert("Реклама не была досмотрена до конца, награда не зачислена.");
+                    alert("Реклама не была досмотрена до конца или была закрыта.");
                 });
         }
 
