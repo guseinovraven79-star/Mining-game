@@ -441,8 +441,7 @@
             <button class="btn-action" disabled style="background: rgba(255,255,255,0.08); color: #a0aec0;">Скоро</button>
         </div>
     </div>
-
-    <!-- 3. ДРУЗЬЯ -->
+        <!-- 3. ДРУЗЬЯ -->
     <div id="page-friends" class="app-container">
         <div class="section-title">🔴 Экипаж (Друзья)</div>
         
@@ -540,24 +539,35 @@
             <span class="nav-label">Инфо</span>
         </button>
     </nav>
-
-    <script>
+        <script>
         let userId = "---";
+        let userName = "Пилот";
+
+        // Адрес вашего будущего бэкенда (измените на реальный URL сервера при публикации)
+        const API_BASE_URL = "https://your-backend-domain.com/api";
 
         // Инициализация Telegram WebApp
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-
-        // Отображение профиля пользователя
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            document.getElementById('user-profile-name').textContent = user.first_name || "Пилот";
-            userId = user.id || "---";
-            document.getElementById('user-profile-id').textContent = userId;
+        let tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+        if (tg) {
+            tg.expand();
+            if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                const user = tg.initDataUnsafe.user;
+                userName = user.first_name || "Пилот";
+                userId = String(user.id || "---");
+                document.getElementById('user-profile-name').textContent = userName;
+                document.getElementById('user-profile-id').textContent = userId;
+            }
         }
 
-        // Инициализация Adsgram SDK с вашим Block ID
-        const adController = window.Adsgram.init({ blockId: "52498" });
+        // Безопасная инициализация Adsgram SDK
+        let adController = null;
+        try {
+            if (typeof Adsgram !== 'undefined' && window.Adsgram) {
+                adController = window.Adsgram.init({ blockId: "52498" });
+            }
+        } catch (e) {
+            console.error("Ошибка инициализации Adsgram:", e);
+        }
 
         // Состояние игры
         let state = {
@@ -569,7 +579,7 @@
             dailyVideosCount: 0,
             totalAdsWatchedToday: 0,
             lastResetDate: "",
-            friendsList: [] // Будет заполняться реальными данными с сервера
+            friendsList: []
         };
 
         function checkDailyReset() {
@@ -584,21 +594,71 @@
             }
         }
 
-        function loadState() {
-            const saved = localStorage.getItem('nevar_game_state');
+        // Загрузка данных с сервера (с резервом на localStorage)
+        async function loadStateFromServer() {
+            if (userId === "---") {
+                loadFromLocalStorage();
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+                if (response.ok) {
+                    const serverData = await response.json();
+                    if (serverData && serverData.state) {
+                        state = serverData.state;
+                        if (!state.friendsList) state.friendsList = [];
+                        checkDailyReset();
+                        saveToLocalStorage();
+                        return;
+                    }
+                }
+                loadFromLocalStorage();
+            } catch (error) {
+                console.warn("Сервер недоступен, загружаем локальные данные:", error);
+                loadFromLocalStorage();
+            }
+        }
+
+        // Отправка данных на сервер при любых изменениях
+        async function saveState() {
+            checkDailyReset();
+            saveToLocalStorage();
+
+            if (userId === "---") return;
+
+            try {
+                await fetch(`${API_BASE_URL}/sync`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        userName: userName,
+                        state: state
+                    })
+                });
+            } catch (error) {
+                console.warn("Не удалось синхронизировать данные с сервером (сохранено локально):", error);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('nevar_game_state_' + userId);
             if (saved) {
                 try {
                     state = JSON.parse(saved);
                     if (!state.friendsList) state.friendsList = [];
                 } catch (e) {
-                    console.error("Ошибка загрузки сохранения", e);
+                    console.error("Ошибка загрузки локального сохранения", e);
                 }
             }
             checkDailyReset();
         }
 
-        function saveState() {
-            localStorage.setItem('nevar_game_state', JSON.stringify(state));
+        function saveToLocalStorage() {
+            localStorage.setItem('nevar_game_state_' + userId, JSON.stringify(state));
         }
 
         function registerAdWatch() {
@@ -721,14 +781,38 @@
         }
 
         function showAdsgramReward(onSuccess) {
+            if (!adController) {
+                console.warn("Adsgram контроллер не найден. Режим отладки.");
+                registerAdWatch();
+                if (typeof onSuccess === 'function') onSuccess();
+                return;
+            }
+
+            let isFinished = false;
+
+            const safetyTimeout = setTimeout(() => {
+                if (!isFinished) {
+                    isFinished = true;
+                    alert("Время ожидания рекламы истекло. Проверьте интернет-соединение.");
+                }
+            }, 10000);
+
             adController.show()
                 .then((result) => {
+                    if (isFinished) return;
+                    isFinished = true;
+                    clearTimeout(safetyTimeout);
+
                     registerAdWatch();
                     if (typeof onSuccess === 'function') {
                         onSuccess();
                     }
                 })
                 .catch((result) => {
+                    if (isFinished) return;
+                    isFinished = true;
+                    clearTimeout(safetyTimeout);
+
                     alert("Реклама не была досмотрена до конца, награда не зачислена.");
                 });
         }
@@ -805,12 +889,11 @@
             saveState();
         }
 
-        // Генерация реальной реферальной ссылки на базе уникального Telegram ID пилота
         function inviteFriend() {
-            const botUsername = "Nevar_mining_bot"; // Замените на username вашего бота
+            const botUsername = "Nevar_mining_bot"; 
             const refLink = `https://t.me/${botUsername}?start=ref_${userId}`;
             
-            if (window.Telegram && window.Telegram.WebApp) {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
                 const inviteUrl = `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=` + encodeURIComponent("🚀 Присоединяйся к космической экспансии NEVAR! Будем майнить вместе!");
                 window.Telegram.WebApp.openTelegramLink(inviteUrl);
             } else {
@@ -830,8 +913,8 @@
             element.classList.add('active');
         }
 
-        window.onload = function() {
-            loadState();
+        window.onload = async function() {
+            await loadStateFromServer();
             updateUI();
             setInterval(updateUI, 1000);
         };
