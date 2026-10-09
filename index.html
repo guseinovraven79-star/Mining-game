@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,6 +6,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#080d19">
 <title>NEVAR — Космическая экспедиция</title>
+
+<!-- SDK рекламной сети Adsgram -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
 <style>
 :root{
@@ -19,571 +23,131 @@
     --green:#42d6a4;
     --red:#ff7373;
 }
-
-*{
-    box-sizing:border-box;
-    -webkit-tap-highlight-color:transparent;
-}
-
-html{
-    min-height:100%;
-    background:var(--bg);
-}
-
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{min-height:100%;background:var(--bg);scroll-behavior:auto}
 body{
-    margin:0;
-    min-height:100vh;
-    padding:0 0 90px;
-    color:var(--text);
-    background:
-        radial-gradient(ellipse at 50% -15%,rgba(43,76,133,.30),transparent 55%),
-        var(--bg);
-    font-family:Arial,Helvetica,sans-serif;
-    font-size:14px;
+    margin:0;min-height:100vh;padding:0 0 90px;color:var(--text);
+    background:radial-gradient(ellipse at 50% -15%,rgba(43,76,133,.30),transparent 55%),var(--bg);
+    font-family:Arial,Helvetica,sans-serif;font-size:14px;
 }
-
-button,
-input,
-select{
-    font:inherit;
-}
-
-button{
-    cursor:pointer;
-}
-
-button:disabled{
-    cursor:not-allowed;
-    opacity:.55;
-}
-
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.55}
 .app-container{
-    display:none;
-    width:100%;
-    max-width:600px;
-    margin:0 auto;
-    padding:16px 15px 24px;
+    display:none;width:100%;max-width:600px;margin:0 auto;padding:16px 15px 24px;
 }
-
-.app-container.active{
-    display:block;
-}
-
-.top-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin-bottom:18px;
-}
-
-.brand{
-    color:var(--gold);
-    font-size:24px;
-    font-weight:900;
-    letter-spacing:3px;
-}
-
-.brand-subtitle{
-    color:var(--muted);
-    font-size:10px;
-    letter-spacing:1.5px;
-    margin-top:4px;
-}
-
+.app-container.active{display:block}
+.top-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{color:var(--gold);font-size:24px;font-weight:900;letter-spacing:3px}
+.brand-subtitle{color:var(--muted);font-size:10px;letter-spacing:1.5px;margin-top:4px}
 .header-card{
-    padding:23px 18px;
-    margin-bottom:16px;
-    text-align:center;
-    border:1px solid var(--border);
-    border-radius:20px;
-    background:linear-gradient(145deg,#17243b,#101828);
-    box-shadow:0 12px 30px rgba(0,0,0,.18);
+    padding:23px 18px;margin-bottom:16px;text-align:center;border:1px solid var(--border);
+    border-radius:20px;background:linear-gradient(145deg,#17243b,#101828);
+    box-shadow:0 12px 30px rgba(0,0,0,.18)
 }
-
-.balance-title{
-    color:var(--muted);
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:2px;
+.balance-title{color:var(--muted);font-size:11px;font-weight:700;letter-spacing:2px}
+.balance-amount{margin-top:10px;color:var(--gold2);font-size:32px;font-weight:800;overflow-wrap:anywhere}
+.balance-unit{color:var(--gold);font-size:13px;font-weight:700;margin-top:5px}
+.section-title{margin:8px 0 14px;color:var(--text);font-size:17px;font-weight:800}
+.card,.info-box,.warning-box{
+    padding:16px;margin-bottom:12px;border:1px solid rgba(160,174,192,.13);
+    border-radius:16px;background:var(--panel)
 }
-
-.balance-amount{
-    margin-top:10px;
-    color:var(--gold2);
-    font-size:32px;
-    font-weight:800;
-    overflow-wrap:anywhere;
-}
-
-.balance-unit{
-    color:var(--gold);
-    font-size:13px;
-    font-weight:700;
-    margin-top:5px;
-}
-
-.section-title{
-    margin:8px 0 14px;
-    color:var(--text);
-    font-size:17px;
-    font-weight:800;
-}
-
-.card,
-.info-box,
-.warning-box{
-    padding:16px;
-    margin-bottom:12px;
-    border:1px solid rgba(160,174,192,.13);
-    border-radius:16px;
-    background:var(--panel);
-}
-
-.card{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-}
-
-.card-info{
-    min-width:0;
-    flex:1;
-}
-
-.card h4,
-.info-box h3{
-    margin:0 0 8px;
-    color:var(--text);
-    font-size:14px;
-    line-height:1.4;
-}
-
-.card p,
-.info-box p,
-.warning-box{
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.6;
-}
-
-.card p{
-    margin:4px 0;
-}
-
-.info-box h3{
-    color:var(--gold2);
-    font-size:15px;
-}
-
-.info-box p:last-child{
-    margin-bottom:0;
-}
-
-.warning-box{
-    border-color:rgba(243,201,105,.22);
-    background:rgba(243,201,105,.06);
-}
-
-.gold-text{
-    color:var(--gold);
-    font-weight:800;
-}
-
+.card{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.card-info{min-width:0;flex:1}
+.card h4,.info-box h3{margin:0 0 8px;color:var(--text);font-size:14px;line-height:1.4}
+.card p,.info-box p,.warning-box{color:var(--muted);font-size:12px;line-height:1.6}
+.card p{margin:4px 0}
+.info-box h3{color:var(--gold2);font-size:15px}
+.info-box p:last-child{margin-bottom:0}
+.warning-box{border-color:rgba(243,201,105,.22);background:rgba(243,201,105,.06)}
+.gold-text{color:var(--gold);font-weight:800}
 .btn-action{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    min-height:42px;
-    padding:10px 14px;
-    border:1px solid rgba(243,201,105,.35);
-    border-radius:12px;
-    color:#17130a;
-    background:linear-gradient(135deg,var(--gold2),var(--gold));
-    font-size:12px;
-    font-weight:800;
-    line-height:1.25;
-    text-align:center;
-    white-space:normal;
-    transition:filter .15s ease,transform .15s ease;
+    display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;
+    border:1px solid rgba(243,201,105,.35);border-radius:12px;color:#17130a;
+    background:linear-gradient(135deg,var(--gold2),var(--gold));font-size:12px;font-weight:800;
+    line-height:1.25;text-align:center;white-space:normal;transition:filter .15s ease,transform .15s ease
 }
-
-.btn-action:active:not(:disabled){
-    transform:scale(.98);
-}
-
-.btn-action:disabled{
-    color:#aab2c0;
-    border-color:rgba(160,174,192,.15);
-    background:#263247;
-}
-
-.btn-secondary{
-    color:var(--gold2);
-    border:1px solid var(--border);
-    background:#19253a;
-}
-
+.btn-action:active:not(:disabled){transform:scale(.98)}
+.btn-action:disabled{color:#aab2c0;border-color:rgba(160,174,192,.15);background:#263247}
+.btn-secondary{color:var(--gold2);border:1px solid var(--border);background:#19253a}
 .mining-hero{
-    position:relative;
-    overflow:hidden;
-    padding:22px 17px;
-    margin-bottom:16px;
-    border:1px solid var(--border);
-    border-radius:22px;
-    background:
-        radial-gradient(circle at 80% 15%,rgba(243,201,105,.12),transparent 35%),
-        linear-gradient(145deg,#17243b,#101726);
+    position:relative;overflow:hidden;padding:22px 17px;margin-bottom:16px;border:1px solid var(--border);
+    border-radius:22px;background:radial-gradient(circle at 80% 15%,rgba(243,201,105,.12),transparent 35%),linear-gradient(145deg,#17243b,#101726)
 }
-
 .mining-hero:after{
-    content:"";
-    position:absolute;
-    right:-25px;
-    top:-35px;
-    width:140px;
-    height:140px;
-    border:1px solid rgba(243,201,105,.12);
-    border-radius:50%;
-    box-shadow:0 0 0 18px rgba(243,201,105,.025),
-               0 0 0 38px rgba(243,201,105,.02);
-    pointer-events:none;
+    content:"";position:absolute;right:-25px;top:-35px;width:140px;height:140px;
+    border:1px solid rgba(243,201,105,.12);border-radius:50%;
+    box-shadow:0 0 0 18px rgba(243,201,105,.025),0 0 0 38px rgba(243,201,105,.02);
+    pointer-events:none
 }
-
-.mining-label{
-    position:relative;
-    z-index:1;
-    color:var(--muted);
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:2px;
-}
-
-.mining-title{
-    position:relative;
-    z-index:1;
-    margin:9px 0 4px;
-    color:var(--gold2);
-    font-size:23px;
-    font-weight:900;
-}
-
-.mining-description{
-    position:relative;
-    z-index:1;
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.5;
-}
-
-.mining-timer-wrap{
-    margin:18px 0;
-    text-align:center;
-}
-
-.mining-timer-label{
-    color:var(--muted);
-    font-size:11px;
-    letter-spacing:1.5px;
-}
-
-.mining-timer{
-    margin-top:7px;
-    color:var(--gold2);
-    font-size:38px;
-    font-weight:900;
-    font-variant-numeric:tabular-nums;
-}
-
-.mining-actions{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:10px;
-    margin-top:16px;
-}
-
-.mining-actions .btn-action{
-    width:100%;
-    min-height:46px;
-}
-
+.mining-label{position:relative;z-index:1;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:2px}
+.mining-title{position:relative;z-index:1;margin:9px 0 4px;color:var(--gold2);font-size:23px;font-weight:900}
+.mining-description{position:relative;z-index:1;color:var(--muted);font-size:12px;line-height:1.5}
+.mining-timer-wrap{margin:18px 0;text-align:center}
+.mining-timer-label{color:var(--muted);font-size:11px;letter-spacing:1.5px}
+.mining-timer{margin-top:7px;color:var(--gold2);font-size:38px;font-weight:900;font-variant-numeric:tabular-nums}
+.mining-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+.mining-actions .btn-action{width:100%;min-height:46px}
 .boost-card{
-    padding:17px;
-    margin-bottom:16px;
-    border:1px solid rgba(243,201,105,.24);
-    border-radius:18px;
-    background:linear-gradient(145deg,rgba(243,201,105,.09),var(--panel));
+    padding:17px;margin-bottom:16px;border:1px solid rgba(243,201,105,.24);border-radius:18px;
+    background:linear-gradient(145deg,rgba(243,201,105,.09),var(--panel))
 }
-
-.boost-heading{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:9px;
-}
-
+.boost-heading{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .boost-icon{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width:42px;
-    height:42px;
-    flex-shrink:0;
-    border-radius:13px;
-    color:var(--gold2);
-    background:rgba(243,201,105,.12);
-    font-size:22px;
+    display:flex;align-items:center;justify-content:center;width:42px;height:42px;flex-shrink:0;
+    border-radius:13px;color:var(--gold2);background:rgba(243,201,105,.12);font-size:22px
 }
-
-.boost-title{
-    color:var(--gold2);
-    font-size:15px;
-    font-weight:800;
-}
-
-.boost-subtitle{
-    margin-top:4px;
-    color:var(--muted);
-    font-size:11px;
-}
-
-.boost-status{
-    margin:12px 0 7px;
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.5;
-}
-
-.boost-progress{
-    margin-bottom:12px;
-    color:var(--gold);
-    font-size:12px;
-    font-weight:700;
-}
-
-.boost-card .btn-action{
-    width:100%;
-}
-
-.progress-track{
-    width:100%;
-    height:7px;
-    margin:12px 0;
-    overflow:hidden;
-    border-radius:20px;
-    background:#27344a;
-}
-
-.progress-fill{
-    width:0;
-    height:100%;
-    border-radius:20px;
-    background:linear-gradient(90deg,var(--gold),var(--gold2));
-    transition:width .2s ease;
-}
-
-.daily-rewards{
-    display:grid;
-    grid-template-columns:repeat(7,minmax(0,1fr));
-    gap:5px;
-    margin:14px 0;
-}
-
-.daily-reward{
-    min-width:0;
-    padding:9px 2px;
-    border:1px solid rgba(160,174,192,.15);
-    border-radius:9px;
-    background:#0d1524;
-    text-align:center;
-}
-
-.daily-reward .day{
-    color:var(--muted);
-    font-size:9px;
-}
-
-.daily-reward .reward{
-    margin:7px 0;
-    color:var(--gold2);
-    font-size:15px;
-    font-weight:900;
-}
-
-.daily-reward .mark{
-    min-height:18px;
-    color:var(--green);
-    font-size:8px;
-    line-height:1.2;
-}
-
-.daily-reward.current{
-    border-color:var(--gold);
-    background:rgba(243,201,105,.08);
-}
-
-.daily-reward.claimed{
-    border-color:rgba(66,214,164,.3);
-    background:rgba(66,214,164,.05);
-}
-
-.daily-login-actions{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:8px;
-}
-
-.friends-list{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-}
-
-.hangar-item{
-    padding:18px;
-    margin-bottom:14px;
-    border:1px solid rgba(160,174,192,.15);
-    border-radius:17px;
-    background:var(--panel);
-}
-
-.hangar-item h3{
-    margin:0 0 8px;
-    color:var(--gold2);
-    font-size:16px;
-}
-
-.hangar-item p{
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.6;
-}
-
-.hangar-status{
-    margin:12px 0 8px;
-    color:var(--gold);
-    font-size:13px;
-    font-weight:800;
-}
-
-.hangar-actions{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:8px;
-    margin-top:12px;
-}
-
+.boost-title{color:var(--gold2);font-size:15px;font-weight:800}
+.boost-subtitle{margin-top:4px;color:var(--muted);font-size:11px}
+.boost-status{margin:12px 0 7px;color:var(--muted);font-size:12px;line-height:1.5}
+.boost-progress{margin-bottom:12px;color:var(--gold);font-size:12px;font-weight:700}
+.boost-card .btn-action{width:100%}
+.progress-track{width:100%;height:7px;margin:12px 0;overflow:hidden;border-radius:20px;background:#27344a}
+.progress-fill{width:0;height:100%;border-radius:20px;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .2s ease}
+.daily-rewards{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:14px 0}
+.daily-reward{min-width:0;padding:9px 2px;border:1px solid rgba(160,174,192,.15);border-radius:9px;background:#0d1524;text-align:center}
+.daily-reward .day{color:var(--muted);font-size:9px}
+.daily-reward .reward{margin:7px 0;color:var(--gold2);font-size:15px;font-weight:900}
+.daily-reward .mark{min-height:18px;color:var(--green);font-size:8px;line-height:1.2}
+.daily-reward.current{border-color:var(--gold);background:rgba(243,201,105,.08)}
+.daily-reward.claimed{border-color:rgba(66,214,164,.3);background:rgba(66,214,164,.05)}
+.daily-login-actions{display:grid;grid-template-columns:1fr;gap:8px}
+.friends-list{display:flex;flex-direction:column;gap:8px}
+.hangar-item{padding:18px;margin-bottom:14px;border:1px solid rgba(160,174,192,.15);border-radius:17px;background:var(--panel)}
+.hangar-item h3{margin:0 0 8px;color:var(--gold2);font-size:16px}
+.hangar-item p{color:var(--muted);font-size:12px;line-height:1.6}
+.hangar-status{margin:12px 0 8px;color:var(--gold);font-size:13px;font-weight:800}
+.hangar-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
 .fuel-select{
-    width:100%;
-    min-height:44px;
-    padding:10px;
-    margin:10px 0;
-    border:1px solid var(--border);
-    border-radius:10px;
-    color:var(--text);
-    background:#0c1423;
+    width:100%;min-height:44px;padding:10px;margin:10px 0;border:1px solid var(--border);
+    border-radius:10px;color:var(--text);background:#0c1423
 }
-
-.fuel-meter{
-    width:100%;
-    height:8px;
-    margin:12px 0;
-    overflow:hidden;
-    border-radius:10px;
-    background:#27344a;
-}
-
-#fuel-meter-fill{
-    display:block;
-    width:0;
-    height:100%;
-    border-radius:10px;
-    background:var(--green);
-    transition:width .2s ease;
-}
-
+.fuel-meter{width:100%;height:8px;margin:12px 0;overflow:hidden;border-radius:10px;background:#27344a}
+#fuel-meter-fill{display:block;width:0;height:100%;border-radius:10px;background:var(--green);transition:width .2s ease}
 .nav-bar{
-    position:fixed;
-    z-index:100;
-    right:0;
-    bottom:0;
-    left:0;
-    display:flex;
-    justify-content:space-around;
-    gap:2px;
-    padding:8px 4px calc(8px + env(safe-area-inset-bottom));
-    border-top:1px solid rgba(160,174,192,.15);
-    background:rgba(8,13,25,.97);
-    backdrop-filter:blur(14px);
+    position:fixed;z-index:100;right:0;bottom:0;left:0;display:flex;justify-content:space-around;gap:2px;
+    padding:8px 4px calc(8px + env(safe-area-inset-bottom));border-top:1px solid rgba(160,174,192,.15);
+    background:rgba(8,13,25,.97);backdrop-filter:blur(14px)
 }
-
-.nav-item{
-    display:flex;
-    flex:1;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:4px;
-    min-width:0;
-    padding:6px 1px;
-    border:0;
-    border-radius:10px;
-    color:var(--muted);
-    background:transparent;
-}
-
-.nav-item.active{
-    color:var(--gold2);
-    background:rgba(243,201,105,.08);
-}
-
-.nav-icon{
-    font-size:19px;
-    line-height:1;
-}
-
-.nav-label{
-    font-size:9px;
-    font-weight:700;
-}
-
+.nav-item{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;padding:6px 1px;border:0;border-radius:10px;color:var(--muted);background:transparent}
+.nav-item.active{color:var(--gold2);background:rgba(243,201,105,.08)}
+.nav-icon{font-size:19px;line-height:1}
+.nav-label{font-size:9px;font-weight:700}
+.share-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.promo-status{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.5}
+.promo-upload{display:block;width:100%;margin:10px 0;color:var(--muted);font-size:12px}
 @media(min-width:480px){
-    .app-container{
-        padding-right:20px;
-        padding-left:20px;
-    }
-
-    .mining-actions,
-    .hangar-actions{
-        grid-template-columns:1fr 1fr;
-    }
-
-    .daily-login-actions{
-        grid-template-columns:1fr;
-    }
+    .app-container{padding-right:20px;padding-left:20px}
+    .mining-actions,.hangar-actions{grid-template-columns:1fr 1fr}
+    .daily-login-actions{grid-template-columns:1fr}
 }
-
 @media(max-width:360px){
-    .nav-label{
-        font-size:8px;
-    }
-
-    .nav-icon{
-        font-size:17px;
-    }
-
-    .balance-amount{
-        font-size:27px;
-    }
-
-    .daily-rewards{
-        gap:3px;
-    }
-
-    .daily-reward .day{
-        font-size:8px;
-    }
+    .nav-label{font-size:8px}
+    .nav-icon{font-size:17px}
+    .balance-amount{font-size:27px}
+    .daily-rewards{gap:3px}
+    .daily-reward .day{font-size:8px}
 }
 </style>
 </head>
@@ -611,12 +175,10 @@ button:disabled{
         <div class="mining-description">
             Запускайте добычу NEVAR и развивайте свою космическую экспедицию.
         </div>
-
         <div class="mining-timer-wrap">
             <div class="mining-timer-label">ОСТАЛОСЬ ВРЕМЕНИ</div>
             <div class="mining-timer" id="mining-timer">00:00</div>
         </div>
-
         <div class="mining-actions">
             <button class="btn-action" id="btn-start-mining" onclick="watchVideoForMining()">
                 Включить майнинг (Смотреть 1 видео)
@@ -635,15 +197,11 @@ button:disabled{
                 <div class="boost-subtitle">Ускорение добычи на 60 минут</div>
             </div>
         </div>
-
         <p class="boost-status" id="boost-status">
             Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.
         </p>
         <p class="boost-progress" id="boost-progress">Прогресс: 0/5</p>
-
-        <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">
-            Активировать
-        </button>
+        <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">Активировать</button>
     </div>
 
     <div class="info-box">
@@ -651,8 +209,9 @@ button:disabled{
         <p>Выполняйте задания, приглашайте друзей и собирайте ресурсы для путешествий по Солнечной системе.</p>
         <p>Текущая скорость майнинга: <span class="gold-text" id="mining-rate-label">1 NEVAR за сеанс</span></p>
     </div>
-    </div>
-    <div id="page-tasks" class="app-container">
+</div>
+
+<div id="page-tasks" class="app-container">
     <div class="section-title">📋 Ежедневные задания</div>
 
     <div class="card">
@@ -688,56 +247,16 @@ button:disabled{
     </div>
 
     <div class="section-title" style="margin-top:25px">🎁 Ежедневная серия входов</div>
-
     <div class="info-box">
         <h3>Ежедневные награды</h3>
         <p>Заходите каждый день и получайте награду за просмотр трёх рекламных видео.</p>
         <p id="daily-login-status">День 1 из 7</p>
-
-        <div class="daily-rewards" id="daily-rewards">
-            <div class="daily-reward">
-                <div class="day">День 1</div>
-                <div class="reward">1</div>
-                <div class="mark"></div>
-            </div>
-            <div class="daily-reward">
-                <div class="day">День 2</div>
-                <div class="reward">2</div>
-                <div class="mark"></div>
-            </div>
-            <div class="daily-reward">
-                <div class="day">День 3</div>
-                <div class="reward">3</div>
-                <div class="mark"></div>
-            </div>
-            <div class="daily-reward">
-                <div class="day">День 4</div>
-                <div class="reward">4</div>
-                <div class="mark"></div>
-            </div>
-            <div class="daily-reward">
-                <div class="day">День 5</div>
-                <div class="reward">5</div>
-                <div class="mark"></div>
-            </div>
-            <div class="daily-reward">
-                <div class="day">День 6</div>
-                <div class="reward">6</div>
-                <div class="mark"></div>
-            </div>
-            <div class="daily-reward">
-                <div class="day">День 7</div>
-                <div class="reward">10</div>
-                <div class="mark"></div>
-            </div>
-        </div>
-
+        <div class="daily-rewards" id="daily-rewards"></div>
         <p id="daily-login-progress">Прогресс: 0/3 видео</p>
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Смотреть видео</button>
     </div>
 
     <div class="section-title" style="margin-top:25px">👥 Задания сообщества</div>
-
     <div class="card">
         <div class="card-info">
             <h4>Пригласить 5 друзей</h4>
@@ -759,7 +278,6 @@ button:disabled{
 
 <div id="page-expeditions" class="app-container">
     <div class="section-title">🚀 Ангар и экспедиции</div>
-
     <div class="info-box">
         <h3>Подготовка к экспедиции</h3>
         <p>Разблокируйте скафандр и космический корабль, чтобы подготовиться к будущим экспедициям.</p>
@@ -793,24 +311,19 @@ button:disabled{
     <div class="info-box">
         <h3>Зарядка корабля</h3>
         <p>Выберите планету и приобретите энергию за NEVAR или накопите её за просмотр рекламных видео.</p>
-
         <select id="fuel-planet" class="fuel-select" onchange="updateFuelPrice()">
+            <option value="earth">Земля</option>
             <option value="mercury">Меркурий</option>
             <option value="venus">Венера</option>
-            <option value="earth">Земля</option>
             <option value="mars">Марс</option>
             <option value="jupiter">Юпитер</option>
             <option value="saturn">Сатурн</option>
             <option value="uranus">Уран</option>
             <option value="neptune">Нептун</option>
         </select>
-
-        <p id="fuel-price">Меркурий: 250 NEVAR или 25 видео</p>
-        <div class="fuel-meter">
-            <span id="fuel-meter-fill"></span>
-        </div>
+        <p id="fuel-price">Земля: 390 NEVAR или 39 видео</p>
+        <div class="fuel-meter"><span id="fuel-meter-fill"></span></div>
         <p id="fuel-status">Корабль не заряжен</p>
-
         <div class="hangar-actions">
             <button class="btn-action" id="btn-fuel-buy" onclick="buyFuel()">Купить энергию</button>
             <button class="btn-action btn-secondary" id="btn-fuel-video" onclick="watchFuelVideos()">Смотреть видео</button>
@@ -820,77 +333,22 @@ button:disabled{
     <div class="section-title" style="margin-top:25px">🪐 Планетарные экспедиции</div>
     <div class="info-box">
         <h3>Исследование космоса</h3>
-        <p>Выбирайте направление будущих экспедиций. Новые маршруты будут открываться по мере развития NEVAR.</p>
+        <p>Путь начинается с Земли. Пройдите восемь планетарных экспедиций, чтобы открыть последнюю цель — Млечный Путь.</p>
     </div>
 
-    <div class="card">
-        <div class="card-info">
-            <h4>Меркурий</h4>
-        </div>
-        <button class="btn-action" disabled>Скоро</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Венера</h4>
-        </div>
-        <button class="btn-action" disabled>Скоро</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Земля</h4>
-        </div>
-        <button class="btn-action" disabled>В разработке</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Марс</h4>
-        </div>
-        <button class="btn-action" disabled>В разработке</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Юпитер</h4>
-        </div>
-        <button class="btn-action" disabled>В разработке</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Сатурн</h4>
-        </div>
-        <button class="btn-action" disabled>В разработке</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Уран</h4>
-        </div>
-        <button class="btn-action" disabled>В разработке</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Нептун</h4>
-        </div>
-        <button class="btn-action" disabled>В разработке</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Млечный Путь</h4>
-            <p>Последняя экспедиция</p>
-        </div>
-        <button class="btn-action" disabled>В разработке</button>
-    </div>
+    <div class="card"><div class="card-info"><h4>Земля</h4><p>Первая экспедиция</p></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Меркурий</h4></div><button class="btn-action" disabled>Скоро</button></div>
+    <div class="card"><div class="card-info"><h4>Венера</h4></div><button class="btn-action" disabled>Скоро</button></div>
+    <div class="card"><div class="card-info"><h4>Марс</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Юпитер</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Сатурн</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Уран</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Нептун</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Млечный Путь</h4><p>Последняя экспедиция — разгадка NEVAR</p></div><button class="btn-action" disabled>В разработке</button></div>
 </div>
 
 <div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
-
     <div class="header-card">
         <div class="balance-title">ПРИГЛАШЁННЫЕ ПИЛОТЫ</div>
         <div class="balance-amount" id="friends-count">0</div>
@@ -904,6 +362,18 @@ button:disabled{
         <p>5–9 друзей: повышенная скорость.</p>
         <p>10 и более друзей: максимальная скорость.</p>
         <button class="btn-action" style="width:100%;margin-top:10px" onclick="inviteFriend()">Пригласить друга</button>
+        <button class="btn-action btn-secondary" style="width:100%;margin-top:8px" onclick="shareNevar()">Поделиться NEVAR</button>
+    </div>
+
+    <div class="info-box">
+        <h3>🚀 Продвигай NEVAR</h3>
+        <p>Опубликуй промоматериал NEVAR в статусе или истории социальной сети. Когда откроется окно подтверждения, загрузи скриншот публикации с видимым счётчиком просмотров.</p>
+        <p id="promo-status" class="promo-status">Следующая публикация пока не начата.</p>
+        <button class="btn-action" id="btn-promo-start" style="width:100%" onclick="startPromoCycle()">Начать задание</button>
+        <input class="promo-upload" id="promo-screenshot" type="file" accept="image/*" capture="environment" hidden>
+        <button class="btn-action btn-secondary" id="btn-promo-upload" style="width:100%" onclick="document.getElementById('promo-screenshot').click()" disabled>Загрузить скриншот</button>
+        <button class="btn-action" id="btn-promo-submit" style="width:100%;margin-top:8px" onclick="submitPromoScreenshot()" disabled>Отправить на проверку</button>
+        <p class="promo-status">Задание повторяется раз в 24 часа. Загрузка скриншота доступна только в установленное окно подтверждения.</p>
     </div>
 
     <div class="section-title">Список экипажа</div>
@@ -912,12 +382,10 @@ button:disabled{
 
 <div id="page-wallet" class="app-container">
     <div class="section-title">💰 Кошелёк NEVAR</div>
-
     <div class="header-card">
         <div class="balance-title">ВАШ БАЛАНС</div>
         <div class="balance-amount" id="wallet-balance">0.00 NEVAR</div>
     </div>
-
     <div class="info-box">
         <h3>Космический кошелёк</h3>
         <p>Здесь отображается ваш текущий баланс NEVAR.</p>
@@ -927,85 +395,71 @@ button:disabled{
 
 <div id="page-info" class="app-container">
     <div class="section-title">ℹ️ О проекте NEVAR</div>
-
     <div class="info-box">
-        <h3>Добро пожаловать в NEVAR</h3>
-        <p>NEVAR — космическая игра, в которой вы становитесь пилотом, развиваете экипаж, добываете игровые монеты и готовитесь к экспедициям.</p>
-        <p>⛏️ <strong>Майнинг:</strong> запускайте майнинг и получайте игровые награды.</p>
-        <p>⚡ <strong>Ускоритель:</strong> смотрите рекламные видео и активируйте ускорение майнинга ×2.</p>
-        <p>👥 <strong>Экипаж:</strong> приглашайте друзей и развивайте команду.</p>
-        <p>🚀 <strong>Ангар и экспедиции:</strong> разблокируйте скафандр и корабль, готовьтесь к исследованию космоса.</p>
+        <h3>🚀 NEVAR — НЕИЗВЕСТНОСТЬ НАЧИНАЕТСЯ ЗДЕСЬ</h3>
+        <p>🌌 Земля, у нас экспедиция!</p>
+        <p>Впереди — бескрайний космос, неизведанные миры и загадка под названием NEVAR.</p>
+        <p>👨‍🚀 <strong>8 ПЛАНЕТ — 8 ЭКСПЕДИЦИЙ</strong></p>
+        <p>Запускай майнинг, выполняй задания, собирай экипаж и проходи одну экспедицию за другой. Каждая миссия приближает тебя к главной цели.</p>
+        <p>🌌 <strong>МЛЕЧНЫЙ ПУТЬ — КЛЮЧ К РАЗГАДКЕ</strong></p>
+        <p>Восемь экспедиций отделяют тебя от главной тайны. Пройди этот путь до конца, доберись до Млечного Пути — и перед тобой откроется истинная сущность NEVAR.</p>
+        <p>Игра? Криптовалюта? Цифровая экосистема? Или нечто, чего ты ещё не представляешь?</p>
+        <p>Ответ ждёт тебя в конце путешествия. 🚀</p>
+        <p>🌌 <strong>БУДУЩЕЕ NEVAR — В НАШИХ РУКАХ</strong></p>
+        <p>Будущее проекта зависит от активности его участников. Чем активнее наше сообщество, чем больше участников проходят экспедиции, выполняют задания и приглашают новых игроков, тем больше возможностей для развития NEVAR.</p>
+        <p>🚀 NEVAR — наше путешествие, и его будущее создаём мы вместе.</p>
     </div>
-
-    <div class="info-box">
-        <h3>Как начать</h3>
-        <p>1. Запустите майнинг.</p>
-        <p>2. Выполняйте ежедневные задания.</p>
-        <p>3. Получайте игровые награды.</p>
-        <p>4. Разблокируйте скафандр и корабль.</p>
-        <p>5. Следите за открытием экспедиций.</p>
-    </div>
-
     <div class="warning-box">
         NEVAR — внутриигровая система вознаграждений. Игровой баланс сам по себе не гарантирует денежную стоимость или возможность обмена на реальные деньги.
     </div>
 </div>
 
 <nav class="nav-bar">
-    <button class="nav-item active" onclick="switchTab('mining',this)">
-        <span class="nav-icon">⛏️</span>
-        <span class="nav-label">Майнинг</span>
-    </button>
-
-    <button class="nav-item" onclick="switchTab('tasks',this)">
-        <span class="nav-icon">📋</span>
-        <span class="nav-label">Задания</span>
-    </button>
-
-    <button class="nav-item" onclick="switchTab('expeditions',this)">
-        <span class="nav-icon">🚀</span>
-        <span class="nav-label">Экспедиции</span>
-    </button>
-
-    <button class="nav-item" onclick="switchTab('friends',this)">
-        <span class="nav-icon">👥</span>
-        <span class="nav-label">Экипаж</span>
-    </button>
-
-    <button class="nav-item" onclick="switchTab('wallet',this)">
-        <span class="nav-icon">💰</span>
-        <span class="nav-label">Кошелёк</span>
-    </button>
-
-    <button class="nav-item" onclick="switchTab('info',this)">
-        <span class="nav-icon">ℹ️</span>
-        <span class="nav-label">Инфо</span>
-    </button>
+    <button class="nav-item active" onclick="switchTab('mining',this)"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
+    <button class="nav-item" onclick="switchTab('tasks',this)"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
+    <button class="nav-item" onclick="switchTab('expeditions',this)"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
+    <button class="nav-item" onclick="switchTab('friends',this)"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
+    <button class="nav-item" onclick="switchTab('wallet',this)"><span class="nav-icon">💰</span><span class="nav-label">Кошелёк</span></button>
+    <button class="nav-item" onclick="switchTab('info',this)"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
 </nav>
 
 <script>
-    let userId="---";
+    
+"use strict";
+
+let userId="---";
 let userName="Пилот";
 
 const API_BASE_URL="https://your-backend-domain.com/api";
 const TELEGRAM_CHANNEL_URL="https://t.me/ВАШ_КАНАЛ";
 const YOUTUBE_URL="";
+const NEVAR_BOT_URL="https://t.me/Nevar_mining_bot";
+const GAME_URL="https://guseinovraven79-star.github.io/Mining-game/";
 
 let adController=null;
 
-try{
-    if(typeof Adsgram!=="undefined"&&window.Adsgram){
-        adController=window.Adsgram.init({blockId:"52498"});
+function initializeAdsgram(){
+    try{
+        if(window.Adsgram&&typeof window.Adsgram.init==="function"){
+            adController=window.Adsgram.init({blockId:"52498"});
+            console.log("Adsgram initialized");
+        }else{
+            console.warn("Adsgram SDK не загружен");
+        }
+    }catch(error){
+        console.error("Adsgram initialization error:",error);
+        adController=null;
     }
-}catch(error){
-    console.error("Adsgram initialization error:",error);
 }
+
+initializeAdsgram();
 
 let state={
     balance:0,
     isMiningActive:false,
     miningEndTime:0,
     miningRate:1,
+    miningMode:"normal",
     completedTasks:{},
     dailyVideosCount:0,
     totalAdsWatchedToday:0,
@@ -1030,19 +484,28 @@ let state={
     completedExpeditions:[],
     fuelVideoProgress:{},
     youtubeDailyClaimed:false,
-    youtubeDailyClaimDate:""
+    youtubeDailyClaimDate:"",
+    youtubeSubscriptionClaimed:false,
+    youtubeChannelOpened:false,
+    promoCycleStart:0,
+    promoCycleClaimed:false,
+    promoScreenshotSubmitted:false,
+    promoLastRewardDate:""
 };
 
 let isAdCooldown=false;
 let adCooldownTimer=10;
 let adCooldownInterval=null;
+let cooldownButtonId="";
 let savingPromise=Promise.resolve();
 let lastMiningCompletionEndTime=0;
+let savedScrollPositions={};
+let promoScreenshotFile=null;
 
 const planets=[
+    {id:"earth",name:"Земля",videos:39,price:390},
     {id:"mercury",name:"Меркурий",videos:25,price:250},
     {id:"venus",name:"Венера",videos:32,price:320},
-    {id:"earth",name:"Земля",videos:39,price:390},
     {id:"mars",name:"Марс",videos:46,price:460},
     {id:"jupiter",name:"Юпитер",videos:54,price:540},
     {id:"saturn",name:"Сатурн",videos:61,price:610},
@@ -1051,10 +514,7 @@ const planets=[
 ];
 
 function localDateKey(date=new Date()){
-    const year=date.getFullYear();
-    const month=String(date.getMonth()+1).padStart(2,"0");
-    const day=String(date.getDate()).padStart(2,"0");
-    return `${year}-${month}-${day}`;
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
 }
 
 function addDaysToDateKey(dateKey,days){
@@ -1068,65 +528,39 @@ function ensureStateDefaults(){
     if(!state||typeof state!=="object")state={};
 
     const defaults={
-        balance:0,
-        isMiningActive:false,
-        miningEndTime:0,
-        miningRate:1,
-        completedTasks:{},
-        dailyVideosCount:0,
-        totalAdsWatchedToday:0,
-        lastResetDate:"",
-        friendsList:[],
-        boostVideoCount:0,
-        boostActiveUntil:0,
-        dailyLoginDay:1,
-        dailyLoginVideoCount:0,
-        dailyLoginLastClaimDate:"",
-        dailyLoginLastClaimDay:0,
-        dailyLoginLastProgressDate:"",
-        dailyLoginCycleStartDate:"",
-        invite5RewardClaimed:false,
-        telegramRewardClaimed:false,
-        telegramChannelOpened:false,
-        spacesuitUnlocked:false,
-        shipUnlocked:false,
-        spacesuitVideoCount:0,
-        shipVideoCount:0,
-        chargedPlanet:"",
-        completedExpeditions:[],
-        fuelVideoProgress:{},
-        youtubeDailyClaimed:false,
-        youtubeDailyClaimDate:""
+        balance:0,isMiningActive:false,miningEndTime:0,miningRate:1,
+        miningMode:"normal",completedTasks:{},dailyVideosCount:0,
+        totalAdsWatchedToday:0,lastResetDate:"",friendsList:[],
+        boostVideoCount:0,boostActiveUntil:0,dailyLoginDay:1,
+        dailyLoginVideoCount:0,dailyLoginLastClaimDate:"",
+        dailyLoginLastClaimDay:0,dailyLoginLastProgressDate:"",
+        dailyLoginCycleStartDate:"",invite5RewardClaimed:false,
+        telegramRewardClaimed:false,telegramChannelOpened:false,
+        spacesuitUnlocked:false,shipUnlocked:false,spacesuitVideoCount:0,
+        shipVideoCount:0,chargedPlanet:"",completedExpeditions:[],
+        fuelVideoProgress:{},youtubeDailyClaimed:false,youtubeDailyClaimDate:"",
+        youtubeSubscriptionClaimed:false,youtubeChannelOpened:false,
+        promoCycleStart:0,promoCycleClaimed:false,
+        promoScreenshotSubmitted:false,promoLastRewardDate:""
     };
 
     for(const key in defaults){
-        if(state[key]===undefined||state[key]===null){
-            state[key]=defaults[key];
-        }
+        if(state[key]===undefined||state[key]===null)state[key]=defaults[key];
     }
 
-    if(!state.completedTasks||typeof state.completedTasks!=="object"){
-        state.completedTasks={};
-    }
+    if(!state.completedTasks||typeof state.completedTasks!=="object")state.completedTasks={};
+    if(!Array.isArray(state.friendsList))state.friendsList=[];
+    if(!Array.isArray(state.completedExpeditions))state.completedExpeditions=[];
+    if(!state.fuelVideoProgress||typeof state.fuelVideoProgress!=="object")state.fuelVideoProgress={};
 
-    if(!Array.isArray(state.friendsList)){
-        state.friendsList=[];
-    }
-
-    if(!Array.isArray(state.completedExpeditions)){
-        state.completedExpeditions=[];
-    }
-
-    if(!state.fuelVideoProgress||typeof state.fuelVideoProgress!=="object"){
-        state.fuelVideoProgress={};
-    }
-
-    state.balance=Number(state.balance)||0;
+    state.balance=Math.max(0,Number(state.balance)||0);
     state.dailyVideosCount=Number(state.dailyVideosCount)||0;
     state.totalAdsWatchedToday=Number(state.totalAdsWatchedToday)||0;
     state.boostVideoCount=Number(state.boostVideoCount)||0;
     state.spacesuitVideoCount=Number(state.spacesuitVideoCount)||0;
     state.shipVideoCount=Number(state.shipVideoCount)||0;
+    state.dailyLoginDay=Math.min(7,Math.max(1,Number(state.dailyLoginDay)||1));
+    state.dailyLoginVideoCount=Number(state.dailyLoginVideoCount)||0;
 }
 
 function saveToLocalStorage(){
@@ -1140,14 +574,11 @@ function saveToLocalStorage(){
 async function saveState(){
     saveToLocalStorage();
 
-    const snapshot=JSON.stringify({
-        userId,
-        userName,
-        state
-    });
+    const snapshot=JSON.stringify({userId,userName,state});
 
     savingPromise=savingPromise.then(async()=>{
         try{
+            if(!API_BASE_URL||API_BASE_URL.includes("your-backend-domain.com"))return;
             await fetch(`${API_BASE_URL}/sync`,{
                 method:"POST",
                 headers:{"Content-Type":"application/json"},
@@ -1164,13 +595,9 @@ async function saveState(){
 function loadFromLocalStorage(){
     try{
         const saved=localStorage.getItem("nevarGameState");
-
         if(saved){
             const parsed=JSON.parse(saved);
-
-            if(parsed&&typeof parsed==="object"){
-                state={...state,...parsed};
-            }
+            if(parsed&&typeof parsed==="object")state={...state,...parsed};
         }
     }catch(error){
         console.error("Local load error:",error);
@@ -1181,12 +608,9 @@ async function loadStateFromServer(){
     loadFromLocalStorage();
 
     try{
-        const response=await fetch(
-            `${API_BASE_URL}/user/${encodeURIComponent(userId)}`
-        );
-
+        if(!API_BASE_URL||API_BASE_URL.includes("your-backend-domain.com"))return;
+        const response=await fetch(`${API_BASE_URL}/user/${encodeURIComponent(userId)}`);
         if(!response.ok)return;
-
         const data=await response.json();
 
         if(data&&data.state&&typeof data.state==="object"){
@@ -1214,977 +638,11 @@ function checkDailyReset(){
 }
 
 function getMiningRate(){
-    const count=Array.isArray(state.friendsList)
-        ?state.friendsList.length
-        :0;
-
+    const count=state.friendsList.length;
     if(count>=10)return 3;
     if(count>=5)return 2;
-
     return 1;
 }
-
-function startCooldownForButton(btn,defaultText,callback){
-    if(isAdCooldown||(btn&&btn.disabled))return;
-
-    isAdCooldown=true;
-    adCooldownTimer=10;
-
-    if(adCooldownInterval){
-        clearInterval(adCooldownInterval);
-        adCooldownInterval=null;
-    }
-
-    if(btn){
-        btn.disabled=true;
-        btn.textContent=String(adCooldownTimer);
-    }
-
-    adCooldownInterval=setInterval(()=>{
-        adCooldownTimer--;
-
-        if(adCooldownTimer<=0){
-            clearInterval(adCooldownInterval);
-            adCooldownInterval=null;
-            isAdCooldown=false;
-
-            if(btn){
-                btn.disabled=false;
-                btn.textContent=defaultText;
-            }
-
-            updateUI();
-
-            if(typeof callback==="function"){
-                callback();
-            }
-        }else{
-            if(btn){
-                btn.textContent=String(adCooldownTimer);
-            }
-        }
-    },1000);
-}
-
-function showAdsgramReward(callback){
-    if(!adController||typeof adController.show!=="function"){
-        alert("Реклама сейчас недоступна. Попробуйте позже.");
-        updateUI();
-        return;
-    }
-
-    try{
-        const result=adController.show();
-
-        Promise.resolve(result).then(()=>{
-            if(typeof callback==="function"){
-                callback();
-            }
-        }).catch(error=>{
-            console.error("Adsgram reward error:",error);
-            alert("Не удалось загрузить рекламу. Попробуйте позже.");
-            updateUI();
-        });
-    }catch(error){
-        console.error("Adsgram error:",error);
-        alert("Не удалось загрузить рекламу. Попробуйте позже.");
-        updateUI();
-    }
-}
-
-function isBoostActive(){
-    return state.boostActiveUntil>Date.now();
-}
-
-function activateBoost(){
-    state.boostActiveUntil=Date.now()+60*60*1000;
-    state.boostVideoCount=5;
-    saveState();
-    updateUI();
-}
-
-function registerAdWatch(){
-    checkDailyReset();
-
-    if(state.totalAdsWatchedToday>=50){
-        alert("Вы достигли дневного лимита в 50 рекламных видео.");
-        return false;
-    }
-
-    state.totalAdsWatchedToday++;
-
-    if(state.totalAdsWatchedToday>=50&&!state.completedTasks.total50){
-        state.completedTasks.total50=true;
-        state.balance+=10;
-    }
-
-    saveToLocalStorage();
-    updateUI();
-
-    return true;
-}
-
-function watchBoostVideo(){
-    if(isBoostActive())return;
-
-    if(state.boostVideoCount>=5){
-        activateBoost();
-        return;
-    }
-
-    const btn=document.getElementById("btn-activate-boost");
-
-    startCooldownForButton(btn,"Активировать",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            state.boostVideoCount=Math.min(
-                5,
-                state.boostVideoCount+1
-            );
-
-            if(state.boostVideoCount>=5){
-                activateBoost();
-            }else{
-                saveState();
-                updateUI();
-            }
-        });
-    });
-}
-
-function watchVideoForMining(){
-    if(state.isMiningActive&&state.miningEndTime>Date.now())return;
-
-    const btn=document.getElementById("btn-start-mining");
-
-    startCooldownForButton(
-        btn,
-        "Включить майнинг (Смотреть 1 видео)",
-        ()=>{
-            showAdsgramReward(()=>{
-                if(!registerAdWatch())return;
-
-                state.miningEndTime=Date.now()+60*60*1000;
-                state.isMiningActive=true;
-
-                saveState();
-                updateUI();
-            });
-        }
-    );
-}
-
-function startNightMining(){
-    if(state.isMiningActive&&state.miningEndTime>Date.now())return;
-
-    const btn=document.getElementById("btn-night-mining");
-
-    startCooldownForButton(
-        btn,
-        "Запустить ночной майнинг (Смотреть 5 видео)",
-        ()=>{
-            showAdsgramReward(()=>{
-                if(!registerAdWatch())return;
-
-                state.miningEndTime=Date.now()+6*60*60*1000;
-                state.isMiningActive=true;
-
-                saveState();
-                updateUI();
-            });
-        }
-    );
-}
-
-function completeDailyVideos(btn){
-    checkDailyReset();
-
-    if(state.completedTasks.dailyVideos||state.dailyVideosCount>=5)return;
-
-    startCooldownForButton(btn,"Смотреть",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            state.dailyVideosCount++;
-
-            if(state.dailyVideosCount>=5){
-                state.dailyVideosCount=5;
-                state.completedTasks.dailyVideos=true;
-                state.balance+=3;
-            }
-
-            saveState();
-            updateUI();
-        });
-    });
-}
-
-function watchOptionalVideo(btn){
-    startCooldownForButton(btn,"Смотреть",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            state.balance+=0.25;
-
-            saveState();
-            updateUI();
-        });
-    });
-}
-
-function completeYouTubeDailyTask(btn){
-    checkDailyReset();
-
-    const today=localDateKey();
-
-    if(state.youtubeDailyClaimed&&state.youtubeDailyClaimDate===today){
-        return;
-    }
-
-    if(!YOUTUBE_URL){
-        alert("Ссылка на YouTube ещё не настроена.");
-        return;
-    }
-
-    try{
-        if(window.Telegram&&window.Telegram.WebApp){
-            window.Telegram.WebApp.openLink(YOUTUBE_URL);
-        }else{
-            window.open(YOUTUBE_URL,"_blank");
-        }
-    }catch(error){
-        console.error("YouTube open error:",error);
-    }
-
-    if(!btn)return;
-
-    startCooldownForButton(btn,"Смотреть",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            state.youtubeDailyClaimed=true;
-            state.youtubeDailyClaimDate=today;
-            state.balance+=5;
-
-            saveState();
-            updateUI();
-        });
-    });
-    }
-    function normalizeDailyLoginStreak(){
-    const today=localDateKey();
-
-    if(!state.dailyLoginCycleStartDate){
-        state.dailyLoginCycleStartDate=today;
-    }
-
-    if(state.dailyLoginLastClaimDate===today){
-        return;
-    }
-
-    if(state.dailyLoginLastClaimDate){
-        const expectedNextDate=addDaysToDateKey(
-            state.dailyLoginLastClaimDate,
-            1
-        );
-
-        if(expectedNextDate!==today){
-            state.dailyLoginDay=1;
-            state.dailyLoginVideoCount=0;
-            state.dailyLoginCycleStartDate=today;
-            state.dailyLoginLastProgressDate="";
-            state.dailyLoginLastClaimDay=0;
-        }
-    }
-
-    if(state.dailyLoginLastProgressDate!==today){
-        state.dailyLoginVideoCount=0;
-        state.dailyLoginLastProgressDate=today;
-    }
-
-    saveToLocalStorage();
-}
-
-function getDailyLoginRewards(){
-    return [1,2,3,4,5,6,10];
-}
-
-function renderDailyLogin(){
-    normalizeDailyLoginStreak();
-
-    const rewards=getDailyLoginRewards();
-    const today=localDateKey();
-    const container=document.getElementById("daily-rewards");
-    const status=document.getElementById("daily-login-status");
-    const progress=document.getElementById("daily-login-progress");
-    const button=document.getElementById("btn-daily-login");
-
-    if(!container||!status||!progress||!button)return;
-
-    container.innerHTML=rewards.map((reward,index)=>{
-        const day=index+1;
-        const claimed=
-            state.dailyLoginLastClaimDate===today&&
-            state.dailyLoginLastClaimDay===day;
-        const current=state.dailyLoginDay===day&&!claimed;
-
-        let classes="daily-reward";
-
-        if(current)classes+=" current";
-        if(claimed)classes+=" claimed";
-
-        return `
-            <div class="${classes}">
-                <div class="day">День ${day}</div>
-                <div class="reward">${reward}</div>
-                <div class="mark">${
-                    claimed?"Получено":current?"Текущий день":""
-                }</div>
-            </div>
-        `;
-    }).join("");
-
-    status.textContent=`День ${Math.min(7,state.dailyLoginDay)} из 7`;
-    progress.textContent=`Прогресс: ${state.dailyLoginVideoCount}/3 видео`;
-
-    if(state.dailyLoginLastClaimDate===today){
-        button.textContent="Награда получена";
-        button.disabled=true;
-    }else if(isAdCooldown){
-        button.disabled=true;
-    }else{
-        button.textContent=
-            state.dailyLoginVideoCount>=3
-                ?"Забрать награду"
-                :"Смотреть видео";
-        button.disabled=false;
-    }
-}
-
-function handleDailyLoginButton(){
-    normalizeDailyLoginStreak();
-
-    const today=localDateKey();
-
-    if(state.dailyLoginLastClaimDate===today)return;
-
-    if(state.dailyLoginVideoCount>=3){
-        claimDailyLoginReward();
-        return;
-    }
-
-    const btn=document.getElementById("btn-daily-login");
-
-    startCooldownForButton(btn,"Смотреть видео",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            if(state.dailyLoginLastProgressDate!==today){
-                state.dailyLoginVideoCount=0;
-                state.dailyLoginLastProgressDate=today;
-            }
-
-            state.dailyLoginVideoCount=Math.min(
-                3,
-                state.dailyLoginVideoCount+1
-            );
-
-            saveState();
-            updateUI();
-        });
-    });
-}
-
-function claimDailyLoginReward(){
-    normalizeDailyLoginStreak();
-
-    const today=localDateKey();
-
-    if(state.dailyLoginLastClaimDate===today)return;
-
-    if(state.dailyLoginVideoCount<3){
-        alert("Посмотрите 3 рекламных видео, чтобы получить ежедневную награду.");
-        return;
-    }
-
-    const rewards=getDailyLoginRewards();
-    const day=Math.min(7,Math.max(1,state.dailyLoginDay));
-    const reward=rewards[day-1];
-
-    state.balance+=reward;
-    state.dailyLoginLastClaimDate=today;
-    state.dailyLoginLastClaimDay=day;
-
-    if(day>=7){
-        state.dailyLoginDay=1;
-        state.dailyLoginCycleStartDate=addDaysToDateKey(today,1);
-    }else{
-        state.dailyLoginDay=day+1;
-    }
-
-    state.dailyLoginVideoCount=0;
-    state.dailyLoginLastProgressDate=today;
-
-    saveState();
-    updateUI();
-
-    alert(`🎉 Получено ${reward} NEVAR!`);
-}
-
-/* Задание: пригласить 5 друзей и посмотреть 1 рекламное видео */
-function handleInviteTask(){
-    ensureStateDefaults();
-
-    if(state.invite5RewardClaimed)return;
-
-    if(state.friendsList.length<5){
-        inviteFriend();
-        return;
-    }
-
-    if(isAdCooldown)return;
-
-    const btn=document.getElementById("btn-invite5");
-
-    startCooldownForButton(btn,"Забрать +10 NEVAR",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            if(state.invite5RewardClaimed)return;
-
-            state.invite5RewardClaimed=true;
-            state.balance+=10;
-
-            saveState();
-            updateUI();
-
-            alert("🎉 Получено +10 NEVAR!");
-        });
-    });
-}
-
-/* Совместимость со старым названием функции */
-function claimInvite5Reward(){
-    handleInviteTask();
-}
-
-function openTelegramChannel(){
-    ensureStateDefaults();
-
-    if(state.telegramRewardClaimed)return;
-
-    state.telegramChannelOpened=true;
-    saveState();
-    updateUI();
-
-    try{
-        if(window.Telegram&&window.Telegram.WebApp){
-            window.Telegram.WebApp.openTelegramLink(TELEGRAM_CHANNEL_URL);
-        }else{
-            window.open(TELEGRAM_CHANNEL_URL,"_blank");
-        }
-    }catch(error){
-        console.error("Telegram channel open error:",error);
-    }
-}
-
-function handleTelegramTask(){
-    ensureStateDefaults();
-
-    if(state.telegramRewardClaimed)return;
-
-    if(!state.telegramChannelOpened){
-        openTelegramChannel();
-        return;
-    }
-
-    if(isAdCooldown)return;
-
-    const btn=document.getElementById("btn-subTg");
-
-    startCooldownForButton(btn,"Забрать +5 NEVAR",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            if(state.telegramRewardClaimed)return;
-
-            state.telegramRewardClaimed=true;
-            state.balance+=5;
-
-            saveState();
-            updateUI();
-
-            alert("🎉 Получено +5 NEVAR!");
-        });
-    });
-}
-
-function claimTelegramReward(){
-    handleTelegramTask();
-}
-
-/* Дополнительное задание: подписка на YouTube */
-function ensureYouTubeSubscriptionTask(){
-    const telegramButton=document.getElementById("btn-subTg");
-
-    if(!telegramButton)return;
-
-    if(document.getElementById("btn-subYoutube"))return;
-
-    state.youtubeSubscriptionClaimed=
-        Boolean(state.youtubeSubscriptionClaimed);
-    state.youtubeChannelOpened=
-        Boolean(state.youtubeChannelOpened);
-
-    const telegramCard=telegramButton.closest(".card");
-
-    if(!telegramCard)return;
-
-    const card=document.createElement("div");
-    card.className="card";
-
-    card.innerHTML=`
-        <div class="card-info">
-            <h4>Подписаться на YouTube</h4>
-            <p>Откройте официальный YouTube-канал NEVAR.</p>
-            <p><span class="gold-text">Награда: +5 NEVAR</span></p>
-        </div>
-        <button class="btn-action" id="btn-subYoutube"
-            onclick="handleYouTubeSubscriptionTask()">
-            Подписаться
-        </button>
-    `;
-
-    telegramCard.insertAdjacentElement("afterend",card);
-}
-
-function handleYouTubeSubscriptionTask(){
-    ensureStateDefaults();
-
-    if(state.youtubeSubscriptionClaimed)return;
-
-    if(!YOUTUBE_URL){
-        alert("Ссылка на YouTube ещё не настроена.");
-        return;
-    }
-
-    if(!state.youtubeChannelOpened){
-        state.youtubeChannelOpened=true;
-        saveState();
-
-        try{
-            if(window.Telegram&&window.Telegram.WebApp){
-                window.Telegram.WebApp.openLink(YOUTUBE_URL);
-            }else{
-                window.open(YOUTUBE_URL,"_blank");
-            }
-        }catch(error){
-            console.error("YouTube channel open error:",error);
-        }
-
-        updateUI();
-        return;
-    }
-
-    if(isAdCooldown)return;
-
-    const btn=document.getElementById("btn-subYoutube");
-
-    startCooldownForButton(btn,"Забрать +5 NEVAR",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            if(state.youtubeSubscriptionClaimed)return;
-
-            state.youtubeSubscriptionClaimed=true;
-            state.balance+=5;
-
-            saveState();
-            updateUI();
-
-            alert("🎉 Получено +5 NEVAR!");
-        });
-    });
-}
-
-function renderFriendsList(){
-    const count=document.getElementById("friends-count");
-    const list=document.getElementById("friends-list");
-
-    if(count){
-        count.textContent=String(state.friendsList.length);
-    }
-
-    if(!list)return;
-
-    if(state.friendsList.length===0){
-        list.innerHTML=
-            '<div class="info-box"><p>Пока нет приглашённых пилотов.</p></div>';
-        return;
-    }
-
-    list.innerHTML=state.friendsList.map((friend,index)=>{
-        const name=typeof friend==="string"
-            ?friend
-            :(friend&&friend.name?friend.name:`Пилот ${index+1}`);
-
-        return `
-            <div class="card">
-                <div class="card-info">
-                    <h4>👨‍🚀 ${escapeHTML(name)}</h4>
-                    <p>Участник экипажа</p>
-                </div>
-                <span class="gold-text">#${index+1}</span>
-            </div>
-        `;
-    }).join("");
-}
-
-function escapeHTML(value){
-    return String(value)
-        .replace(/&/g,"&amp;")
-        .replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/"/g,"&quot;")
-        .replace(/'/g,"&#039;");
-}
-
-function buySuit(){
-    ensureStateDefaults();
-
-    if(state.spacesuitUnlocked)return;
-
-    if(state.balance<500){
-        alert("Недостаточно NEVAR для покупки скафандра.");
-        return;
-    }
-
-    state.balance-=500;
-    state.spacesuitUnlocked=true;
-
-    saveState();
-    updateUI();
-
-    alert("🧑‍🚀 Скафандр разблокирован!");
-}
-
-function watchSuitVideo(){
-    ensureStateDefaults();
-
-    if(state.spacesuitUnlocked||isAdCooldown)return;
-
-    const btn=document.getElementById("btn-video-suit");
-
-    startCooldownForButton(
-        btn,
-        `Видео ${state.spacesuitVideoCount}/100`,
-        ()=>{
-            showAdsgramReward(()=>{
-                if(!registerAdWatch())return;
-
-                state.spacesuitVideoCount=Math.min(
-                    100,
-                    state.spacesuitVideoCount+1
-                );
-
-                if(state.spacesuitVideoCount>=100){
-                    state.spacesuitUnlocked=true;
-                    alert("🧑‍🚀 Скафандр разблокирован!");
-                }
-
-                saveState();
-                updateUI();
-            });
-        }
-    );
-}
-
-function buyShip(){
-    ensureStateDefaults();
-
-    if(state.shipUnlocked)return;
-
-    if(state.balance<1500){
-        alert("Недостаточно NEVAR для покупки космического корабля.");
-        return;
-    }
-
-    state.balance-=1500;
-    state.shipUnlocked=true;
-
-    saveState();
-    updateUI();
-
-    alert("🛸 Космический корабль разблокирован!");
-}
-
-function watchShipVideo(){
-    ensureStateDefaults();
-
-    if(state.shipUnlocked||isAdCooldown)return;
-
-    const btn=document.getElementById("btn-video-ship");
-
-    startCooldownForButton(
-        btn,
-        `Видео ${state.shipVideoCount}/250`,
-        ()=>{
-            showAdsgramReward(()=>{
-                if(!registerAdWatch())return;
-
-                state.shipVideoCount=Math.min(
-                    250,
-                    state.shipVideoCount+1
-                );
-
-                if(state.shipVideoCount>=250){
-                    state.shipUnlocked=true;
-                    alert("🛸 Космический корабль разблокирован!");
-                }
-
-                saveState();
-                updateUI();
-            });
-        }
-    );
-}
-
-function getSelectedPlanet(){
-    const select=document.getElementById("fuel-planet");
-    const selectedId=select?select.value:"mercury";
-
-    return planets.find(planet=>planet.id===selectedId)||planets[0];
-}
-
-function updateFuelPrice(){
-    const planet=getSelectedPlanet();
-    const price=document.getElementById("fuel-price");
-    const status=document.getElementById("fuel-status");
-    const meter=document.getElementById("fuel-meter-fill");
-
-    if(price){
-        price.textContent=
-            `${planet.name}: ${planet.price} NEVAR или ${planet.videos} видео`;
-    }
-
-    if(status){
-        status.textContent=state.chargedPlanet===planet.id
-            ?"Энергия готова для этой экспедиции"
-            :(state.chargedPlanet
-                ?`Заряжено для ${
-                    planets.find(p=>p.id===state.chargedPlanet)?.name||
-                    state.chargedPlanet
-                }`
-                :"Корабль не заряжен");
-    }
-
-    if(meter){
-        meter.style.width=
-            state.chargedPlanet===planet.id?"100%":"0%";
-    }
-}
-
-function buyFuel(){
-    ensureStateDefaults();
-
-    const planet=getSelectedPlanet();
-
-    if(!state.spacesuitUnlocked||!state.shipUnlocked){
-        alert("Сначала разблокируйте скафандр и космический корабль.");
-        return;
-    }
-
-    if(state.completedExpeditions.includes(planet.id)){
-        alert("Эта экспедиция уже завершена.");
-        return;
-    }
-
-    if(state.chargedPlanet===planet.id){
-        alert("Корабль уже заряжен для этой планеты.");
-        return;
-    }
-
-    if(state.balance<planet.price){
-        alert("Недостаточно NEVAR для покупки энергии.");
-        return;
-    }
-
-    state.balance-=planet.price;
-    state.chargedPlanet=planet.id;
-
-    saveState();
-    updateUI();
-
-    alert(`⚡ Корабль заряжен для экспедиции на ${planet.name}!`);
-}
-
-function watchFuelVideos(){
-    ensureStateDefaults();
-
-    const planet=getSelectedPlanet();
-
-    if(!state.spacesuitUnlocked||!state.shipUnlocked){
-        alert("Сначала разблокируйте скафандр и космический корабль.");
-        return;
-    }
-
-    if(state.completedExpeditions.includes(planet.id)){
-        alert("Эта экспедиция уже завершена.");
-        return;
-    }
-
-    if(state.chargedPlanet===planet.id){
-        alert("Корабль уже заряжен для этой планеты.");
-        return;
-    }
-
-    const currentProgress=Number(
-        state.fuelVideoProgress[planet.id]||0
-    );
-
-    if(currentProgress>=planet.videos){
-        state.chargedPlanet=planet.id;
-        saveState();
-        updateUI();
-        return;
-    }
-
-    const btn=document.getElementById("btn-fuel-video");
-
-    startCooldownForButton(btn,"Смотреть видео",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-
-            state.fuelVideoProgress[planet.id]=Math.min(
-                planet.videos,
-                Number(state.fuelVideoProgress[planet.id]||0)+1
-            );
-
-            if(state.fuelVideoProgress[planet.id]>=planet.videos){
-                state.chargedPlanet=planet.id;
-                alert(`⚡ Энергия для экспедиции на ${planet.name} готова!`);
-            }
-
-            saveState();
-            updateUI();
-        });
-    });
-}
-
-function launchExpedition(planetId){
-    ensureStateDefaults();
-
-    const planet=planets.find(item=>item.id===planetId);
-
-    if(!planet)return;
-
-    if(state.completedExpeditions.includes(planetId)){
-        alert("Эта экспедиция уже завершена.");
-        return;
-    }
-
-    if(!state.spacesuitUnlocked){
-        alert("Сначала разблокируйте космический скафандр.");
-        switchTab("expeditions");
-        return;
-    }
-
-    if(!state.shipUnlocked){
-        alert("Сначала разблокируйте космический корабль.");
-        switchTab("expeditions");
-        return;
-    }
-
-    if(state.chargedPlanet!==planetId){
-        alert(`Сначала зарядите корабль для экспедиции на ${planet.name}.`);
-
-        const select=document.getElementById("fuel-planet");
-
-        if(select){
-            select.value=planetId;
-        }
-
-        switchTab("expeditions");
-        updateFuelPrice();
-        return;
-    }
-
-    state.completedExpeditions.push(planetId);
-    state.chargedPlanet="";
-    state.fuelVideoProgress[planetId]=0;
-
-    saveState();
-    updateUI();
-
-    alert(`🚀 Экспедиция на планету ${planet.name} завершена!`);
-}
-
-function inviteFriend(){
-    const tg=window.Telegram&&window.Telegram.WebApp;
-
-    const link=
-        `https://t.me/NEVAR_BOT_USERNAME?start=${encodeURIComponent(userId)}`;
-
-    const shareText=
-        "Присоединяйся ко мне в NEVAR — развивай свой экипаж и исследуй космос!";
-
-    try{
-        if(tg&&typeof tg.openTelegramLink==="function"){
-            tg.openTelegramLink(
-                `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`
-            );
-        }else if(navigator.share){
-            navigator.share({
-                title:"NEVAR",
-                text:shareText,
-                url:link
-            });
-        }else if(navigator.clipboard){
-            navigator.clipboard.writeText(link).then(()=>{
-                alert("Ссылка приглашения скопирована.");
-            }).catch(()=>{
-                prompt("Скопируйте ссылку приглашения:",link);
-            });
-        }else{
-            prompt("Скопируйте ссылку приглашения:",link);
-        }
-    }catch(error){
-        console.error("Invite error:",error);
-        prompt("Скопируйте ссылку приглашения:",link);
-    }
-}
-
-function switchTab(tabName,button){
-    document.querySelectorAll(".app-container").forEach(page=>{
-        page.classList.remove("active");
-    });
-
-    const page=document.getElementById(`page-${tabName}`);
-
-    if(page){
-        page.classList.add("active");
-    }
-
-    document.querySelectorAll(".nav-item").forEach(item=>{
-        item.classList.remove("active");
-    });
-
-    if(button){
-        button.classList.add("active");
-    }else{
-        document.querySelectorAll(".nav-item").forEach(item=>{
-            const onclickText=item.getAttribute("onclick")||"";
-
-            if(onclickText.includes(`'${tabName}'`)){
-                item.classList.add("active");
-            }
-        });
-    }
-
-    updateUI();
-}
-    let cooldownButtonId="";
 
 function startCooldownForButton(btn,defaultText,callback){
     if(isAdCooldown||(btn&&btn.disabled))return;
@@ -2218,422 +676,810 @@ function startCooldownForButton(btn,defaultText,callback){
             }
 
             updateUI();
-
-            if(typeof callback==="function"){
-                callback();
-            }
-
+            if(typeof callback==="function")callback();
             return;
         }
 
-        if(btn){
-            btn.textContent=String(adCooldownTimer);
-        }
+        if(btn)btn.textContent=String(adCooldownTimer);
     },1000);
 }
 
-function updateUI(){
-    ensureStateDefaults();
-    checkDailyReset();
-    normalizeDailyLoginStreak();
-
-    state.miningRate=Math.min(3,getMiningRate());
-
-    if(state.youtubeSubscriptionClaimed===undefined){
-        state.youtubeSubscriptionClaimed=false;
+/* Награда выдаётся только после успешного завершения рекламы. */
+function showAdsgramReward(callback){
+    if(!adController||typeof adController.show!=="function"){
+        alert("Реклама сейчас недоступна. Проверьте подключение и попробуйте позже.");
+        initializeAdsgram();
+        updateUI();
+        return;
     }
 
-    if(state.youtubeChannelOpened===undefined){
-        state.youtubeChannelOpened=false;
-    }
-
-    ensureYouTubeSubscriptionTask();
-
-    if(
-        state.boostActiveUntil>0&&
-        state.boostActiveUntil<=Date.now()
-    ){
-        state.boostActiveUntil=0;
-        state.boostVideoCount=0;
-        saveState();
-    }
-
-    const balance=document.getElementById("balance");
-    const walletBalance=document.getElementById("wallet-balance");
-    const miningRateLabel=document.getElementById("mining-rate-label");
-
-    if(balance){
-        balance.textContent=state.balance.toFixed(2);
-    }
-
-    if(walletBalance){
-        walletBalance.textContent=state.balance.toFixed(2)+" NEVAR";
-    }
-
-    if(miningRateLabel){
-        miningRateLabel.textContent=
-            `${state.miningRate} NEVAR за сеанс`;
-    }
-
-    renderDailyLogin();
-    renderFriendsList();
-
-    const dailyBtn=document.getElementById("btn-daily-videos");
-    const dailyDesc=document.getElementById("desc-daily-videos");
-
-    if(dailyBtn&&dailyDesc){
-        if(state.completedTasks.dailyVideos){
-            dailyBtn.textContent="Выполнено";
-            dailyBtn.disabled=true;
-            dailyDesc.innerHTML=
-                'Прогресс: 5/5 • <span class="gold-text">+3.0 NEVAR</span>';
-        }else{
-            if(cooldownButtonId!==dailyBtn.id){
-                dailyBtn.textContent="Смотреть";
-                dailyBtn.disabled=isAdCooldown;
-            }
-
-            dailyDesc.innerHTML=
-                `Прогресс: ${state.dailyVideosCount}/5 • `+
-                '<span class="gold-text">+3.0 NEVAR</span>';
-        }
-    }
-
-    const totalBtn=document.getElementById("btn-total-50");
-    const totalDesc=document.getElementById("desc-total-50");
-
-    if(totalBtn&&totalDesc){
-        if(state.completedTasks.total50){
-            totalBtn.textContent="Выполнено";
-            totalBtn.disabled=true;
-            totalBtn.style.opacity="1";
-            totalDesc.innerHTML=
-                'Прогресс: 50/50 • <span class="gold-text">+10.0 NEVAR</span>';
-        }else{
-            totalBtn.textContent="В процессе";
-            totalBtn.disabled=true;
-            totalBtn.style.opacity=".6";
-            totalDesc.innerHTML=
-                `Прогресс: ${state.totalAdsWatchedToday}/50 • `+
-                '<span class="gold-text">+10.0 NEVAR</span>';
-        }
-    }
-
-    const today=localDateKey();
-    const youtubeBtn=document.getElementById("btn-youtube-daily");
-    const youtubeDesc=document.getElementById("desc-youtube-daily");
-
-    if(youtubeBtn&&youtubeDesc){
-        if(
-            state.youtubeDailyClaimed&&
-            state.youtubeDailyClaimDate===today
-        ){
-            youtubeBtn.textContent="Выполнено";
-            youtubeBtn.disabled=true;
-            youtubeDesc.innerHTML=
-                'Ежедневное задание выполнено • '+
-                '<span class="gold-text">+5 NEVAR</span>';
-        }else if(cooldownButtonId!==youtubeBtn.id){
-            youtubeBtn.textContent="Смотреть";
-            youtubeBtn.disabled=isAdCooldown;
-            youtubeDesc.innerHTML=
-                'Ежедневное задание • <span class="gold-text">+5 NEVAR</span>';
-        }
-    }
-
-    const inviteProgress=document.getElementById("invite5-progress");
-    const inviteBtn=document.getElementById("btn-invite5");
-
-    if(inviteProgress&&inviteBtn){
-        inviteProgress.textContent=
-            `Приглашено: ${Math.min(5,state.friendsList.length)}/5`;
-
-        if(state.invite5RewardClaimed){
-            inviteBtn.textContent="Награда получена";
-            inviteBtn.disabled=true;
-        }else if(cooldownButtonId!==inviteBtn.id){
-            inviteBtn.textContent=
-                state.friendsList.length>=5
-                    ?"+10 NEVAR • Смотреть 1 видео"
-                    :"Пригласить";
-
-            inviteBtn.disabled=isAdCooldown;
-        }
-    }
-
-    const telegramBtn=document.getElementById("btn-subTg");
-
-    if(telegramBtn){
-        if(state.telegramRewardClaimed){
-            telegramBtn.textContent="Награда получена";
-            telegramBtn.disabled=true;
-        }else if(cooldownButtonId!==telegramBtn.id){
-            telegramBtn.textContent=
-                state.telegramChannelOpened
-                    ?"Забрать +5 NEVAR • Смотреть видео"
-                    :"Подписаться";
-
-            telegramBtn.disabled=isAdCooldown;
-        }
-    }
-
-    const youtubeSubscriptionBtn=
-        document.getElementById("btn-subYoutube");
-
-    if(youtubeSubscriptionBtn){
-        if(state.youtubeSubscriptionClaimed){
-            youtubeSubscriptionBtn.textContent="Награда получена";
-            youtubeSubscriptionBtn.disabled=true;
-        }else if(cooldownButtonId!==youtubeSubscriptionBtn.id){
-            youtubeSubscriptionBtn.textContent=
-                state.youtubeChannelOpened
-                    ?"Забрать +5 NEVAR • Смотреть видео"
-                    :"Подписаться";
-
-            youtubeSubscriptionBtn.disabled=isAdCooldown;
-        }
-    }
-
-    const boostStatus=document.getElementById("boost-status");
-    const boostProgress=document.getElementById("boost-progress");
-    const activateBtn=document.getElementById("btn-activate-boost");
-
-    if(boostStatus&&boostProgress&&activateBtn){
-        if(isBoostActive()){
-            const secondsLeft=Math.max(
-                0,
-                Math.ceil((state.boostActiveUntil-Date.now())/1000)
-            );
-
-            const minutes=Math.floor(secondsLeft/60);
-            const seconds=secondsLeft%60;
-
-            boostStatus.textContent=
-                `Ускоритель ×2 активен. Осталось ${minutes}:`+
-                String(seconds).padStart(2,"0")+".";
-
-            boostProgress.textContent="Прогресс: 5/5";
-            activateBtn.disabled=true;
-            activateBtn.textContent="Ускоритель активен";
-        }else{
-            boostStatus.textContent=
-                "Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.";
-
-            boostProgress.textContent=
-                `Прогресс: ${state.boostVideoCount}/5`;
-
-            if(cooldownButtonId===activateBtn.id){
-                activateBtn.disabled=true;
-                activateBtn.textContent=String(adCooldownTimer);
-            }else if(isAdCooldown){
-                activateBtn.disabled=true;
-                activateBtn.textContent="Активировать";
+    try{
+        Promise.resolve(adController.show()).then(result=>{
+            if(result&&result.done===true){
+                if(typeof callback==="function")callback();
             }else{
-                activateBtn.disabled=state.boostVideoCount>=5;
-                activateBtn.textContent="Активировать";
+                alert("Просмотр рекламы не был завершён. Награда не начислена.");
             }
-        }
-    }
-
-    const miningBtn=document.getElementById("btn-start-mining");
-    const nightBtn=document.getElementById("btn-night-mining");
-    const miningTimer=document.getElementById("mining-timer");
-
-    if(state.isMiningActive){
-        const timeLeft=state.miningEndTime-Date.now();
-
-        if(timeLeft<=0){
-            if(
-                state.miningEndTime!==lastMiningCompletionEndTime&&
-                state.miningEndTime>0
-            ){
-                lastMiningCompletionEndTime=state.miningEndTime;
-
-                state.balance+=
-                    state.miningRate*(isBoostActive()?2:1);
-
-                state.isMiningActive=false;
-                state.miningEndTime=0;
-
-                if(miningTimer){
-                    miningTimer.textContent="00:00";
-                }
-
-                saveState();
-            }else{
-                state.isMiningActive=false;
-            }
-        }else{
-            const hours=Math.floor(timeLeft/3600000);
-            const minutes=Math.floor(timeLeft%3600000/60000);
-            const seconds=Math.floor(timeLeft%60000/1000);
-
-            if(miningTimer){
-                miningTimer.textContent=
-                    (hours>0?hours+":":"")+
-                    String(minutes).padStart(2,"0")+":"+
-                    String(seconds).padStart(2,"0");
-            }
-        }
-    }else if(miningTimer){
-        miningTimer.textContent="00:00";
-    }
-
-    if(miningBtn){
-        if(state.isMiningActive&&state.miningEndTime>Date.now()){
-            miningBtn.disabled=true;
-            miningBtn.textContent="Майнинг активен...";
-        }else if(cooldownButtonId!==miningBtn.id){
-            miningBtn.disabled=isAdCooldown;
-            miningBtn.textContent=
-                "Включить майнинг (Смотреть 1 видео)";
-        }
-    }
-
-    if(nightBtn&&cooldownButtonId!==nightBtn.id){
-        nightBtn.disabled=
-            isAdCooldown||
-            (state.isMiningActive&&state.miningEndTime>Date.now());
-
-        nightBtn.textContent=
-            "Запустить ночной майнинг (Смотреть 5 видео)";
-    }
-
-    const suitStatus=document.getElementById("suit-status");
-    const suitProgress=document.getElementById("suit-progress");
-    const buySuitBtn=document.getElementById("btn-buy-suit");
-    const videoSuitBtn=document.getElementById("btn-video-suit");
-
-    if(suitStatus&&suitProgress&&buySuitBtn&&videoSuitBtn){
-        suitStatus.textContent=
-            state.spacesuitUnlocked?"Куплено ✓":"Не приобретён";
-
-        suitProgress.textContent=
-            state.spacesuitUnlocked
-                ?"Скафандр готов к экспедициям"
-                :`Видео: ${state.spacesuitVideoCount}/100`;
-
-        buySuitBtn.disabled=
-            state.spacesuitUnlocked||state.balance<500;
-
-        buySuitBtn.textContent=
-            state.spacesuitUnlocked
-                ?"Куплено"
-                :"Купить за 500 NEVAR";
-
-        if(cooldownButtonId!==videoSuitBtn.id){
-            videoSuitBtn.disabled=
-                state.spacesuitUnlocked||isAdCooldown;
-
-            videoSuitBtn.textContent=
-                state.spacesuitUnlocked
-                    ?"Куплено"
-                    :`Видео ${state.spacesuitVideoCount}/100`;
-        }
-    }
-
-    const shipStatus=document.getElementById("ship-status");
-    const shipProgress=document.getElementById("ship-progress");
-    const buyShipBtn=document.getElementById("btn-buy-ship");
-    const videoShipBtn=document.getElementById("btn-video-ship");
-
-    if(shipStatus&&shipProgress&&buyShipBtn&&videoShipBtn){
-        shipStatus.textContent=
-            state.shipUnlocked?"Куплено ✓":"Не приобретён";
-
-        shipProgress.textContent=
-            state.shipUnlocked
-                ?"Корабль готов к экспедициям"
-                :`Видео: ${state.shipVideoCount}/250`;
-
-        buyShipBtn.disabled=
-            state.shipUnlocked||state.balance<1500;
-
-        buyShipBtn.textContent=
-            state.shipUnlocked
-                ?"Куплено"
-                :"Купить за 1500 NEVAR";
-
-        if(cooldownButtonId!==videoShipBtn.id){
-            videoShipBtn.disabled=
-                state.shipUnlocked||isAdCooldown;
-
-            videoShipBtn.textContent=
-                state.shipUnlocked
-                    ?"Куплено"
-                    :`Видео ${state.shipVideoCount}/250`;
-        }
-    }
-
-    const fuelPlanet=getSelectedPlanet();
-    const fuelBuyBtn=document.getElementById("btn-fuel-buy");
-    const fuelVideoBtn=document.getElementById("btn-fuel-video");
-    const fuelPrice=document.getElementById("fuel-price");
-    const fuelStatus=document.getElementById("fuel-status");
-    const fuelMeter=document.getElementById("fuel-meter-fill");
-
-    if(fuelBuyBtn&&fuelVideoBtn){
-        fuelBuyBtn.disabled=
-            !state.spacesuitUnlocked||
-            !state.shipUnlocked||
-            state.balance<fuelPlanet.price||
-            state.chargedPlanet===fuelPlanet.id||
-            state.completedExpeditions.includes(fuelPlanet.id);
-
-        if(cooldownButtonId!==fuelVideoBtn.id){
-            fuelVideoBtn.disabled=
-                !state.spacesuitUnlocked||
-                !state.shipUnlocked||
-                state.chargedPlanet===fuelPlanet.id||
-                state.completedExpeditions.includes(fuelPlanet.id)||
-                isAdCooldown;
-        }
-
-        if(fuelPrice){
-            fuelPrice.textContent=
-                `${fuelPlanet.name}: ${fuelPlanet.price} NEVAR или ${fuelPlanet.videos} видео`;
-        }
-
-        if(fuelStatus){
-            fuelStatus.textContent=
-                state.chargedPlanet===fuelPlanet.id
-                    ?"Энергия готова для этой экспедиции"
-                    :(state.chargedPlanet
-                        ?`Заряжено для ${
-                            planets.find(p=>p.id===state.chargedPlanet)?.name||
-                            state.chargedPlanet
-                        }`
-                        :"Корабль не заряжен");
-        }
-
-        if(fuelMeter){
-            fuelMeter.style.width=
-                state.chargedPlanet===fuelPlanet.id?"100%":"0%";
-        }
+            updateUI();
+        }).catch(error=>{
+            console.error("Adsgram reward error:",error);
+            alert("Не удалось загрузить рекламу. Попробуйте позже.");
+            updateUI();
+        });
+    }catch(error){
+        console.error("Adsgram error:",error);
+        alert("Не удалось запустить рекламу. Попробуйте позже.");
+        updateUI();
     }
 }
 
-window.addEventListener("beforeunload",saveToLocalStorage);
+/* Для ночного майнинга требуется завершить все 5 просмотров. */
+function showMultipleAds(count,onComplete){
+    let completed=0;
 
-window.onload=async function(){
-    await loadStateFromServer();
+    const next=()=>{
+        if(completed>=count){
+            onComplete();
+            return;
+        }
 
-    ensureStateDefaults();
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            completed++;
+            next();
+        });
+    };
 
-    state.youtubeSubscriptionClaimed=
-        Boolean(state.youtubeSubscriptionClaimed);
+    next();
+}
 
-    state.youtubeChannelOpened=
-        Boolean(state.youtubeChannelOpened);
+function isBoostActive(){
+    return state.boostActiveUntil>Date.now();
+}
 
+function activateBoost(){
+    state.boostActiveUntil=Date.now()+60*60*1000;
+    state.boostVideoCount=5;
+    saveState();
+    updateUI();
+}
+
+function registerAdWatch(){
     checkDailyReset();
+
+    if(state.totalAdsWatchedToday>=50){
+        alert("Вы достигли дневного лимита в 50 рекламных видео.");
+        return false;
+    }
+
+    state.totalAdsWatchedToday++;
+
+    if(state.totalAdsWatchedToday>=50&&!state.completedTasks.total50){
+        state.completedTasks.total50=true;
+        state.balance+=10;
+    }
+
+    saveToLocalStorage();
+    updateUI();
+    return true;
+}
+
+function watchBoostVideo(){
+    if(isBoostActive())return;
+
+    if(state.boostVideoCount>=5){
+        activateBoost();
+        return;
+    }
+
+    const btn=document.getElementById("btn-activate-boost");
+    startCooldownForButton(btn,"Активировать",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.boostVideoCount=Math.min(5,state.boostVideoCount+1);
+            if(state.boostVideoCount>=5)activateBoost();
+            else{
+                saveState();
+                updateUI();
+            }
+        });
+    });
+}
+
+function watchVideoForMining(){
+    if(state.isMiningActive&&state.miningEndTime>Date.now())return;
+
+    const btn=document.getElementById("btn-start-mining");
+    startCooldownForButton(btn,"Включить майнинг (Смотреть 1 видео)",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.miningEndTime=Date.now()+60*60*1000;
+            state.isMiningActive=true;
+            state.miningMode="normal";
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function startNightMining(){
+    if(state.isMiningActive&&state.miningEndTime>Date.now())return;
+
+    const now=new Date();
+    const hour=now.getHours();
+
+    if(hour<22||hour>23){
+        alert("Ночной майнинг можно запускать только с 22:00 до 23:59.");
+        return;
+    }
+
+    if(state.totalAdsWatchedToday+5>50){
+        alert("Для ночного майнинга нужно 5 доступных рекламных просмотров. Дневной лимит — 50.");
+        return;
+    }
+
+    const btn=document.getElementById("btn-night-mining");
+
+    startCooldownForButton(btn,"Запустить ночной майнинг (Смотреть 5 видео)",()=>{
+        showMultipleAds(5,()=>{
+            state.miningEndTime=Date.now()+6*60*60*1000;
+            state.isMiningActive=true;
+            state.miningMode="night";
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function completeDailyVideos(btn){
+    checkDailyReset();
+    if(state.completedTasks.dailyVideos||state.dailyVideosCount>=5)return;
+
+    startCooldownForButton(btn,"Смотреть",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.dailyVideosCount++;
+
+            if(state.dailyVideosCount>=5){
+                state.dailyVideosCount=5;
+                state.completedTasks.dailyVideos=true;
+                state.balance+=3;
+            }
+
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function watchOptionalVideo(btn){
+    startCooldownForButton(btn,"Смотреть",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.balance+=0.25;
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function completeYouTubeDailyTask(btn){
+    checkDailyReset();
+    const today=localDateKey();
+
+    if(state.youtubeDailyClaimed&&state.youtubeDailyClaimDate===today)return;
+
+    if(!YOUTUBE_URL){
+        alert("Ссылка на YouTube ещё не настроена.");
+        return;
+    }
+
+    try{
+        if(window.Telegram&&window.Telegram.WebApp)window.Telegram.WebApp.openLink(YOUTUBE_URL);
+        else window.open(YOUTUBE_URL,"_blank");
+    }catch(error){
+        console.error("YouTube open error:",error);
+    }
+
+    if(!btn)return;
+
+    startCooldownForButton(btn,"Смотреть",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.youtubeDailyClaimed=true;
+            state.youtubeDailyClaimDate=today;
+            state.balance+=5;
+            saveState();
+            updateUI();
+        });
+    });
+    }
+    
+function normalizeDailyLoginStreak(){
+    const today=localDateKey();
+
+    if(!state.dailyLoginCycleStartDate)state.dailyLoginCycleStartDate=today;
+    if(state.dailyLoginLastClaimDate===today)return;
+
+    if(state.dailyLoginLastClaimDate){
+        const expected=addDaysToDateKey(state.dailyLoginLastClaimDate,1);
+        if(expected!==today){
+            state.dailyLoginDay=1;
+            state.dailyLoginVideoCount=0;
+            state.dailyLoginCycleStartDate=today;
+            state.dailyLoginLastProgressDate="";
+            state.dailyLoginLastClaimDay=0;
+        }
+    }
+
+    if(state.dailyLoginLastProgressDate!==today){
+        state.dailyLoginVideoCount=0;
+        state.dailyLoginLastProgressDate=today;
+    }
+
+    saveToLocalStorage();
+}
+
+function getDailyLoginRewards(){return [1,2,3,4,5,6,10];}
+
+function renderDailyLogin(){
     normalizeDailyLoginStreak();
-    ensureYouTubeSubscriptionTask();
+
+    const rewards=getDailyLoginRewards();
+    const today=localDateKey();
+    const container=document.getElementById("daily-rewards");
+    const status=document.getElementById("daily-login-status");
+    const progress=document.getElementById("daily-login-progress");
+    const button=document.getElementById("btn-daily-login");
+
+    if(!container||!status||!progress||!button)return;
+
+    container.innerHTML=rewards.map((reward,index)=>{
+        const day=index+1;
+        const claimed=state.dailyLoginLastClaimDate===today&&state.dailyLoginLastClaimDay===day;
+        const current=state.dailyLoginDay===day&&!claimed;
+        return `<div class="daily-reward${current?" current":""}${claimed?" claimed":""}">
+            <div class="day">День ${day}</div>
+            <div class="reward">${reward}</div>
+            <div class="mark">${claimed?"Получено":current?"Текущий день":""}</div>
+        </div>`;
+    }).join("");
+
+    status.textContent=`День ${Math.min(7,state.dailyLoginDay)} из 7`;
+    progress.textContent=`Прогресс: ${state.dailyLoginVideoCount}/3 видео`;
+
+    if(state.dailyLoginLastClaimDate===today){
+        button.textContent="Награда получена";
+        button.disabled=true;
+    }else if(isAdCooldown){
+        button.disabled=true;
+    }else{
+        button.textContent=state.dailyLoginVideoCount>=3?"Забрать награду":"Смотреть видео";
+        button.disabled=false;
+    }
+}
+
+function handleDailyLoginButton(){
+    normalizeDailyLoginStreak();
+    const today=localDateKey();
+
+    if(state.dailyLoginLastClaimDate===today)return;
+    if(state.dailyLoginVideoCount>=3){
+        claimDailyLoginReward();
+        return;
+    }
+
+    const btn=document.getElementById("btn-daily-login");
+    startCooldownForButton(btn,"Смотреть видео",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            if(state.dailyLoginLastProgressDate!==today){
+                state.dailyLoginVideoCount=0;
+                state.dailyLoginLastProgressDate=today;
+            }
+            state.dailyLoginVideoCount=Math.min(3,state.dailyLoginVideoCount+1);
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function claimDailyLoginReward(){
+    normalizeDailyLoginStreak();
+    const today=localDateKey();
+
+    if(state.dailyLoginLastClaimDate===today)return;
+    if(state.dailyLoginVideoCount<3){
+        alert("Посмотрите 3 рекламных видео, чтобы получить ежедневную награду.");
+        return;
+    }
+
+    const rewards=getDailyLoginRewards();
+    const day=Math.min(7,Math.max(1,state.dailyLoginDay));
+    const reward=rewards[day-1];
+
+    state.balance+=reward;
+    state.dailyLoginLastClaimDate=today;
+    state.dailyLoginLastClaimDay=day;
+
+    if(day>=7){
+        state.dailyLoginDay=1;
+        state.dailyLoginCycleStartDate=addDaysToDateKey(today,1);
+    }else{
+        state.dailyLoginDay=day+1;
+    }
+
+    state.dailyLoginVideoCount=0;
+    state.dailyLoginLastProgressDate=today;
+    saveState();
+    updateUI();
+    alert(`🎉 Получено ${reward} NEVAR!`);
+}
+
+function handleInviteTask(){
+    ensureStateDefaults();
+    if(state.invite5RewardClaimed)return;
+
+    if(state.friendsList.length<5){
+        inviteFriend();
+        return;
+    }
+
+    if(isAdCooldown)return;
+    const btn=document.getElementById("btn-invite5");
+
+    startCooldownForButton(btn,"Забрать +10 NEVAR",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch()||state.invite5RewardClaimed)return;
+            state.invite5RewardClaimed=true;
+            state.balance+=10;
+            saveState();
+            updateUI();
+            alert("🎉 Получено +10 NEVAR!");
+        });
+    });
+}
+
+function claimInvite5Reward(){handleInviteTask();}
+
+function openTelegramChannel(){
+    ensureStateDefaults();
+    if(state.telegramRewardClaimed)return;
+
+    state.telegramChannelOpened=true;
+    saveState();
     updateUI();
 
-    setInterval(updateUI,1000);
-};
+    try{
+        if(window.Telegram&&window.Telegram.WebApp){
+            window.Telegram.WebApp.openTelegramLink(TELEGRAM_CHANNEL_URL);
+        }else{
+            window.open(TELEGRAM_CHANNEL_URL,"_blank");
+        }
+    }catch(error){console.error("Telegram channel open error:",error);}
+}
 
-</script>
-</body>
-</html>
+function handleTelegramTask(){
+    ensureStateDefaults();
+    if(state.telegramRewardClaimed)return;
+
+    if(!state.telegramChannelOpened){
+        openTelegramChannel();
+        return;
+    }
+
+    if(isAdCooldown)return;
+    const btn=document.getElementById("btn-subTg");
+
+    startCooldownForButton(btn,"Забрать +5 NEVAR",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch()||state.telegramRewardClaimed)return;
+            state.telegramRewardClaimed=true;
+            state.balance+=5;
+            saveState();
+            updateUI();
+            alert("🎉 Получено +5 NEVAR!");
+        });
+    });
+}
+
+function claimTelegramReward(){handleTelegramTask();}
+
+function ensureYouTubeSubscriptionTask(){
+    const telegramButton=document.getElementById("btn-subTg");
+    if(!telegramButton||document.getElementById("btn-subYoutube"))return;
+
+    state.youtubeSubscriptionClaimed=Boolean(state.youtubeSubscriptionClaimed);
+    state.youtubeChannelOpened=Boolean(state.youtubeChannelOpened);
+
+    const telegramCard=telegramButton.closest(".card");
+    if(!telegramCard)return;
+
+    const card=document.createElement("div");
+    card.className="card";
+    card.innerHTML=`
+        <div class="card-info">
+            <h4>Подписаться на YouTube</h4>
+            <p>Откройте официальный YouTube-канал NEVAR.</p>
+            <p><span class="gold-text">Награда: +5 NEVAR</span></p>
+        </div>
+        <button class="btn-action" id="btn-subYoutube" onclick="handleYouTubeSubscriptionTask()">Подписаться</button>`;
+    telegramCard.insertAdjacentElement("afterend",card);
+}
+
+function handleYouTubeSubscriptionTask(){
+    ensureStateDefaults();
+    if(state.youtubeSubscriptionClaimed)return;
+
+    if(!YOUTUBE_URL){
+        alert("Ссылка на YouTube ещё не настроена.");
+        return;
+    }
+
+    if(!state.youtubeChannelOpened){
+        state.youtubeChannelOpened=true;
+        saveState();
+        try{
+            if(window.Telegram&&window.Telegram.WebApp)window.Telegram.WebApp.openLink(YOUTUBE_URL);
+            else window.open(YOUTUBE_URL,"_blank");
+        }catch(error){console.error("YouTube channel open error:",error);}
+        updateUI();
+        return;
+    }
+
+    if(isAdCooldown)return;
+    const btn=document.getElementById("btn-subYoutube");
+
+    startCooldownForButton(btn,"Забрать +5 NEVAR",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch()||state.youtubeSubscriptionClaimed)return;
+            state.youtubeSubscriptionClaimed=true;
+            state.balance+=5;
+            saveState();
+            updateUI();
+            alert("🎉 Получено +5 NEVAR!");
+        });
+    });
+}
+
+function renderFriendsList(){
+    const count=document.getElementById("friends-count");
+    const list=document.getElementById("friends-list");
+
+    if(count)count.textContent=String(state.friendsList.length);
+    if(!list)return;
+
+    if(!state.friendsList.length){
+        list.innerHTML='<div class="info-box"><p>Пока нет приглашённых пилотов.</p></div>';
+        return;
+    }
+
+    list.innerHTML=state.friendsList.map((friend,index)=>{
+        const name=typeof friend==="string"?friend:(friend&&friend.name?friend.name:`Пилот ${index+1}`);
+        return `<div class="card"><div class="card-info"><h4>👨‍🚀 ${escapeHTML(name)}</h4><p>Участник экипажа</p></div><span class="gold-text">#${index+1}</span></div>`;
+    }).join("");
+}
+
+function escapeHTML(value){
+    return String(value).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+/* Сначала реклама, затем разрешается открыть приглашение. */
+function inviteFriend(){
+    if(isAdCooldown)return;
+
+    const btn=document.querySelector('#page-friends button[onclick="inviteFriend()"]');
+
+    startCooldownForButton(btn,"Пригласить друга",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            performInviteShare();
+        });
+    });
+}
+
+function performInviteShare(){
+    const link=`${NEVAR_BOT_URL}?start=${encodeURIComponent(userId)}`;
+    const shareText="Присоединяйся ко мне в NEVAR — развивай свой экипаж и исследуй космос!";
+    const shareUrl=`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(shareText)}`;
+
+    try{
+        if(window.Telegram&&window.Telegram.WebApp){
+            window.Telegram.WebApp.openTelegramLink(shareUrl);
+        }else if(navigator.share){
+            navigator.share({title:"NEVAR",text:shareText,url:link}).catch(()=>copyInviteLink(link));
+        }else{
+            copyInviteLink(link);
+        }
+    }catch(error){
+        console.error("Invite error:",error);
+        copyInviteLink(link);
+    }
+}
+
+function copyInviteLink(link){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(link).then(()=>{
+            alert("Ссылка приглашения скопирована.");
+        }).catch(()=>prompt("Скопируйте ссылку приглашения:",link));
+    }else{
+        prompt("Скопируйте ссылку приглашения:",link);
+    }
+}
+
+function shareNevar(){
+    const text="🚀 NEVAR — неизвестность начинается здесь! Присоединяйся к моей космической экспедиции.";
+    const link=GAME_URL;
+    const shareUrl=`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`;
+
+    try{
+        if(window.Telegram&&window.Telegram.WebApp){
+            window.Telegram.WebApp.openTelegramLink(shareUrl);
+        }else if(navigator.share){
+            navigator.share({title:"NEVAR",text,url:link}).catch(()=>copyInviteLink(link));
+        }else{
+            copyInviteLink(link);
+        }
+    }catch(error){
+        console.error("Share NEVAR error:",error);
+        copyInviteLink(link);
+    }
+}
+
+/* Продвижение NEVAR: новый цикл раз в 24 часа.
+   Окно загрузки скриншота: с 12-го до 23-го часа цикла. */
+function getPromoElapsed(){
+    return state.promoCycleStart?Date.now()-state.promoCycleStart:-1;
+}
+
+function updatePromoUI(){
+    const status=document.getElementById("promo-status");
+    const startBtn=document.getElementById("btn-promo-start");
+    const uploadBtn=document.getElementById("btn-promo-upload");
+    const submitBtn=document.getElementById("btn-promo-submit");
+    const fileInput=document.getElementById("promo-screenshot");
+
+    if(!status||!startBtn||!uploadBtn||!submitBtn)return;
+
+    const elapsed=getPromoElapsed();
+    const hour=elapsed<0?-1:elapsed/3600000;
+    const active=elapsed>=0&&elapsed<24*3600000;
+    const uploadWindow=active&&hour>=12&&hour<23;
+    const claimed=state.promoCycleClaimed&&active;
+
+    if(!active){
+        status.textContent=state.promoCycleStart
+            ?"Прошлый цикл завершён. Можно начать новый."
+            :"Задание ещё не начато.";
+        startBtn.disabled=false;
+        startBtn.textContent="Начать задание";
+        uploadBtn.disabled=true;
+        submitBtn.disabled=true;
+        return;
+    }
+
+    startBtn.disabled=true;
+    startBtn.textContent="Цикл уже начат";
+
+    if(claimed){
+        status.textContent="Скриншот отправлен в этом цикле. Новое задание будет доступно через 24 часа.";
+        uploadBtn.disabled=true;
+        submitBtn.disabled=true;
+    }else if(uploadWindow){
+        const remaining=Math.max(0,Math.floor(23-hour));
+        status.textContent=`Окно подтверждения открыто. До закрытия примерно ${remaining} ч. Загрузите скриншот публикации с видимым счётчиком просмотров.`;
+        uploadBtn.disabled=false;
+        submitBtn.disabled=!(fileInput&&fileInput.files&&fileInput.files.length);
+    }else if(hour<12){
+        status.textContent=`Задание начато. Загрузка скриншота откроется через ${Math.ceil(12-hour)} ч. Окно закроется на 23-м часу цикла.`;
+        uploadBtn.disabled=true;
+        submitBtn.disabled=true;
+    }else{
+        status.textContent="Время подтверждения истекло. Начать новый цикл можно после завершения 24 часов.";
+        uploadBtn.disabled=true;
+        submitBtn.disabled=true;
+    }
+}
+
+function startPromoCycle(){
+    const elapsed=getPromoElapsed();
+    if(state.promoCycleStart&&elapsed>=0&&elapsed<24*3600000){
+        alert("Текущий цикл ещё не завершён.");
+        return;
+    }
+
+    state.promoCycleStart=Date.now();
+    state.promoCycleClaimed=false;
+    state.promoScreenshotSubmitted=false;
+    saveState();
+    updatePromoUI();
+    alert("Цикл NEVAR начат. Окно загрузки скриншота откроется через 12 часов.");
+}
+
+function submitPromoScreenshot(){
+    updatePromoUI();
+
+    const elapsed=getPromoElapsed();
+    if(elapsed<12*3600000||elapsed>=23*3600000){
+        alert("Сейчас загрузка скриншота недоступна.");
+        return;
+    }
+
+    const input=document.getElementById("promo-screenshot");
+    if(!input||!input.files||!input.files.length){
+        alert("Сначала выберите скриншот публикации.");
+        return;
+    }
+
+    promoScreenshotFile=input.files[0];
+    state.promoScreenshotSubmitted=true;
+    state.promoCycleClaimed=true;
+    state.promoLastRewardDate=localDateKey();
+    saveState();
+    updatePromoUI();
+
+    alert("Скриншот отмечен как отправленный на проверку. Автоматическая проверка и начисление награды требуют серверной части NEVAR.");
+}
+
+function buySuit(){
+    ensureStateDefaults();
+    if(state.spacesuitUnlocked)return;
+    if(state.balance<500){alert("Недостаточно NEVAR для покупки скафандра.");return;}
+
+    state.balance-=500;
+    state.spacesuitUnlocked=true;
+    saveState();
+    updateUI();
+    alert("🧑‍🚀 Скафандр разблокирован!");
+}
+
+function watchSuitVideo(){
+    ensureStateDefaults();
+    if(state.spacesuitUnlocked||isAdCooldown)return;
+
+    const btn=document.getElementById("btn-video-suit");
+    startCooldownForButton(btn,`Видео ${state.spacesuitVideoCount}/100`,()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.spacesuitVideoCount=Math.min(100,state.spacesuitVideoCount+1);
+            if(state.spacesuitVideoCount>=100){
+                state.spacesuitUnlocked=true;
+                alert("🧑‍🚀 Скафандр разблокирован!");
+            }
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function buyShip(){
+    ensureStateDefaults();
+    if(state.shipUnlocked)return;
+    if(state.balance<1500){alert("Недостаточно NEVAR для покупки космического корабля.");return;}
+
+    state.balance-=1500;
+    state.shipUnlocked=true;
+    saveState();
+    updateUI();
+    alert("🛸 Космический корабль разблокирован!");
+}
+
+function watchShipVideo(){
+    ensureStateDefaults();
+    if(state.shipUnlocked||isAdCooldown)return;
+
+    const btn=document.getElementById("btn-video-ship");
+    startCooldownForButton(btn,`Видео ${state.shipVideoCount}/250`,()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.shipVideoCount=Math.min(250,state.shipVideoCount+1);
+            if(state.shipVideoCount>=250){
+                state.shipUnlocked=true;
+                alert("🛸 Космический корабль разблокирован!");
+            }
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function getSelectedPlanet(){
+    const select=document.getElementById("fuel-planet");
+    const id=select?select.value:"earth";
+    return planets.find(planet=>planet.id===id)||planets[0];
+}
+
+function updateFuelPrice(){
+    const planet=getSelectedPlanet();
+    const price=document.getElementById("fuel-price");
+    const status=document.getElementById("fuel-status");
+    const meter=document.getElementById("fuel-meter-fill");
+
+    if(price)price.textContent=`${planet.name}: ${planet.price} NEVAR или ${planet.videos} видео`;
+    if(status){
+        status.textContent=state.chargedPlanet===planet.id
+            ?"Энергия готова для этой экспедиции"
+            :(state.chargedPlanet?`Заряжено для ${planets.find(p=>p.id===state.chargedPlanet)?.name||state.chargedPlanet}`:"Корабль не заряжен");
+    }
+    if(meter)meter.style.width=state.chargedPlanet===planet.id?"100%":"0%";
+}
+
+function buyFuel(){
+    ensureStateDefaults();
+    const planet=getSelectedPlanet();
+
+    if(!state.spacesuitUnlocked||!state.shipUnlocked){alert("Сначала разблокируйте скафандр и космический корабль.");return;}
+    if(state.completedExpeditions.includes(planet.id)){alert("Эта экспедиция уже завершена.");return;}
+    if(state.chargedPlanet===planet.id){alert("Корабль уже заряжен для этой планеты.");return;}
+    if(state.balance<planet.price){alert("Недостаточно NEVAR для покупки энергии.");return;}
+
+    state.balance-=planet.price;
+    state.chargedPlanet=planet.id;
+    saveState();
+    updateUI();
+    alert(`⚡ Корабль заряжен для экспедиции на ${planet.name}!`);
+}
+
+function watchFuelVideos(){
+    ensureStateDefaults();
+    const planet=getSelectedPlanet();
+
+    if(!state.spacesuitUnlocked||!state.shipUnlocked){alert("Сначала разблокируйте скафандр и космический корабль.");return;}
+    if(state.completedExpeditions.includes(planet.id)){alert("Эта экспедиция уже завершена.");return;}
+    if(state.chargedPlanet===planet.id){alert("Корабль уже заряжен для этой планеты.");return;}
+
+    if(Number(state.fuelVideoProgress[planet.id]||0)>=planet.videos){
+        state.chargedPlanet=planet.id;
+        saveState();
+        updateUI();
+        return;
+    }
+
+    const btn=document.getElementById("btn-fuel-video");
+    startCooldownForButton(btn,"Смотреть видео",()=>{
+        showAdsgramReward(()=>{
+            if(!registerAdWatch())return;
+            state.fuelVideoProgress[planet.id]=Math.min(
+                planet.videos,Number(state.fuelVideoProgress[planet.id]||0)+1
+            );
+            if(state.fuelVideoProgress[planet.id]>=planet.videos){
+                state.chargedPlanet=planet.id;
+                alert(`⚡ Энергия для экспедиции на ${planet.name} готова!`);
+            }
+            saveState();
+            updateUI();
+        });
+    });
+}
+
+function launchExpedition(planetId){
+    ensureStateDefaults();
+    const planet=planets.find(item=>item.id===planetId);
+    if(!planet)return;
+
+    if(state.completedExpeditions.includes(planetId)){alert("Эта экспедиция уже завершена.");return;}
+    if(!state.spacesuitUnlocked){alert("Сначала разблокируйте космический скафандр.");switchTab("expeditions");return;}
+    if(!state.shipUnlocked){alert("Сначала разблокируйте космический корабль.");switchTab("expeditions");return;}
+
+    if(state.chargedPlanet!==planetId){
+        alert(`Сначала зарядите корабль для экспедиции на ${planet.name}.`);
+        const select=document.getElementById("fuel-planet");
+        if(select)select.value=planetId;
+        switchTab("expeditions");
+        updateFuelPrice();
+        return;
+    }
+
+    state.completedExpeditions.push(planetId);
+    state.chargedPlanet="";
+    state.fuelVideoProgress[planetId]=0;
+    saveState();
+    updateUI();
+    alert(`🚀 Экспедиция на планету ${planet.name} завершена!`);
+}
+
+/* Сохраняем позицию прокрутки каждой вкладки при переключении. */
+function switchTab(tabName,button){
+    const current=document.querySelector(".app-container.active");
+    if(current)savedScr
