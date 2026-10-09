@@ -336,6 +336,7 @@ button:disabled{ cursor:not-allowed; opacity:.55; }
     <div class="card"><div class="card-info"><h4>Венера</h4></div><button class="btn-action" disabled>Скоро</button></div>
     <div class="card"><div class="card-info"><h4>Земля</h4></div><button class="btn-action" disabled>В разработке</button></div>
 </div>
+
 <!-- 4. ЭКИПАЖ -->
 <div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
@@ -373,16 +374,15 @@ button:disabled{ cursor:not-allowed; opacity:.55; }
         <h3>Добро пожаловать в NEVAR</h3>
         <p>NEVAR — космическая игра для пилотов.</p>
     </div>
-</div>
-
-<!-- Нижняя навигация -->
+    </div>
+    <!-- Нижняя навигация -->
 <nav class="nav-bar">
-    <button class="nav-item active" onclick="switchTab('mining',this)"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
-    <button class="nav-item" onclick="switchTab('tasks',this)"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
-    <button class="nav-item" onclick="switchTab('expeditions',this)"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
-    <button class="nav-item" onclick="switchTab('friends',this)"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
-    <button class="nav-item" onclick="switchTab('wallet',this)"><span class="nav-icon">💰</span><span class="nav-label">Кошелёк</span></button>
-    <button class="nav-item" onclick="switchTab('info',this)"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
+    <button class="nav-item active" onclick="switchPage('mining',this)"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
+    <button class="nav-item" onclick="switchPage('tasks',this)"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
+    <button class="nav-item" onclick="switchPage('expeditions',this)"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
+    <button class="nav-item" onclick="switchPage('friends',this)"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
+    <button class="nav-item" onclick="switchPage('wallet',this)"><span class="nav-icon">💰</span><span class="nav-label">Кошелёк</span></button>
+    <button class="nav-item" onclick="switchPage('info',this)"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
 </nav>
 
 <script>
@@ -709,13 +709,25 @@ function inviteFriend(){
     const link=`https://t.me/NEVAR_BOT?start=${userId}`;
     try{prompt("Скопируйте реферальную ссылку:",link);}catch(e){}
 }
-function switchTab(tabName,button){
+
+// Функция переключения страниц
+function switchPage(pageName, button){
     document.querySelectorAll(".app-container").forEach(p=>p.classList.remove("active"));
-    const page=document.getElementById(`page-${tabName}`);
-    if(page)page.classList.add("active");
+    const page=document.getElementById(`page-${pageName}`);
+    if(page) page.classList.add("active");
+
     document.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));
-    if(button)button.classList.add("active");
-    if(tabName==='expeditions'&&window.onResize3D)setTimeout(window.onResize3D,50);
+    if(button){
+        button.classList.add("active");
+    } else {
+        document.querySelectorAll(".nav-item").forEach(item=>{
+            if((item.getAttribute("onclick")||"").includes(`'${pageName}'`)){
+                item.classList.add("active");
+            }
+        });
+    }
+
+    if(pageName==='expeditions'&&window.onResize3D) setTimeout(window.onResize3D,50);
 }
 
 // ==================== 3D ИНСПЕКТОР (THREE.JS) ====================
@@ -745,4 +757,23 @@ function init3DViewer(){
     const helmet=new THREE.Mesh(new THREE.SphereGeometry(0.35,16,16), suitMat); helmet.position.y=1.0; suitGroup.add(helmet);
     const visor=new THREE.Mesh(new THREE.SphereGeometry(0.28,16,16,0,Math.PI*2,0,Math.PI*0.5), visorMat);
     visor.position.set(0,1.0,0.15); visor.rotation.x=Math.PI/2; suitGroup.add(visor);
-    const bp=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.8,0.3), suitMat); bp.position.set(0,0.1,-0.35); su
+    const bp=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.8,0.3), suitMat); bp.position.set(0,0.1,-0.35); suitGroup.add(bp);
+    scene.add(suitGroup);
+
+    // Модель корабля
+    shipGroup=new THREE.Group();
+    const shipMat=new THREE.MeshStandardMaterial({color:0x1c2942, roughness:0.3, metalness:0.8});
+    const glassMat=new THREE.MeshStandardMaterial({color:0x42d6a4, roughness:0.1, metalness:0.5, transparent:true, opacity:0.7});
+    const hull=new THREE.Mesh(new THREE.ConeGeometry(0.8,2.2,16), shipMat); hull.rotation.x=Math.PI/2; shipGroup.add(hull);
+    const cabin=new THREE.Mesh(new THREE.SphereGeometry(0.4,16,16), glassMat); cabin.position.set(0,0.2,0.3); shipGroup.add(cabin);
+    shipGroup.visible=false; scene.add(shipGroup);
+
+    container.addEventListener('mousedown',(e)=>{isDragging=true; previousMousePosition={x:e.clientX,y:e.clientY};});
+    container.addEventListener('mousemove',(e)=>{
+        if(!isDragging)return;
+        const dx=e.clientX-previousMousePosition.x, dy=e.clientY-previousMousePosition.y;
+        const target=currentModelType==='suit'?suitGroup:shipGroup;
+        target.rotation.y+=dx*0.01; target.rotation.x+=dy*0.01;
+        previousMousePosition={x:e.clientX,y:e.clientY};
+    });
+    window.addEventListener('mouseup',()=>{isDragging=fal
