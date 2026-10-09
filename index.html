@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -75,13 +76,13 @@ body{background:#0b0f19;color:#fff;display:flex;flex-direction:column;height:100
 </div>
 <div class="boost-box">
 <div class="boost-title">⚡ Ускоритель майнинга ×2</div>
-<div class="boost-status" id="boost-status">Посмотрите 5 видео, чтобы открыть ускоритель на 60 минут.</div>
+<div class="boost-status" id="boost-status">Посмотрите 5 видео, чтобы активировать ускоритель ×2 на 60 минут.</div>
 <div class="boost-status" id="boost-progress">Прогресс: 0/5</div>
-<button class="btn-action" id="btn-boost-video" onclick="watchBoostVideo()">Ускоритель ×2</button>
-<button class="btn-action" id="btn-activate-boost" onclick="activateBoost()" disabled style="margin-top:8px">Активировать ×2 на 1 час</button>
+<button class="btn-action" id="btn-activate-boost" onclick="activateBoost()" disabled>Активировать ×2 на 1 час</button>
 </div>
 <div class="visible-21">★ 21 ★</div>
 </div>
+
 <div id="page-tasks" class="app-container">
 <div class="section-title">🧊 Энцелад: Обязательные миссии</div>
 
@@ -210,7 +211,8 @@ body{background:#0b0f19;color:#fff;display:flex;flex-direction:column;height:100
 <button class="nav-item" onclick="switchTab('friends',this)"><span class="nav-icon">🔴</span><span class="nav-label">Друзья</span></button>
 <button class="nav-item" onclick="switchTab('wallet',this)"><span class="nav-icon">🌀</span><span class="nav-label">Кошелёк</span></button>
 <button class="nav-item" onclick="switchTab('info',this)"><span class="nav-icon">🌌</span><span class="nav-label">Инфо</span></button>
-</nav>
+                                                                          </nav>
+                                                                          
 <script>
 let userId="---";
 let userName="Пилот";
@@ -374,13 +376,14 @@ if(btn)btn.disabled=true;
 if(adCooldownInterval)clearInterval(adCooldownInterval);
 adCooldownInterval=setInterval(()=>{
 adCooldownTimer--;
-if(adCooldownTimer>0){
-if(btn)btn.textContent=`Подождите ${adCooldownTimer}с...`;
-}else{
+if(adCooldownTimer<=0){
 clearInterval(adCooldownInterval);
 adCooldownInterval=null;
 isAdCooldown=false;
-if(btn){btn.disabled=false;btn.textContent=defaultText}
+if(btn){
+btn.disabled=false;
+btn.textContent=defaultText;
+}
 if(typeof callback==="function")callback();
 updateUI();
 }
@@ -399,9 +402,34 @@ alert("Реклама не была досмотрена до конца или 
 });
 }
 
+function isBoostActive(){
+return typeof state.boostActiveUntil==="number"&&state.boostActiveUntil>Date.now();
+}
+
+function activateBoost(){
+if(isBoostActive())return;
+if(state.boostVideoCount<5)return;
+state.boostVideoCount=0;
+state.boostActiveUntil=Date.now()+60*60*1000;
+if(state.isMiningActive)state.miningBoostBonus=1;
+saveState();
+updateUI();
+}
+
 function registerAdWatch(){
 checkDailyReset();
 state.totalAdsWatchedToday++;
+
+if(state.boostVideoCount<5&&!isBoostActive()){
+state.boostVideoCount++;
+if(state.boostVideoCount>=5){
+state.boostVideoCount=0;
+state.boostActiveUntil=Date.now()+60*60*1000;
+if(state.isMiningActive)state.miningBoostBonus=1;
+alert("⚡ Ускоритель ×2 активирован автоматически на 60 минут!");
+}
+}
+
 if(state.totalAdsWatchedToday>=21&&!state.completedTasks.total21){
 state.completedTasks.total21=true;
 state.balance+=10;
@@ -440,35 +468,6 @@ updateUI();
 alert("🌙 Ночной майнинг запущен на 6 часов!");
 });
 });
-}
-
-function watchBoostVideo(){
-if(isAdCooldown||state.boostVideoCount>=5)return;
-const btn=document.getElementById("btn-boost-video");
-startCooldownForButton(btn,"Ускоритель ×2",()=>{
-showAdsgramReward(()=>{
-state.boostVideoCount=Math.min(5,state.boostVideoCount+1);
-saveState();
-updateUI();
-});
-});
-}
-
-function activateBoost(){
-if(state.boostVideoCount<5||isBoostActive())return;
-state.boostVideoCount=0;
-state.boostActiveUntil=Date.now()+60*60*1000;
-if(state.isMiningActive)state.miningBoostBonus=1;
-saveState();
-updateUI();
-}
-
-function isBoostActive(){
-return typeof state.boostActiveUntil==="number"&&state.boostActiveUntil>Date.now();
-}
-
-function getCurrentMiningRate(){
-return state.miningRate*(isBoostActive()?2:1);
 }
 
 function completeDailyVideos(btn){
@@ -543,6 +542,7 @@ const btn=document.getElementById("btn-daily-login-video");
 startCooldownForButton(btn,"Смотреть видео",()=>{
 showAdsgramReward(()=>{
 state.dailyLoginVideoCount=Math.min(3,state.dailyLoginVideoCount+1);
+registerAdWatch();
 saveState();
 updateUI();
 });
@@ -602,7 +602,8 @@ claimBtn.disabled=!canClaimDailyLogin();
 claimBtn.textContent=`Забрать +${rewards[day-1]} NEVAR`;
 }
 }
-    function claimInvite5Reward(){
+    
+function claimInvite5Reward(){
 ensureStateDefaults();
 if(state.invite5RewardClaimed||state.friendsList.length<5||isAdCooldown)return;
 const btn=document.getElementById("claim-invite5");
@@ -743,7 +744,6 @@ telegramClaim.textContent=state.telegramRewardClaimed?"Награда получ
 
 const boostStatus=document.getElementById("boost-status");
 const boostProgress=document.getElementById("boost-progress");
-const boostVideoBtn=document.getElementById("btn-boost-video");
 const activateBtn=document.getElementById("btn-activate-boost");
 
 if(isBoostActive()){
@@ -752,14 +752,11 @@ const minutes=Math.floor(secondsLeft/60);
 const seconds=secondsLeft%60;
 boostStatus.textContent=`Ускоритель ×2 активен. Осталось ${minutes}:${String(seconds).padStart(2,"0")}.`;
 }else{
-boostStatus.textContent="Посмотрите 5 видео, чтобы открыть ускоритель на 60 минут.";
+boostStatus.textContent="Просмотрите 5 рекламных видео для автоматической активации ускорителя ×2 на 60 минут.";
 }
 
 boostProgress.textContent=`Прогресс: ${state.boostVideoCount}/5`;
-boostVideoBtn.disabled=state.boostVideoCount>=5||isAdCooldown;
-boostVideoBtn.textContent=state.boostVideoCount>=5?"Все видео просмотрены":"Ускоритель ×2";
-
-activateBtn.disabled=state.boostVideoCount<5||isBoostActive();
+activateBtn.disabled=state.boostVideoCount<5||isBoostActive()||isAdCooldown;
 activateBtn.textContent=isBoostActive()?"Ускоритель активен":"Активировать ×2 на 1 час";
 
 if(state.isMiningActive){
