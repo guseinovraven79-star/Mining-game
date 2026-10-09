@@ -6,9 +6,6 @@
 <meta name="theme-color" content="#080d19">
 <title>NEVAR — Космическая экспедиция</title>
 
-<!-- Подключение Three.js для рендеринга 3D моделей скафандра и корабля -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-
 <style>
 :root{
     --bg:#080d19;
@@ -414,6 +411,12 @@ button:disabled{
     background:rgba(66,214,164,.05);
 }
 
+.friends-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
 .hangar-item{
     padding:18px;
     margin-bottom:14px;
@@ -696,18 +699,6 @@ button:disabled{
         <p>Разблокируйте скафандр и космический корабль, чтобы подготовиться к будущим экспедициям.</p>
     </div>
 
-    <!-- 3D ИНСПЕКТОР МОДЕЛЕЙ (СКАНФАРД И КОРАБЛЬ) -->
-    <div class="hangar-3d-container" style="position:relative; width:100%; height:300px; background:#0c1423; border:1px solid var(--border); border-radius:16px; overflow:hidden; margin-bottom:16px;">
-        <div style="position:absolute; top:12px; left:12px; z-index:10; display:flex; gap:6px;">
-            <button class="btn-action" id="btn-inspect-suit" style="min-height:30px; padding:4px 10px; font-size:11px;" onclick="switch3DModel('suit')">🧑‍🚀 Скафандр</button>
-            <button class="btn-action btn-secondary" id="btn-inspect-ship" style="min-height:30px; padding:4px 10px; font-size:11px;" onclick="switch3DModel('ship')">🛸 Корабль</button>
-        </div>
-        <div style="position:absolute; bottom:8px; right:12px; z-index:10; font-size:10px; color:var(--muted); pointer-events:none;">
-            Крутите модель мышкой / пальцем 🔄
-        </div>
-        <div id="canvas-3d-target" style="width:100%; height:100%; cursor:grab;"></div>
-    </div>
-
     <div class="section-title">🧑‍🚀 Космический скафандр</div>
     <div class="hangar-item">
         <h3>Космический скафандр</h3>
@@ -765,4 +756,23 @@ button:disabled{
     <div class="card"><div class="card-info"><h4>Венера</h4></div><button class="btn-action" disabled>Скоро</button></div>
     <div class="card"><div class="card-info"><h4>Земля</h4></div><button class="btn-action" disabled>В разработке</button></div>
     <div class="card"><div class="card-info"><h4>Марс</h4></div><button class="btn-action" disabled>В разработке</button></div>
-    <div class="card"><div class="card-info"><h4>Юпитер</h4></div><button class="btn-ac
+    <div class="card"><div class="card-info"><h4>Юпитер</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Сатурн</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Уран</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Нептун</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="card"><div class="card-info"><h4>Млечный Путь</h4><p>Последняя экспедиция</p></div><button class="btn-action" disabled>В разработке</button></div>
+</div>
+
+<!-- 4. ЭКИПАЖ -->
+<div id="page-friends" class="app-container">
+    <div class="section-title">👥 Мой экипаж</div>
+
+    <div class="header-card">
+        <div class="balance-title">ПРИГЛАШЁННЫЕ ПИЛОТЫ</div>
+        <div class="balance-amount" id="friends-count">0</div>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Чем больше экипаж, тем выше скорость майнинга.</p>
+    </div>
+
+    <div class="info-box">
+        <h3>Пригласи друзей</h3>
+        <p>Приглашайте новых пилотов в NEVAR и разви
