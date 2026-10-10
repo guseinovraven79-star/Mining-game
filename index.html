@@ -6,8 +6,9 @@
 <meta name="theme-color" content="#080d19">
 <title>NEVAR — Космическая экспедиция</title>
 
-<!-- Подключение Three.js для 3D-инспектора скафандра и корабля -->
+<!-- Подключение Three.js и Adsgram SDK -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
 <style>
 :root{
@@ -372,408 +373,398 @@ button:disabled{ cursor:not-allowed; opacity:.55; }
     <div class="section-title">ℹ️ О проекте NEVAR</div>
     <div class="info-box">
         <h3>Добро пожаловать в NEVAR</h3>
-        <p>NEVAR — космическая игра для пилотов.</p>
-    </div>
-    </div>
-    <!-- Нижняя навигация -->
-<nav class="nav-bar">
-    <button class="nav-item active" onclick="switchPage('mining',this)"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
-    <button class="nav-item" onclick="switchPage('tasks',this)"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
-    <button class="nav-item" onclick="switchPage('expeditions',this)"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
-    <button class="nav-item" onclick="switchPage('friends',this)"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
-    <button class="nav-item" onclick="switchPage('wallet',this)"><span class="nav-icon">💰</span><span class="nav-label">Кошелёк</span></button>
-    <button class="nav-item" onclick="switchPage('info',this)"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
-</nav>
-
+        <p>NEVAR — космическая игра для пи
 <script>
-let userId="---";
-let userName="Пилот";
-const API_BASE_URL="https://your-backend-domain.com/api";
-const TELEGRAM_CHANNEL_URL="https://t.me/ВАШ_КАНАЛ";
-const YOUTUBE_URL="";
-let adController=null;
+let userId = "---";
+let userName = "Пилот";
+const API_BASE_URL = "https://your-backend-domain.com/api";
+const TELEGRAM_CHANNEL_URL = "https://t.me/ВАШ_КАНАЛ";
+const YOUTUBE_URL = "";
+let adController = null;
 
-try{
-    if(typeof Adsgram!=="undefined"&&window.Adsgram){
-        adController=window.Adsgram.init({blockId:"52498"});
+try {
+    if (typeof Adsgram !== "undefined" && window.Adsgram) {
+        adController = window.Adsgram.init({ blockId: "52498" });
     }
-}catch(e){console.error(e);}
+} catch (e) { console.error(e); }
 
-let state={
-    balance:0, isMiningActive:false, miningEndTime:0, miningRate:1,
-    completedTasks:{}, dailyVideosCount:0, totalAdsWatchedToday:0, lastResetDate:"",
-    friendsList:[], boostVideoCount:0, boostActiveUntil:0,
-    dailyLoginDay:1, dailyLoginVideoCount:0, dailyLoginLastClaimDate:"",
-    dailyLoginLastClaimDay:0, dailyLoginLastProgressDate:"", dailyLoginCycleStartDate:"",
-    spacesuitUnlocked:false, shipUnlocked:false, spacesuitVideoCount:0, shipVideoCount:0,
-    chargedPlanet:"", completedExpeditions:[], fuelVideoProgress:{},
-    youtubeDailyClaimed:false, youtubeDailyClaimDate:"", youtubeChannelOpened:false
+let state = {
+    balance: 0, isMiningActive: false, miningEndTime: 0, miningRate: 1,
+    completedTasks: {}, dailyVideosCount: 0, totalAdsWatchedToday: 0, lastResetDate: "",
+    friendsList: [], boostVideoCount: 0, boostActiveUntil: 0,
+    dailyLoginDay: 1, dailyLoginVideoCount: 0, dailyLoginLastClaimDate: "",
+    dailyLoginLastClaimDay: 0, dailyLoginLastProgressDate: "", dailyLoginCycleStartDate: "",
+    spacesuitUnlocked: false, shipUnlocked: false, spacesuitVideoCount: 0, shipVideoCount: 0,
+    chargedPlanet: "", completedExpeditions: [], fuelVideoProgress: {},
+    youtubeDailyClaimed: false, youtubeDailyClaimDate: "", youtubeChannelOpened: false
 };
 
-let isAdCooldown=false, adCooldownTimer=10, adCooldownInterval=null, savingPromise=Promise.resolve(), lastMiningCompletionEndTime=0, cooldownButtonId="";
+let isAdCooldown = false, adCooldownTimer = 10, adCooldownInterval = null, savingPromise = Promise.resolve();
 
-const planets=[
-    {id:"mercury",name:"Меркурий",videos:25,price:250},
-    {id:"venus",name:"Венера",videos:32,price:320},
-    {id:"earth",name:"Земля",videos:39,price:390},
-    {id:"mars",name:"Марс",videos:46,price:460},
-    {id:"jupiter",name:"Юпитер",videos:54,price:540},
-    {id:"saturn",name:"Сатурн",videos:61,price:610},
-    {id:"uranus",name:"Уран",videos:68,price:680},
-    {id:"neptune",name:"Нептун",videos:75,price:750}
+const planets = [
+    { id: "mercury", name: "Меркурий", videos: 25, price: 250 },
+    { id: "venus", name: "Венера", videos: 32, price: 320 },
+    { id: "earth", name: "Земля", videos: 39, price: 390 },
+    { id: "mars", name: "Марс", videos: 46, price: 460 },
+    { id: "jupiter", name: "Юпитер", videos: 54, price: 540 },
+    { id: "saturn", name: "Сатурн", videos: 61, price: 610 },
+    { id: "uranus", name: "Уран", videos: 68, price: 680 },
+    { id: "neptune", name: "Нептун", videos: 75, price: 750 }
 ];
 
-function localDateKey(date=new Date()){
-    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;
+function localDateKey(date = new Date()) {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
-function addDaysToDateKey(dateKey,days){
-    const parts=dateKey.split("-").map(Number);
-    const date=new Date(parts[0],parts[1]-1,parts[2]);
-    date.setDate(date.getDate()+days);
+function addDaysToDateKey(dateKey, days) {
+    const parts = dateKey.split("-").map(Number);
+    const date = new Date(parts[0], parts[1] - 1, parts[2]);
+    date.setDate(date.getDate() + days);
     return localDateKey(date);
 }
-function ensureStateDefaults(){
-    if(!state||typeof state!=="object")state={};
-    if(!state.completedTasks)state.completedTasks={};
-    if(!Array.isArray(state.friendsList))state.friendsList=[];
-    if(!Array.isArray(state.completedExpeditions))state.completedExpeditions=[];
-    if(!state.fuelVideoProgress)state.fuelVideoProgress={};
+function ensureStateDefaults() {
+    if (!state || typeof state !== "object") state = {};
+    if (!state.completedTasks) state.completedTasks = {};
+    if (!Array.isArray(state.friendsList)) state.friendsList = [];
+    if (!Array.isArray(state.completedExpeditions)) state.completedExpeditions = [];
+    if (!state.fuelVideoProgress) state.fuelVideoProgress = {};
 }
-function saveToLocalStorage(){ try{ localStorage.setItem("nevarGameState",JSON.stringify(state)); }catch(e){} }
-function loadFromLocalStorage(){
-    try{ const saved=localStorage.getItem("nevarGameState"); if(saved)state={...state,...JSON.parse(saved)}; }catch(e){}
+function saveToLocalStorage() { try { localStorage.setItem("nevarGameState", JSON.stringify(state)); } catch (e) { } }
+function loadFromLocalStorage() {
+    try { const saved = localStorage.getItem("nevarGameState"); if (saved) state = { ...state, ...JSON.parse(saved) }; } catch (e) { }
 }
-async function saveState(){
+async function saveState() {
     saveToLocalStorage();
-    const snapshot=JSON.stringify({userId,userName,state});
-    savingPromise=savingPromise.then(async()=>{
-        try{ await fetch(`${API_BASE_URL}/sync`,{method:"POST",headers:{"Content-Type":"application/json"},body:snapshot}); }catch(e){}
+    const snapshot = JSON.stringify({ userId, userName, state });
+    savingPromise = savingPromise.then(async () => {
+        try { await fetch(`${API_BASE_URL}/sync`, { method: "POST", headers: { "Content-Type": "application/json" }, body: snapshot }); } catch (e) { }
     });
     return savingPromise;
 }
-function checkDailyReset(){
-    const today=localDateKey();
-    if(state.lastResetDate!==today){
-        state.dailyVideosCount=0; state.totalAdsWatchedToday=0;
-        state.completedTasks.dailyVideos=false; state.completedTasks.total50=false;
-        state.youtubeDailyClaimed=false; state.lastResetDate=today;
+function checkDailyReset() {
+    const today = localDateKey();
+    if (state.lastResetDate !== today) {
+        state.dailyVideosCount = 0; state.totalAdsWatchedToday = 0;
+        state.completedTasks.dailyVideos = false; state.completedTasks.total50 = false;
+        state.youtubeDailyClaimed = false; state.lastResetDate = today;
         saveToLocalStorage();
     }
 }
-function getMiningRate(){
-    const c=state.friendsList.length;
-    if(c>=10)return 3; if(c>=5)return 2; return 1;
+function getMiningRate() {
+    const c = state.friendsList.length;
+    if (c >= 10) return 3; if (c >= 5) return 2; return 1;
 }
-function startCooldownForButton(btn,defaultText,callback){
-    if(isAdCooldown||(btn&&btn.disabled))return;
-    isAdCooldown=true; adCooldownTimer=10; cooldownButtonId=btn?btn.id:"";
-    if(adCooldownInterval)clearInterval(adCooldownInterval);
-    if(btn){btn.disabled=true; btn.textContent=String(adCooldownTimer);}
-    adCooldownInterval=setInterval(()=>{
+function startCooldownForButton(btn, defaultText, callback) {
+    if (isAdCooldown || (btn && btn.disabled)) return;
+    isAdCooldown = true; adCooldownTimer = 10;
+    if (adCooldownInterval) clearInterval(adCooldownInterval);
+    if (btn) { btn.disabled = true; btn.textContent = String(adCooldownTimer); }
+    adCooldownInterval = setInterval(() => {
         adCooldownTimer--;
-        if(adCooldownTimer<=0){
-            clearInterval(adCooldownInterval); isAdCooldown=false; cooldownButtonId="";
-            if(btn){btn.disabled=false; btn.textContent=defaultText;}
-            updateUI(); if(typeof callback==="function")callback();
+        if (adCooldownTimer <= 0) {
+            clearInterval(adCooldownInterval); isAdCooldown = false;
+            if (btn) { btn.disabled = false; btn.textContent = defaultText; }
+            updateUI(); if (typeof callback === "function") callback();
             return;
         }
-        if(btn)btn.textContent=String(adCooldownTimer);
-    },1000);
+        if (btn) btn.textContent = String(adCooldownTimer);
+    }, 1000);
 }
-function showAdsgramReward(cb){
-    if(!adController||typeof adController.show!=="function"){if(cb)cb();return;}
-    try{
-        Promise.resolve(adController.show()).then(()=>{if(cb)cb();}).catch(()=>{if(cb)cb();});
-    }catch(e){if(cb)cb();}
+function showAdsgramReward(cb) {
+    if (!adController || typeof adController.show !== "function") { if (cb) cb(); return; }
+    try {
+        Promise.resolve(adController.show()).then(() => { if (cb) cb(); }).catch(() => { if (cb) cb(); });
+    } catch (e) { if (cb) cb(); }
 }
-function isBoostActive(){return state.boostActiveUntil>Date.now();}
-function activateBoost(){
-    state.boostActiveUntil=Date.now()+60*60*1000; state.boostVideoCount=5;
+function isBoostActive() { return state.boostActiveUntil > Date.now(); }
+function activateBoost() {
+    state.boostActiveUntil = Date.now() + 60 * 60 * 1000; state.boostVideoCount = 5;
     saveState(); updateUI();
 }
-function registerAdWatch(){
+function registerAdWatch() {
     checkDailyReset();
-    if(state.totalAdsWatchedToday>=50){alert("Дневной лимит 50 видео исчерпан.");return false;}
+    if (state.totalAdsWatchedToday >= 50) { alert("Дневной лимит 50 видео исчерпан."); return false; }
     state.totalAdsWatchedToday++;
-    if(state.totalAdsWatchedToday>=50&&!state.completedTasks.total50){
-        state.completedTasks.total50=true; state.balance+=10;
+    if (state.totalAdsWatchedToday >= 50 && !state.completedTasks.total50) {
+        state.completedTasks.total50 = true; state.balance += 10;
     }
     saveToLocalStorage(); updateUI(); return true;
 }
-function watchBoostVideo(){
-    if(isBoostActive())return;
-    if(state.boostVideoCount>=5){activateBoost();return;}
-    startCooldownForButton(document.getElementById("btn-activate-boost"),"Активировать",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            state.boostVideoCount=Math.min(5,state.boostVideoCount+1);
-            if(state.boostVideoCount>=5)activateBoost(); else{saveState();updateUI();}
+function watchBoostVideo() {
+    if (isBoostActive()) return;
+    if (state.boostVideoCount >= 5) { activateBoost(); return; }
+    startCooldownForButton(document.getElementById("btn-activate-boost"), "Активировать", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            state.boostVideoCount = Math.min(5, state.boostVideoCount + 1);
+            if (state.boostVideoCount >= 5) activateBoost(); else { saveState(); updateUI(); }
         });
     });
 }
-function watchVideoForMining(){
-    if(state.isMiningActive&&state.miningEndTime>Date.now())return;
-    startCooldownForButton(document.getElementById("btn-start-mining"),"Включить майнинг (Смотреть 1 видео)",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            state.miningEndTime=Date.now()+60*60*1000; state.isMiningActive=true;
+function watchVideoForMining() {
+    if (state.isMiningActive && state.miningEndTime > Date.now()) return;
+    startCooldownForButton(document.getElementById("btn-start-mining"), "Включить майнинг (Смотреть 1 видео)", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            state.miningEndTime = Date.now() + 60 * 60 * 1000; state.isMiningActive = true;
             saveState(); updateUI();
         });
     });
 }
-function startNightMining(){
-    if(state.isMiningActive&&state.miningEndTime>Date.now())return;
-    startCooldownForButton(document.getElementById("btn-night-mining"),"Запустить ночной майнинг (Смотреть 5 видео)",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            state.miningEndTime=Date.now()+6*60*60*1000; state.isMiningActive=true;
+function startNightMining() {
+    if (state.isMiningActive && state.miningEndTime > Date.now()) return;
+    startCooldownForButton(document.getElementById("btn-night-mining"), "Запустить ночной майнинг (Смотреть 5 видео)", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            state.miningEndTime = Date.now() + 6 * 60 * 60 * 1000; state.isMiningActive = true;
             saveState(); updateUI();
         });
     });
 }
-function completeDailyVideos(btn){
+function completeDailyVideos(btn) {
     checkDailyReset();
-    if(state.completedTasks.dailyVideos||state.dailyVideosCount>=5)return;
-    startCooldownForButton(btn,"Смотреть",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
+    if (state.completedTasks.dailyVideos || state.dailyVideosCount >= 5) return;
+    startCooldownForButton(btn, "Смотреть", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
             state.dailyVideosCount++;
-            if(state.dailyVideosCount>=5){state.dailyVideosCount=5;state.completedTasks.dailyVideos=true;state.balance+=3;}
+            if (state.dailyVideosCount >= 5) { state.dailyVideosCount = 5; state.completedTasks.dailyVideos = true; state.balance += 3; }
             saveState(); updateUI();
         });
     });
 }
-function watchOptionalVideo(btn){
-    startCooldownForButton(btn,"Смотреть",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return; state.balance+=0.25; saveState(); updateUI();
+function watchOptionalVideo(btn) {
+    startCooldownForButton(btn, "Смотреть", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return; state.balance += 0.25; saveState(); updateUI();
         });
     });
 }
-function completeYouTubeDailyTask(btn){
+function completeYouTubeDailyTask(btn) {
     checkDailyReset();
-    const today=localDateKey();
-    if(state.youtubeDailyClaimed&&state.youtubeDailyClaimDate===today)return;
-    if(!YOUTUBE_URL){alert("Ссылка на YouTube не настроена.");return;}
-    try{window.open(YOUTUBE_URL,"_blank");}catch(e){}
-    startCooldownForButton(btn,"Смотреть",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            state.youtubeDailyClaimed=true; state.youtubeDailyClaimDate=today; state.balance+=5;
+    const today = localDateKey();
+    if (state.youtubeDailyClaimed && state.youtubeDailyClaimDate === today) return;
+    if (!YOUTUBE_URL) { alert("Ссылка на YouTube не настроена."); return; }
+    try { window.open(YOUTUBE_URL, "_blank"); } catch (e) { }
+    startCooldownForButton(btn, "Смотреть", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            state.youtubeDailyClaimed = true; state.youtubeDailyClaimDate = today; state.balance += 5;
             saveState(); updateUI();
         });
     });
 }
-function normalizeDailyLoginStreak(){
-    const today=localDateKey();
-    if(!state.dailyLoginCycleStartDate)state.dailyLoginCycleStartDate=today;
-    if(state.dailyLoginLastClaimDate===today)return;
-    if(state.dailyLoginLastClaimDate){
-        if(addDaysToDateKey(state.dailyLoginLastClaimDate,1)!==today){
-            state.dailyLoginDay=1; state.dailyLoginVideoCount=0; state.dailyLoginCycleStartDate=today;
-            state.dailyLoginLastProgressDate=""; state.dailyLoginLastClaimDay=0;
+function normalizeDailyLoginStreak() {
+    const today = localDateKey();
+    if (!state.dailyLoginCycleStartDate) state.dailyLoginCycleStartDate = today;
+    if (state.dailyLoginLastClaimDate === today) return;
+    if (state.dailyLoginLastClaimDate) {
+        if (addDaysToDateKey(state.dailyLoginLastClaimDate, 1) !== today) {
+            state.dailyLoginDay = 1; state.dailyLoginVideoCount = 0; state.dailyLoginCycleStartDate = today;
+            state.dailyLoginLastProgressDate = ""; state.dailyLoginLastClaimDay = 0;
         }
     }
-    if(state.dailyLoginLastProgressDate!==today){state.dailyLoginVideoCount=0; state.dailyLoginLastProgressDate=today;}
+    if (state.dailyLoginLastProgressDate !== today) { state.dailyLoginVideoCount = 0; state.dailyLoginLastProgressDate = today; }
     saveToLocalStorage();
 }
-function getDailyLoginRewards(){return [1,2,3,4,5,6,10];}
-function renderDailyLogin(){
+function getDailyLoginRewards() { return [1, 2, 3, 4, 5, 6, 10]; }
+function renderDailyLogin() {
     normalizeDailyLoginStreak();
-    const rewards=getDailyLoginRewards(), today=localDateKey();
-    const container=document.getElementById("daily-rewards"), status=document.getElementById("daily-login-status");
-    const progress=document.getElementById("daily-login-progress"), button=document.getElementById("btn-daily-login");
-    if(!container||!status||!progress||!button)return;
-    container.innerHTML=rewards.map((reward,index)=>{
-        const day=index+1;
-        const claimed=(state.dailyLoginLastClaimDate===today&&state.dailyLoginLastClaimDay===day);
-        const current=(state.dailyLoginDay===day&&!claimed);
-        let classes="daily-reward";
-        if(current)classes+=" current"; if(claimed)classes+=" claimed";
-        return `<div class="${classes}"><div class="day">День ${day}</div><div class="reward">${reward}</div><div class="mark">${claimed?"Получено":current?"Текущий":""}</div></div>`;
+    const rewards = getDailyLoginRewards(), today = localDateKey();
+    const container = document.getElementById("daily-rewards"), status = document.getElementById("daily-login-status");
+    const progress = document.getElementById("daily-login-progress"), button = document.getElementById("btn-daily-login");
+    if (!container || !status || !progress || !button) return;
+    container.innerHTML = rewards.map((reward, index) => {
+        const day = index + 1;
+        const claimed = (state.dailyLoginLastClaimDate === today && state.dailyLoginLastClaimDay === day);
+        const current = (state.dailyLoginDay === day && !claimed);
+        let classes = "daily-reward";
+        if (current) classes += " current"; if (claimed) classes += " claimed";
+        return `<div class="${classes}"><div class="day">День ${day}</div><div class="reward">${reward}</div><div class="mark">${claimed ? "Получено" : current ? "Текущий" : ""}</div></div>`;
     }).join("");
-    status.textContent=`День ${Math.min(7,state.dailyLoginDay)} из 7`;
-    progress.textContent=`Прогресс: ${state.dailyLoginVideoCount}/3 видео`;
-    if(state.dailyLoginLastClaimDate===today){button.textContent="Награда получена";button.disabled=true;}
-    else if(isAdCooldown){button.disabled=true;}
-    else{button.textContent=state.dailyLoginVideoCount>=3?"Забрать награду":"Смотреть видео";button.disabled=false;}
+    status.textContent = `День ${Math.min(7, state.dailyLoginDay)} из 7`;
+    progress.textContent = `Прогресс: ${state.dailyLoginVideoCount}/3 видео`;
+    if (state.dailyLoginLastClaimDate === today) { button.textContent = "Награда получена"; button.disabled = true; }
+    else if (isAdCooldown) { button.disabled = true; }
+    else { button.textContent = state.dailyLoginVideoCount >= 3 ? "Забрать награду" : "Смотреть видео"; button.disabled = false; }
 }
-function handleDailyLoginButton(){
+function handleDailyLoginButton() {
     normalizeDailyLoginStreak();
-    if(state.dailyLoginLastClaimDate===localDateKey())return;
-    if(state.dailyLoginVideoCount>=3){claimDailyLoginReward();return;}
-    startCooldownForButton(document.getElementById("btn-daily-login"),"Смотреть видео",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            const today=localDateKey();
-            if(state.dailyLoginLastProgressDate!==today){state.dailyLoginVideoCount=0;state.dailyLoginLastProgressDate=today;}
-            state.dailyLoginVideoCount=Math.min(3,state.dailyLoginVideoCount+1);
+    if (state.dailyLoginLastClaimDate === localDateKey()) return;
+    if (state.dailyLoginVideoCount >= 3) { claimDailyLoginReward(); return; }
+    startCooldownForButton(document.getElementById("btn-daily-login"), "Смотреть видео", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            const today = localDateKey();
+            if (state.dailyLoginLastProgressDate !== today) { state.dailyLoginVideoCount = 0; state.dailyLoginLastProgressDate = today; }
+            state.dailyLoginVideoCount = Math.min(3, state.dailyLoginVideoCount + 1);
             saveState(); updateUI();
         });
     });
 }
-function claimDailyLoginReward(){
+function claimDailyLoginReward() {
     normalizeDailyLoginStreak();
-    const today=localDateKey();
-    if(state.dailyLoginLastClaimDate===today)return;
-    if(state.dailyLoginVideoCount<3){alert("Посмотрите 3 видео.");return;}
-    const rewards=getDailyLoginRewards(), day=Math.min(7,Math.max(1,state.dailyLoginDay));
-    const reward=rewards[day-1];
-    state.balance+=reward; state.dailyLoginLastClaimDate=today; state.dailyLoginLastClaimDay=day;
-    if(day>=7){state.dailyLoginDay=1;state.dailyLoginCycleStartDate=addDaysToDateKey(today,1);}
-    else{state.dailyLoginDay=day+1;}
-    state.dailyLoginVideoCount=0; state.dailyLoginLastProgressDate=today;
+    const today = localDateKey();
+    if (state.dailyLoginLastClaimDate === today) return;
+    if (state.dailyLoginVideoCount < 3) { alert("Посмотрите 3 видео."); return; }
+    const rewards = getDailyLoginRewards(), day = Math.min(7, Math.max(1, state.dailyLoginDay));
+    const reward = rewards[day - 1];
+    state.balance += reward; state.dailyLoginLastClaimDate = today; state.dailyLoginLastClaimDay = day;
+    if (day >= 7) { state.dailyLoginDay = 1; state.dailyLoginCycleStartDate = addDaysToDateKey(today, 1); }
+    else { state.dailyLoginDay = day + 1; }
+    state.dailyLoginVideoCount = 0; state.dailyLoginLastProgressDate = today;
     saveState(); updateUI(); alert(`🎉 Получено ${reward} NEVAR!`);
 }
-function openTelegramChannel(){
-    state.telegramChannelOpened=true; saveState(); updateUI();
-    try{window.open(TELEGRAM_CHANNEL_URL,"_blank");}catch(e){}
+function openTelegramChannel() {
+    state.telegramChannelOpened = true; saveState(); updateUI();
+    try { window.open(TELEGRAM_CHANNEL_URL, "_blank"); } catch (e) { }
 }
-function handleYouTubeSubscriptionTask(){
-    state.youtubeChannelOpened=true; saveState(); updateUI();
-    if(!YOUTUBE_URL){alert("Ссылка не настроена.");return;}
-    try{window.open(YOUTUBE_URL,"_blank");}catch(e){}
+function handleYouTubeSubscriptionTask() {
+    state.youtubeChannelOpened = true; saveState(); updateUI();
+    if (!YOUTUBE_URL) { alert("Ссылка не настроена."); return; }
+    try { window.open(YOUTUBE_URL, "_blank"); } catch (e) { }
 }
-function renderFriendsList(){
-    const count=document.getElementById("friends-count"), list=document.getElementById("friends-list");
-    if(count)count.textContent=String(state.friendsList.length);
-    if(!list)return;
-    if(state.friendsList.length===0){list.innerHTML='<div class="info-box"><p>Нет приглашенных пилотов.</p></div>';return;}
-    list.innerHTML=state.friendsList.map((f,i)=>`<div class="card"><div class="card-info"><h4>👨‍🚀 Пилот</h4><p>Участник экипажа</p></div><span class="gold-text">#${i+1}</span></div>`).join("");
+function renderFriendsList() {
+    const count = document.getElementById("friends-count"), list = document.getElementById("friends-list");
+    if (count) count.textContent = String(state.friendsList.length);
+    if (!list) return;
+    if (state.friendsList.length === 0) { list.innerHTML = '<div class="info-box"><p>Нет приглашенных пилотов.</p></div>'; return; }
+    list.innerHTML = state.friendsList.map((f, i) => `<div class="card"><div class="card-info"><h4>👨‍🚀 Пилот</h4><p>Участник экипажа</p></div><span class="gold-text">#${i + 1}</span></div>`).join("");
 }
-function buySuit(){
-    if(state.spacesuitUnlocked)return;
-    if(state.balance<500){alert("Недостаточно NEVAR.");return;}
-    state.balance-=500; state.spacesuitUnlocked=true; saveState(); updateUI(); alert("🧑‍🚀 Скафандр разблокирован!");
+function buySuit() {
+    if (state.spacesuitUnlocked) return;
+    if (state.balance < 500) { alert("Недостаточно NEVAR."); return; }
+    state.balance -= 500; state.spacesuitUnlocked = true; saveState(); updateUI(); alert("🧑‍🚀 Скафандр разблокирован!");
 }
-function watchSuitVideo(){
-    if(state.spacesuitUnlocked||isAdCooldown)return;
-    startCooldownForButton(document.getElementById("btn-video-suit"),`Видео ${state.spacesuitVideoCount}/100`,()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            state.spacesuitVideoCount=Math.min(100,state.spacesuitVideoCount+1);
-            if(state.spacesuitVideoCount>=100){state.spacesuitUnlocked=true;alert("🧑‍🚀 Скафандр разблокирован!");}
+function watchSuitVideo() {
+    if (state.spacesuitUnlocked || isAdCooldown) return;
+    startCooldownForButton(document.getElementById("btn-video-suit"), `Видео ${state.spacesuitVideoCount}/100`, () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            state.spacesuitVideoCount = Math.min(100, state.spacesuitVideoCount + 1);
+            if (state.spacesuitVideoCount >= 100) { state.spacesuitUnlocked = true; alert("🧑‍🚀 Скафандр разблокирован!"); }
             saveState(); updateUI();
         });
     });
 }
-function buyShip(){
-    if(state.shipUnlocked)return;
-    if(state.balance<1500){alert("Недостаточно NEVAR.");return;}
-    state.balance-=1500; state.shipUnlocked=true; saveState(); updateUI(); alert("🛸 Корабль разблокирован!");
+function buyShip() {
+    if (state.shipUnlocked) return;
+    if (state.balance < 1500) { alert("Недостаточно NEVAR."); return; }
+    state.balance -= 1500; state.shipUnlocked = true; saveState(); updateUI(); alert("🛸 Корабль разблокирован!");
 }
-function watchShipVideo(){
-    if(state.shipUnlocked||isAdCooldown)return;
-    startCooldownForButton(document.getElementById("btn-video-ship"),`Видео ${state.shipVideoCount}/250`,()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            state.shipVideoCount=Math.min(250,state.shipVideoCount+1);
-            if(state.shipVideoCount>=250){state.shipUnlocked=true;alert("🛸 Корабль разблокирован!");}
+function watchShipVideo() {
+    if (state.shipUnlocked || isAdCooldown) return;
+    startCooldownForButton(document.getElementById("btn-video-ship"), `Видео ${state.shipVideoCount}/250`, () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            state.shipVideoCount = Math.min(250, state.shipVideoCount + 1);
+            if (state.shipVideoCount >= 250) { state.shipUnlocked = true; alert("🛸 Корабль разблокирован!"); }
             saveState(); updateUI();
         });
     });
 }
-function getSelectedPlanet(){
-    const s=document.getElementById("fuel-planet");
-    return planets.find(p=>p.id===(s?s.value:"mercury"))||planets[0];
+function getSelectedPlanet() {
+    const s = document.getElementById("fuel-planet");
+    return planets.find(p => p.id === (s ? s.value : "mercury")) || planets[0];
 }
-function updateFuelPrice(){
-    const planet=getSelectedPlanet();
-    const price=document.getElementById("fuel-price"), status=document.getElementById("fuel-status"), meter=document.getElementById("fuel-meter-fill");
-    if(price)price.textContent=`${planet.name}: ${planet.price} NEVAR или ${planet.videos} видео`;
-    if(status)status.textContent=state.chargedPlanet===planet.id?"Энергия готова":(state.chargedPlanet?"Заряжено для другой планеты":"Корабль не заряжен");
-    if(meter)meter.style.width=state.chargedPlanet===planet.id?"100%":"0%";
+function updateFuelPrice() {
+    const planet = getSelectedPlanet();
+    const price = document.getElementById("fuel-price"), status = document.getElementById("fuel-status"), meter = document.getElementById("fuel-meter-fill");
+    if (price) price.textContent = `${planet.name}: ${planet.price} NEVAR или ${planet.videos} видео`;
+    if (status) status.textContent = state.chargedPlanet === planet.id ? "Энергия готова" : (state.chargedPlanet ? "Заряжено для другой планеты" : "Корабль не заряжен");
+    if (meter) meter.style.width = state.chargedPlanet === planet.id ? "100%" : "0%";
 }
-function buyFuel(){
-    const planet=getSelectedPlanet();
-    if(!state.spacesuitUnlocked||!state.shipUnlocked){alert("Сначала разблокируйте скафандр и корабль.");return;}
-    if(state.chargedPlanet===planet.id){alert("Уже заряжено.");return;}
-    if(state.balance<planet.price){alert("Недостаточно NEVAR.");return;}
-    state.balance-=planet.price; state.chargedPlanet=planet.id; saveState(); updateUI(); alert("⚡ Корабль заряжен!");
+function buyFuel() {
+    const planet = getSelectedPlanet();
+    if (!state.spacesuitUnlocked || !state.shipUnlocked) { alert("Сначала разблокируйте скафандр и корабль."); return; }
+    if (state.chargedPlanet === planet.id) { alert("Уже заряжено."); return; }
+    if (state.balance < planet.price) { alert("Недостаточно NEVAR."); return; }
+    state.balance -= planet.price; state.chargedPlanet = planet.id; saveState(); updateUI(); alert("⚡ Корабль заряжен!");
 }
-function watchFuelVideos(){
-    const planet=getSelectedPlanet();
-    if(!state.spacesuitUnlocked||!state.shipUnlocked){alert("Разблокируйте снаряжение.");return;}
-    if(state.chargedPlanet===planet.id)return;
-    if(!state.fuelVideoProgress[planet.id])state.fuelVideoProgress[planet.id]=0;
-    startCooldownForButton(document.getElementById("btn-fuel-video"),"Смотреть видео",()=>{
-        showAdsgramReward(()=>{
-            if(!registerAdWatch())return;
-            state.fuelVideoProgress[planet.id]=Math.min(planet.videos,state.fuelVideoProgress[planet.id]+1);
-            if(state.fuelVideoProgress[planet.id]>=planet.videos)state.chargedPlanet=planet.id;
+function watchFuelVideos() {
+    const planet = getSelectedPlanet();
+    if (!state.spacesuitUnlocked || !state.shipUnlocked) { alert("Разблокируйте снаряжение."); return; }
+    if (state.chargedPlanet === planet.id) return;
+    if (!state.fuelVideoProgress[planet.id]) state.fuelVideoProgress[planet.id] = 0;
+    startCooldownForButton(document.getElementById("btn-fuel-video"), "Смотреть видео", () => {
+        showAdsgramReward(() => {
+            if (!registerAdWatch()) return;
+            state.fuelVideoProgress[planet.id] = Math.min(planet.videos, state.fuelVideoProgress[planet.id] + 1);
+            if (state.fuelVideoProgress[planet.id] >= planet.videos) state.chargedPlanet = planet.id;
             saveState(); updateUI();
         });
     });
 }
-function inviteFriend(){
-    const link=`https://t.me/NEVAR_BOT?start=${userId}`;
-    try{prompt("Скопируйте реферальную ссылку:",link);}catch(e){}
+function inviteFriend() {
+    const link = `https://t.me/NEVAR_BOT?start=${userId}`;
+    try { prompt("Скопируйте реферальную ссылку:", link); } catch (e) { }
 }
 
 // Функция переключения страниц
-function switchPage(pageName, button){
-    document.querySelectorAll(".app-container").forEach(p=>p.classList.remove("active"));
-    const page=document.getElementById(`page-${pageName}`);
-    if(page) page.classList.add("active");
+function switchPage(pageName, buttonElement) {
+    document.querySelectorAll(".app-container").forEach(page => {
+        page.classList.remove("active");
+    });
 
-    document.querySelectorAll(".nav-item").forEach(i=>i.classList.remove("active"));
-    if(button){
-        button.classList.add("active");
-    } else {
-        document.querySelectorAll(".nav-item").forEach(item=>{
-            if((item.getAttribute("onclick")||"").includes(`'${pageName}'`)){
-                item.classList.add("active");
-            }
-        });
+    const targetPage = document.getElementById(`page-${pageName}`);
+    if (targetPage) {
+        targetPage.classList.add("active");
     }
 
-    if(pageName==='expeditions'&&window.onResize3D) setTimeout(window.onResize3D,50);
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.remove("active");
+    });
+
+    if (buttonElement) {
+        buttonElement.classList.add("active");
+    }
+
+    if (pageName === 'expeditions' && typeof window.onResize3D === 'function') {
+        setTimeout(window.onResize3D, 50);
+    }
 }
 
 // ==================== 3D ИНСПЕКТОР (THREE.JS) ====================
-let scene, camera, renderer, suitGroup, shipGroup, currentModelType='suit';
-let isDragging=false, previousMousePosition={x:0,y:0};
+let scene, camera, renderer, suitGroup, shipGroup, currentModelType = 'suit';
+let isDragging = false, previousMousePosition = { x: 0, y: 0 };
 
-function init3DViewer(){
-    const container=document.getElementById('canvas-3d-target');
-    if(!container)return;
-    scene=new THREE.Scene();
-    camera=new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 1000);
-    camera.position.set(0,0,5.5);
-    renderer=new THREE.WebGLRenderer({antialias:true, alpha:true});
+function init3DViewer() {
+    const container = document.getElementById('canvas-3d-target');
+    if (!container) return;
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.set(0, 0, 5.5);
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(container.clientWidth, container.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    scene.add(new THREE.AmbientLight(0xffffff,0.8));
-    const dirLight=new THREE.DirectionalLight(0xf3c969,1.5);
-    dirLight.position.set(5,5,5); scene.add(dirLight);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+    const dirLight = new THREE.DirectionalLight(0xf3c969, 1.5);
+    dirLight.position.set(5, 5, 5); scene.add(dirLight);
 
     // Модель скафандра
-    suitGroup=new THREE.Group();
-    const suitMat=new THREE.MeshStandardMaterial({color:0xdddddd, roughness:0.4, metalness:0.2});
-    const visorMat=new THREE.MeshStandardMaterial({color:0xf3c969, roughness:0.1, metalness:0.9});
-    suitGroup.add(new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.4,1.4,16), suitMat));
-    const helmet=new THREE.Mesh(new THREE.SphereGeometry(0.35,16,16), suitMat); helmet.position.y=1.0; suitGroup.add(helmet);
-    const visor=new THREE.Mesh(new THREE.SphereGeometry(0.28,16,16,0,Math.PI*2,0,Math.PI*0.5), visorMat);
-    visor.position.set(0,1.0,0.15); visor.rotation.x=Math.PI/2; suitGroup.add(visor);
-    const bp=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.8,0.3), suitMat); bp.position.set(0,0.1,-0.35); suitGroup.add(bp);
+    suitGroup = new THREE.Group();
+    const suitMat = new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.4, metalness: 0.2 });
+    const visorMat = new THREE.MeshStandardMaterial({ color: 0xf3c969, roughness: 0.1, metalness: 0.9 });
+    suitGroup.add(new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.4, 1.4, 16), suitMat));
+    const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.35, 16, 16), suitMat); helmet.position.y = 1.0; suitGroup.add(helmet);
+    const visor = new THREE.Mesh(new THREE.SphereGeometry(0.28, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.5), visorMat);
+    visor.position.set(0, 1.0, 0.15); visor.rotation.x = Math.PI / 2; suitGroup.add(visor);
+    const bp = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 0.3), suitMat); bp.position.set(0, 0.1, -0.35); suitGroup.add(bp);
     scene.add(suitGroup);
 
     // Модель корабля
-    shipGroup=new THREE.Group();
-    const shipMat=new THREE.MeshStandardMaterial({color:0x1c2942, roughness:0.3, metalness:0.8});
-    const glassMat=new THREE.MeshStandardMaterial({color:0x42d6a4, roughness:0.1, metalness:0.5, transparent:true, opacity:0.7});
-    const hull=new THREE.Mesh(new THREE.ConeGeometry(0.8,2.2,16), shipMat); hull.rotation.x=Math.PI/2; shipGroup.add(hull);
-    const cabin=new THREE.Mesh(new THREE.SphereGeometry(0.4,16,16), glassMat); cabin.position.set(0,0.2,0.3); shipGroup.add(cabin);
-    shipGroup.visible=false; scene.add(shipGroup);
+    shipGroup = new THREE.Group();
+    const shipMat = new THREE.MeshStandardMaterial({ color: 0x1c2942, roughness: 0.3, metalness: 0.8 });
+    const glassMat = new THREE.MeshStandardMaterial({ color: 0x42d6a4, roughness: 0.1, metalness: 0.5, transparent: true, opacity: 0.7 });
+    const hull = new THREE.Mesh(new THREE.ConeGeometry(0.8, 2.2, 16), shipMat); hull.rotation.x = Math.PI / 2; shipGroup.add(hull);
+    const cabin = new THREE.Mesh(new THREE.SphereGeometry(0.4, 16, 16), glassMat); cabin.position.set(0, 0.2, 0.3); shipGroup.add(cabin);
+    shipGroup.visible = false; scene.add(shipGroup);
 
-    container.addEventListener('mousedown',(e)=>{isDragging=true; previousMousePosition={x:e.clientX,y:e.clientY};});
-    container.addEventListener('mousemove',(e)=>{
-        if(!isDragging)return;
-        const dx=e.clientX-previousMousePosition.x, dy=e.clientY-previousMousePosition.y;
-        const target=currentModelType==='suit'?suitGroup:shipGroup;
-        target.rotation.y+=dx*0.01; target.rotation.x+=dy*0.01;
-        previousMousePosition={x:e.clientX,y:e.clientY};
-    });
-    window.addEventListener('mouseup',()=>{isDragging=fal
+    container.addEventListener('mousedown', (e) => { isDragging = true; previousMousePosition = { x: e.clientX, y: e.clientY }; });
+    container.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - previousMousePosition.x, dy = e.clientY - previousMousePosition.y;
+        const target = currentModelType === 'suit' ? suitGroup : shipGroup;
+        target.rotation.y += dx * 0.01; target.rotation.x += dy * 0.01;
+        previousMousePosition =
