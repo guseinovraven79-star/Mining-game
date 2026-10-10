@@ -325,7 +325,7 @@ function checkDailyReset() {
     const today = getToday();
     if (state.todayDateString !== today) {
         state.todayDateString = today;
-        state.dailyVideos = 0; // Сброс ежедневных видеозаданий
+        state.dailyVideos = 0;
         saveState();
     }
 }
@@ -344,7 +344,6 @@ function loadState() {
             const parsed = JSON.parse(saved);
             Object.assign(state, parsed);
 
-            // РАСЧЕТ ОФЛАЙН-МАЙНИНГА (когда игрока не было в игре)
             if (state.lastActiveTimestamp) {
                 const now = Date.now();
                 const offlineSeconds = (now - state.lastActiveTimestamp) / 1000;
@@ -353,7 +352,6 @@ function loadState() {
                     let minedOffline = 0;
                     const speed = getCurrentSpeed();
 
-                    // Если был активен дневной майнинг
                     if (state.miningActiveUntil > state.lastActiveTimestamp) {
                         const activeUntil = Math.min(now, state.miningActiveUntil);
                         const activeSeconds = (activeUntil - state.lastActiveTimestamp) / 1000;
@@ -362,7 +360,6 @@ function loadState() {
                         }
                     }
 
-                    // Если был активен ночной майнинг
                     if (state.nightMiningActiveUntil > state.lastActiveTimestamp) {
                         const activeUntilNight = Math.min(now, state.nightMiningActiveUntil);
                         const activeSecondsNight = (activeUntilNight - state.lastActiveTimestamp) / 1000;
@@ -389,11 +386,10 @@ function getCurrentSpeed() {
     }
     return base;
 }
-    <script>
-// === Функции управления майнингом и заданиями ===
+
 function startMiningSession() {
     if (state.miningActiveUntil > Date.now()) return alert("Майнинг уже запущен!");
-    state.miningActiveUntil = Date.now() + 60 * 60 * 1000; // 1 час
+    state.miningActiveUntil = Date.now() + 60 * 60 * 1000;
     alert("🚀 Просмотр засчитан! Майнинг успешно запущен на 1 час.");
     saveState();
     render();
@@ -411,7 +407,7 @@ function watchNightMiningVideo() {
     state.nightMiningVideos++;
     if (state.nightMiningVideos >= 5) {
         state.nightMiningVideos = 0;
-        state.nightMiningActiveUntil = Date.now() + 6 * 60 * 60 * 1000; // 6 часов
+        state.nightMiningActiveUntil = Date.now() + 6 * 60 * 60 * 1000;
         alert("🌙 Ночной майнинг успешно запущен на 6 часов!");
     } else {
         alert(`Просмотрено видео для ночного майнинга: ${state.nightMiningVideos}/5`);
@@ -419,69 +415,7 @@ function watchNightMiningVideo() {
     saveState();
     render();
 }
-
-function watchBoostVideo() {
-    if (state.boostActiveUntil > Date.now()) return alert("Ускоритель уже активен!");
-    state.boostVideos++;
-    if (state.boostVideos >= 5) {
-        state.boostVideos = 0;
-        state.boostActiveUntil = Date.now() + 60 * 60 * 1000;
-        alert("⚡ Ускоритель ×2 успешно активирован на 60 минут!");
-    } else {
-        alert(`Просмотрено видео для буста: ${state.boostVideos}/5`);
-    }
-    saveState();
-    render();
-}
-
-function completeDailyVideos() {
-    checkDailyReset();
-    if (state.dailyVideos >= 5) return;
-    state.dailyVideos++;
-    if (state.dailyVideos === 5) {
-        state.balance += 3.0;
-        alert("🎉 Задание выполнено! Получено +3.0 NEVAR");
-    } else {
-        alert(`Прогресс ежедневных видео: ${state.dailyVideos}/5`);
-    }
-    saveState();
-    render();
-}
-
-function watchOptionalVideo() {
-    state.balance += 1.0;
-    alert("Вы посмотрели видео и получили +1 NEVAR!");
-    saveState();
-    render();
-}
-
-function handleDailyLoginButton() {
-    const today = getToday();
-    if (state.lastDailyReward === today) return;
-    state.dailyLoginVideos++;
-    if (state.dailyLoginVideos >= 3) {
-        const reward = 10 + (state.loginStreak * 10);
-        state.balance += reward;
-        state.lastDailyReward = today;
-        state.loginStreak++;
-        state.dailyLoginVideos = 0;
-        alert(`🎁 Получена ежедневная награда: +${reward} NEVAR!`);
-    } else {
-        alert(`Просмотрено видео для ежедневной награды: ${state.dailyLoginVideos}/3`);
-    }
-    saveState();
-    render();
-}
-
-function inviteFriend() {
-    state.invitedFriends++;
-    state.balance += 20;
-    alert("👥 Новый пилот успешно приглашен в ваш экипаж! Получено +20 NEVAR.");
-    saveState();
-    render();
-}
-
-// === Покупка снаряжения и планет ===
+    <script>
 function buySuit(method) {
     if (state.suitOwned) return;
     if (method === 'nevar') {
@@ -572,7 +506,6 @@ function unlockPlanet(planetId, method) {
     render();
 }
 
-// === Статус задачи (SHA-256) ===
 function copyStatusLink() {
     const refLink = `https://t.me/NevarBot?start=ref_status_${Date.now()}`;
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -693,7 +626,67 @@ function formatTimeMS(ms) {
     return `${h}:${m}:${s}`;
 }
 
-// === Отрисовка интерфейса ===
+function watchBoostVideo() {
+    if (state.boostActiveUntil > Date.now()) return alert("Ускоритель уже активен!");
+    state.boostVideos++;
+    if (state.boostVideos >= 5) {
+        state.boostVideos = 0;
+        state.boostActiveUntil = Date.now() + 60 * 60 * 1000;
+        alert("⚡ Ускоритель ×2 успешно активирован на 60 минут!");
+    } else {
+        alert(`Просмотрено видео для буста: ${state.boostVideos}/5`);
+    }
+    saveState();
+    render();
+}
+
+function completeDailyVideos() {
+    checkDailyReset();
+    if (state.dailyVideos >= 5) return;
+    state.dailyVideos++;
+    if (state.dailyVideos === 5) {
+        state.balance += 3.0;
+        alert("🎉 Задание выполнено! Получено +3.0 NEVAR");
+    } else {
+        alert(`Прогресс ежедневных видео: ${state.dailyVideos}/5`);
+    }
+    saveState();
+    render();
+}
+
+function watchOptionalVideo() {
+    state.balance += 1.0;
+    alert("Вы посмотрели видео и получили +1 NEVAR!");
+    saveState();
+    render();
+}
+
+function handleDailyLoginButton() {
+    const today = getToday();
+    if (state.lastDailyReward === today) return;
+    state.dailyLoginVideos++;
+    if (state.dailyLoginVideos >= 3) {
+        const reward = 10 + (state.loginStreak * 10);
+        state.balance += reward;
+        state.lastDailyReward = today;
+        state.loginStreak++;
+        state.dailyLoginVideos = 0;
+        alert(`🎁 Получена ежедневная награда: +${reward} NEVAR!`);
+    } else {
+        alert(`Просмотрено видео для ежедневной награды: ${state.dailyLoginVideos}/3`);
+    }
+    saveState();
+    render();
+}
+
+function inviteFriend() {
+    state.invitedFriends++;
+    state.balance += 20;
+    alert("👥 Новый пилот успешно приглашен в ваш экипаж! Получено +20 NEVAR.");
+    saveState();
+    render();
+}
+
 function renderPlanetsList() {
     const container = document.getElementById("planets-list");
     if (!container) return;
@@ -763,6 +756,7 @@ function render() {
     const btnNight = document.getElementById("btn-night-mining");
     const nightStatus = document.getElementById("night-mining-status");
     const nightProgress = document.getElementById("night-mining-progress");
+
     const nightAvailable = isNightMiningTime();
 
     if (state.nightMiningActiveUntil > now) {
@@ -845,7 +839,6 @@ function render() {
     updateStatusTaskUI();
 }
 
-// === Игровой цикл (тик каждую секунду) ===
 function gameTick() {
     const now = Date.now();
     const speed = getCurrentSpeed();
@@ -869,7 +862,6 @@ function gameTick() {
         balanceChanged = true;
     }
 
-    // Сохраняем состояние при изменениях баланса каждые несколько секунд или при событиях
     if (balanceChanged) {
         saveState();
     }
@@ -877,6 +869,21 @@ function gameTick() {
     render();
 }
 
-// === Навигация по страницам ===
 function switchPage(pageId) {
-    document.querySelectorAll(".app-container").forE
+    document.querySelectorAll(".app-container").forEach(page => page.classList.remove("active"));
+    const targetPage = document.getElementById("page-" + pageId);
+    if (targetPage) targetPage.classList.add("active");
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.toggle("active", item.dataset.page === pageId);
+    });
+}
+
+function showPage(pageId) { switchPage(pageId); }
+
+loadState();
+render();
+setInterval(gameTick, 1000);
+</script>
+</body>
+</html>
