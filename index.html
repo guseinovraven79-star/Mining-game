@@ -177,30 +177,31 @@ button:disabled{cursor:not-allowed;opacity:.55}
             <p id="invite5-progress">Приглашено: 0</p>
             <p id="invite-reward-progress">Получено за приглашения: 0 NEVAR</p>
             <p>Первые 5 приглашённых: по <span class="gold-text">20 NEVAR</span> за каждого. С 6-го: по <span class="gold-text">10 NEVAR</span>.</p>
+            <button class="btn-action" style="width:100%;margin-top:10px" id="btn-claim-invite-reward" onclick="claimInviteReward()">Получить награду</button>
         </div>
     </div>
 
     <div class="card">
         <div class="card-info">
             <h4>Подписаться на Telegram-канал</h4>
-            <p id="telegram-task-status">Перейдите в канал, посмотрите видео и получите награду • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action" style="width:100%" id="btn-telegram-task" onclick="handleCommunityTask('telegram')">Перейти в Telegram</button>
+            <p id="telegram-task-status">Выполните задание • <span class="gold-text">+5 NEVAR</span></p>
+            <button class="btn-action" style="width:100%" id="btn-telegram-task" onclick="handleCommunityTask('telegram')">Подписаться на канал</button>
         </div>
     </div>
 
     <div class="card">
         <div class="card-info">
             <h4>Подписаться на YouTube</h4>
-            <p id="youtube-task-status">Перейдите на канал, посмотрите видео и получите награду • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action" style="width:100%" id="btn-youtube-task" onclick="handleCommunityTask('youtube')">Перейти на YouTube</button>
+            <p id="youtube-task-status">Выполните задание • <span class="gold-text">+5 NEVAR</span></p>
+            <button class="btn-action" style="width:100%" id="btn-youtube-task" onclick="handleCommunityTask('youtube')">Подписаться на канал</button>
         </div>
     </div>
 
     <div class="card">
         <div class="card-info">
             <h4>Подписаться на X</h4>
-            <p id="x-task-status">Перейдите на страницу, посмотрите видео и получите награду • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action" style="width:100%" id="btn-x-task" onclick="handleCommunityTask('x')">Перейти в X</button>
+            <p id="x-task-status">Выполните задание • <span class="gold-text">+5 NEVAR</span></p>
+            <button class="btn-action" style="width:100%" id="btn-x-task" onclick="handleCommunityTask('x')">Подписаться на канал</button>
         </div>
     </div>
 </div>
@@ -469,8 +470,19 @@ function render() {
 
     const inviteRewardProgress = document.getElementById("invite-reward-progress");
     if (inviteRewardProgress) {
-        inviteRewardProgress.textContent = "Награда за приглашения: " +
+        inviteRewardProgress.textContent = "Получено за приглашения: " +
             Number(state.inviteRewardsPaid || 0).toFixed(2) + " NEVAR";
+    }
+
+    const inviteRewardButton = document.getElementById("btn-claim-invite-reward");
+    const availableInviteReward = getInviteRewardTotal(state.invitedFriends) -
+        Number(state.inviteRewardsPaid || 0);
+
+    if (inviteRewardButton) {
+        inviteRewardButton.disabled = availableInviteReward <= 0;
+        inviteRewardButton.textContent = availableInviteReward > 0
+            ? "Получить " + availableInviteReward + " NEVAR"
+            : "Нет доступной награды";
     }
 
     const dailyLoginButton = document.getElementById("btn-daily-login");
@@ -536,7 +548,8 @@ function render() {
     updateFuelDisplay();
     saveState();
 }
-    function getMiningTimerText() {
+    <script>
+function getMiningTimerText() {
     if (!state.miningEnd || state.miningEnd <= Date.now()) return "Майнинг не активен";
 
     const seconds = Math.floor((state.miningEnd - Date.now()) / 1000);
@@ -711,6 +724,20 @@ function claimTotal50() {
 
     state.total50Claimed = true;
     state.balance += 25;
+    saveState();
+    render();
+}
+
+function claimInviteReward() {
+    const totalReward = getInviteRewardTotal(state.invitedFriends);
+    const alreadyPaid = Math.max(0, Number(state.inviteRewardsPaid) || 0);
+    const reward = totalReward - alreadyPaid;
+
+    if (reward <= 0) return;
+
+    state.balance += reward;
+    state.inviteRewardsPaid = totalReward;
+
     saveState();
     render();
 }
@@ -896,42 +923,26 @@ function renderCommunityTask(platform) {
     const button = document.getElementById("btn-" + platform + "-task");
     const status = document.getElementById(platform + "-task-status");
 
-    const names = {
-        telegram: "Telegram",
-        youtube: "YouTube",
-        x: "X"
-    };
-
     if (button) {
         button.disabled = claimed || isAdCooldown;
 
         if (claimed) {
             button.textContent = "Награда получена";
         } else if (watched) {
-            button.textContent = "Получить +5 NEVAR";
-        } else if (opened) {
-            button.textContent = "Смотреть видео";
+            button.textContent = "Получить награду";
         } else {
-            button.textContent = platform === "telegram"
-                ? "Перейти в Telegram"
-                : platform === "youtube"
-                    ? "Перейти на YouTube"
-                    : "Перейти в X";
+            button.textContent = "Подписаться на канал";
         }
     }
 
     if (status) {
         if (claimed) {
             status.innerHTML = "Награда получена • <span class=\"gold-text\">+5 NEVAR</span>";
-        } else if (watched) {
-            status.innerHTML = "Видео просмотрено • <span class=\"gold-text\">+5 NEVAR</span>";
-        } else if (opened) {
-            status.innerHTML = "Теперь посмотрите видео на " + names[platform] + " • <span class=\"gold-text\">+5 NEVAR</span>";
         } else {
-            status.innerHTML = "Перейдите на " + names[platform] + ", затем посмотрите видео • <span class=\"gold-text\">+5 NEVAR</span>";
+            status.innerHTML = "Награда за выполнение • <span class=\"gold-text\">+5 NEVAR</span>";
         }
     }
-                }
+                         }
     function switchPage(pageId) {
     document.querySelectorAll(".app-container").forEach(page => {
         page.classList.remove("active");
