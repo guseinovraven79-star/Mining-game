@@ -209,8 +209,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <p id="daily-login-progress">Посмотрите 3 видео, чтобы открыть награду: 0/3</p>
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Смотреть видео (0/3)</button>
     </div>
-    </div>
-    <!-- 3. ЭКСПЕДИЦИИ -->
+</div>
+<!-- 3. ЭКСПЕДИЦИИ -->
 <div id="page-expeditions" class="app-container">
     <div class="section-title">🚀 Ангар и Снаряжение</div>
 
@@ -292,7 +292,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <h3>🚀 Руководство по выживанию и развитию</h3>
         <p>1. <strong>Ангар и Снаряжение:</strong> Приобретите <span class="gold-text">Скафандр</span> и <span class="gold-text">Корабль</span> (за NEVAR или просмотром видео). Без них экспедиции недоступны.<br>
         2. <strong>Последовательные экспедиции:</strong> Планеты открываются строго по цепочке (<span class="gold-text">Меркурий → Венера → Марс → Юпитер → Сатурн → Уран → Нептун</span>). Пропустить планету нельзя.<br>
-        3. <strong>Пассивный доход:</strong> Каждая покоренная планета навсегда увеличивает скорость добычи на <span class="gold-text">+1 NEVAR/час</span>!</p>
+        3. <strong>Скорость добычи:</strong> Каждая покоренная планета увеличивает скорость добычи во время активного майнинга на <span class="gold-text">+1 NEVAR/час</span>!</p>
     </div>
 
     <div class="info-box" style="margin-top:14px">
@@ -315,13 +315,13 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
 </div>
 
-<!-- Нижняя навигация -->
+<!-- Нижняя навигация (Исправлена для четкого переключения) -->
 <nav class="nav-bar">
-    <button class="nav-item active" data-page="mining" onclick="showPage('mining')"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
-    <button class="nav-item" data-page="tasks" onclick="showPage('tasks')"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
-    <button class="nav-item" data-page="expeditions" onclick="showPage('expeditions')"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
-    <button class="nav-item" data-page="friends" onclick="showPage('friends')"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
-    <button class="nav-item" data-page="info" onclick="showPage('info')"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
+    <button class="nav-item active" data-page="mining" onclick="switchPage('mining')"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
+    <button class="nav-item" data-page="tasks" onclick="switchPage('tasks')"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
+    <button class="nav-item" data-page="expeditions" onclick="switchPage('expeditions')"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
+    <button class="nav-item" data-page="friends" onclick="switchPage('friends')"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
+    <button class="nav-item" data-page="info" onclick="switchPage('info')"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
 </nav>
 <script>
 const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
@@ -778,83 +778,5 @@ function renderPlanetsList() {
             statusText = `Цена: <span class="gold-text">${planet.costNevar} NEVAR</span> или ${planet.costVideos} видео`;
         }
 
-        html += `
-            <div class="card" style="flex-direction:column;align-items:stretch;opacity:${!isAvailable && !isUnlocked ? 0.6 : 1}">
-                <div style="display:flex;justify-content:space-between;align-items:center">
-                    <div>
-                        <h4 style="margin:0">${planet.name}</h4>
-                        <p style="margin:4px 0 0">${statusText}</p>
-                    </div>
-                    <div>${isUnlocked ? '<span style="color:var(--green);font-weight:bold">Открыто</span>' : `<span style="font-size:11px;color:var(--muted)">📺 ${watched}/${planet.costVideos}</span>`}</div>
-                </div>
-                ${!isUnlocked ? `
-                <div class="btn-group" style="margin-top:10px">
-                    <button class="btn-action" ${!isAvailable ? 'disabled' : ''} onclick="unlockPlanet('${planet.id}', 'nevar')">
-                        ${!isAvailable ? '🔒 Закрыто' : `Купить за ${planet.costNevar} NEVAR`}
-                    </button>
-                    <button class="btn-action btn-secondary" ${!isAvailable ? 'disabled' : ''} onclick="unlockPlanet('${planet.id}', 'video')">
-                        ${!isAvailable ? '🔒 Закрыто' : `Видео (${watched}/${planet.costVideos}) 📺`}
-                    </button>
-                </div>` : ''}
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function render() {
-    document.getElementById("balance").textContent = Number(state.balance).toFixed(2);
+        html
     
-    const speed = getCurrentSpeed();
-    document.getElementById("speed-indicator").textContent = `⚡ ${speed} NEVAR/ч`;
-
-    // Автосчетчик видео за день
-    const videoCounterElem = document.getElementById("daily-total-videos-counter");
-    if (videoCounterElem) videoCounterElem.textContent = state.dailyVideoCount;
-
-    // Майнинг сессии (1 час)
-    const btnStartMining = document.getElementById("btn-start-mining");
-    const miningLabel = document.getElementById("mining-status-label");
-    const miningTimerDisplay = document.getElementById("mining-timer-display");
-
-    const now = Date.now();
-    if (state.miningActiveUntil > now) {
-        const rem = state.miningActiveUntil - now;
-        if (miningLabel) miningLabel.textContent = "ИДЕТ ДОБЫЧА (1 ЧАС)...";
-        if (miningTimerDisplay) miningTimerDisplay.textContent = formatTimeMS(rem);
-        if (btnStartMining) { btnStartMining.disabled = true; btnStartMining.textContent = "Майнинг запущен"; }
-    } else {
-        if (miningLabel) miningLabel.textContent = "МАЙНИНГ НЕ АКТИВЕН";
-        if (miningTimerDisplay) miningTimerDisplay.textContent = "00:00:00";
-        if (btnStartMining) { btnStartMining.disabled = false; btnStartMining.textContent = "Запустить майнинг (1 ч) 📺"; }
-    }
-
-    // Ночной майнинг (6 часов)
-    const btnNight = document.getElementById("btn-night-mining");
-    const nightStatus = document.getElementById("night-mining-status");
-    const nightProgress = document.getElementById("night-mining-progress");
-
-    const nightAvailable = isNightMiningTime();
-
-    if (state.nightMiningActiveUntil > now) {
-        const remNight = state.nightMiningActiveUntil - now;
-        if (nightStatus) nightStatus.textContent = `🌙 Ночной майнинг активен! Осталось: ${formatTimeMS(remNight)}`;
-        if (nightProgress) nightProgress.textContent = "Активно";
-        if (btnNight) { btnNight.disabled = true; btnNight.textContent = "Ночной майнинг запущен"; }
-    } else {
-        if (nightProgress) nightProgress.textContent = `Прогресс: ${state.nightMiningVideos}/5`;
-        if (nightAvailable) {
-            if (nightStatus) nightStatus.textContent = "Окно открыто (22:00-23:59)! Посмотрите 5 видео для запуска.";
-            if (btnNight) { btnNight.disabled = false; btnNight.textContent = `Запустить ночной майнинг (${state.nightMiningVideos}/5) 📺`; }
-        } else {
-            if (nightStatus) nightStatus.textContent = "🔒 Доступен строго с 22:00 до 23:59. Сейчас запустить нельзя.";
-            if (btnNight) { btnNight.disabled = true; btnNight.textContent = "Закрыто до 22:00"; }
-        }
-    }
-
-    // Ускоритель
-    const boostProgress = document.getElementById("boost-progress");
-    const boostStatus = document.getElementById("boost-status");
-    const btnBoost = document.getElementById("btn-activate-boost");
-    if (state.boostActiveUntil > now) {
-        const remainingMi
