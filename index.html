@@ -186,10 +186,31 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <div class="balance-amount" id="friends-count">0</div>
         <p style="font-size:12px;color:var(--muted);margin-top:8px">Приглашайте пилотов и получайте бонусы.</p>
     </div>
+    
     <div class="info-box">
         <h3>Пригласить друзей</h3>
         <p>За первых 5 друзей начисляется по 20 NEVAR, с 6-го — по 10 NEVAR.</p>
         <button class="btn-action" style="width:100%;margin-top:10px" onclick="inviteFriend()">Пригласить друга</button>
+    </div>
+
+    <!-- ЗАДАНИЕ СО СТАТУСОМ СОЦСЕТЕЙ -->
+    <div class="info-box" style="margin-top:16px;border-color:var(--border)">
+        <h3>📸 Поделитесь ссылкой в статусах и получите вознаграждение</h3>
+        <p>1. Скопируйте вашу реферальную ссылку и выложите её в статус/сторис социальной сети.<br>
+        2. Через 12 часов выложите скриншот с просмотрами вашего статуса.<br>
+        <span class="gold-text">• Первые 10 загрузок: +50 NEVAR каждый день</span><br>
+        <span class="gold-text">• Начиная с 11-й: +20 NEVAR каждый день</span></p>
+        
+        <p id="status-task-info" style="margin-top:10px;font-weight:bold;color:var(--gold2)">Статус: Ссылка ещё не скопирована</p>
+        <p id="status-timer-display" style="font-size:16px;font-weight:bold;color:var(--text);margin:6px 0"></p>
+
+        <!-- Элемент выбора скриншота -->
+        <input type="file" id="status-file-input" accept="image/*" style="display:none" onchange="handleStatusImageUpload(event)">
+
+        <div class="btn-group" style="margin-top:10px;flex-direction:column;gap:8px">
+            <button class="btn-action" id="btn-copy-status-link" style="width:100%" onclick="copyStatusLink()">1. Скопировать ссылку статуса</button>
+            <button class="btn-action btn-secondary" id="btn-upload-status-img" style="width:100%" onclick="triggerStatusUpload()" disabled>2. Загрузить скриншот статуса</button>
+        </div>
     </div>
 </div>
 
@@ -262,7 +283,10 @@ const state = {
     boostVideos: 0,
     boostActiveUntil: 0,
     invitedFriends: 0,
-    currentDay: ""
+    currentDay: "",
+    statusTaskStartTime: 0,
+    statusUploadCount: 0,
+    usedImageHashes: [] // Массив для хранения хэшей уже использованных скриншотов
 };
 
 const PLANETS_DATA = [
@@ -399,7 +423,134 @@ function claimMined() {
     saveState();
     render();
 }
-    function watchBoostVideo() {
+    const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+function copyStatusLink() {
+    const refLink = `https://t.me/NevarBot?start=ref_status_${Date.now()}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(refLink);
+    } else {
+        const tempInput = document.createElement("input");
+        tempInput.value = refLink;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+    }
+
+    const now = Date.now();
+    if (!state.statusTaskStartTime || (now - state.statusTaskStartTime >= TWENTY_FOUR_HOURS_MS)) {
+        state.statusTaskStartTime = now;
+        saveState();
+        alert("📋 Ссылка скопирована! Выложите её в статус соцсети. Через 12 часов можно будет загрузить скриншот.");
+    } else {
+        alert("📋 Ссылка повторно скопирована в буфер обмена!");
+    }
+    render();
+}
+
+function triggerStatusUpload() {
+    document.getElementById("status-file-input").click();
+}
+
+// Функция для генерации цифрового слепка (хэша) загруженного файла
+async function computeFileHash(file) {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function handleStatusImageUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const now = Date.now();
+    const elapsed = now - state.statusTaskStartTime;
+
+    if (elapsed >= TWELVE_HOURS_MS && elapsed < TWENTY_FOUR_HOURS_MS) {
+        // Проверяем хэш файла на повторное использование
+        try {
+            const fileHash = await computeFileHash(file);
+            
+            if (!state.usedImageHashes) state.usedImageHashes = [];
+
+            if (state.usedImageHashes.includes(fileHash)) {
+                alert("❌ Этот скриншот уже использовался ранее! Пожалуйста, сделайте новый скриншот с актуальными просмотрами.");
+                event.target.value = "";
+                return;
+            }
+
+            // Запоминаем новый хэш
+            state.usedImageHashes.push(fileHash);
+
+            state.statusUploadCount++;
+            const reward = state.statusUploadCount <= 10 ? 50 : 20;
+            state.balance += reward;
+            
+            alert(`🎉 Скриншот успешно принят! Начислено +${reward} NEVAR (Загрузка #${state.statusUploadCount}). Следующая попытка будет доступна завтра.`);
+            
+            event.target.value = "";
+            saveState();
+            render();
+        } catch (err) {
+            alert("Ошибка при обработке файла. Попробуйте другой скриншот.");
+        }
+    } else {
+        alert("⏳ Окно загрузки скриншота сейчас неактивно!");
+        event.target.value = "";
+    }
+}
+
+function updateStatusTaskUI() {
+    const infoElem = document.getElementById("status-task-info");
+    const timerElem = document.getElementById("status-timer-display");
+    const btnCopy = document.getElementById("btn-copy-status-link");
+    const btnUpload = document.getElementById("btn-upload-status-img");
+
+    if (!infoElem || !timerElem || !btnCopy || !btnUpload) return;
+
+    if (!state.statusTaskStartTime) {
+        infoElem.textContent = "Статус: Скопируйте ссылку для старта";
+        timerElem.textContent = "";
+        btnCopy.disabled = false;
+        btnUpload.disabled = true;
+        return;
+    }
+
+    const now = Date.now();
+    const elapsed = now - state.statusTaskStartTime;
+
+    if (elapsed < TWELVE_HOURS_MS) {
+        const remaining = TWELVE_HOURS_MS - elapsed;
+        infoElem.textContent = "⏳ Выложите ссылку в статус. Открытие загрузки через:";
+        timerElem.textContent = formatTimeMS(remaining);
+        btnCopy.disabled = false;
+        btnUpload.disabled = true;
+    } else if (elapsed >= TWELVE_HOURS_MS && elapsed < TWENTY_FOUR_HOURS_MS) {
+        const remainingWindow = TWENTY_FOUR_HOURS_MS - elapsed;
+        infoElem.textContent = "📸 Загрузите скриншот статуса! Окно закрывается через:";
+        timerElem.textContent = formatTimeMS(remainingWindow);
+        btnCopy.disabled = false;
+        btnUpload.disabled = false;
+    } else {
+        infoElem.textContent = "✅ Новый день доступен! Скопируйте ссылку заново.";
+        timerElem.textContent = "00:00:00";
+        btnCopy.disabled = false;
+        btnUpload.disabled = true;
+    }
+}
+
+function formatTimeMS(ms) {
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600).toString().padStart(2, '0');
+    const m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0');
+    const s = (totalSec % 60).toString().padStart(2, '0');
+    return `${h}:${m}:${s}`;
+}
+
+function watchBoostVideo() {
     if (state.boostActiveUntil > Date.now()) return alert("Ускоритель уже активен!");
     state.boostVideos++;
     if (state.boostVideos >= 5) {
@@ -571,6 +722,7 @@ function render() {
     }
 
     renderPlanetsList();
+    updateStatusTaskUI();
 }
 
 function gameTick() {
