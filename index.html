@@ -82,7 +82,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
 </head>
 <body>
 
-<!-- 1. МАЙНИНГ -->
 <div class="app-container active" id="page-mining">
     <div class="top-header">
         <div><div class="brand">NEVAR</div><div class="brand-subtitle">COSMIC EXPEDITION</div></div>
@@ -114,9 +113,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <p class="boost-status" id="boost-status">Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.</p>
         <p class="boost-progress" id="boost-progress">Прогресс: 0/5</p>
         <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">Активировать</button>
-    </div>
-    <div class="info-box">
-        <p>Текущая скорость майнинга: <span class="gold-text" id="mining-rate-label">1 NEVAR за сеанс</span></p>
     </div>
 </div>
 <!-- 2. ЗАДАНИЯ -->
@@ -177,40 +173,34 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="card">
         <div class="card-info">
-            <h4>Пригласить 5 друзей</h4>
-            <p id="invite5-progress">Приглашено: 0/5</p>
-            <p>Награда за приглашение 5 друзей: <span class="gold-text">20 NEVAR</span></p>
+            <h4>Приглашение друзей</h4>
+            <p id="invite5-progress">Приглашено: 0</p>
+            <p id="invite-reward-progress">Получено за приглашения: 0 NEVAR</p>
+            <p>Первые 5 приглашённых: по <span class="gold-text">20 NEVAR</span> за каждого. С 6-го: по <span class="gold-text">10 NEVAR</span>.</p>
         </div>
-        <button class="btn-action" id="btn-invite-friends" onclick="inviteFriend()">Пригласить</button>
     </div>
 
     <div class="card">
         <div class="card-info">
             <h4>Подписаться на Telegram-канал</h4>
-            <p id="telegram-task-status">Откройте канал, затем посмотрите видео и заберите награду • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action btn-secondary" id="btn-telegram-open" onclick="openTelegramChannel()">Перейти в Telegram</button>
-            <button class="btn-action" id="btn-telegram-video" onclick="watchCommunityVideo('telegram')" disabled>Смотреть видео</button>
-            <button class="btn-action" id="btn-telegram-claim" onclick="claimCommunityReward('telegram')" disabled>Забрать награду</button>
+            <p id="telegram-task-status">Перейдите в канал, посмотрите видео и получите награду • <span class="gold-text">+5 NEVAR</span></p>
+            <button class="btn-action" style="width:100%" id="btn-telegram-task" onclick="handleCommunityTask('telegram')">Перейти в Telegram</button>
         </div>
     </div>
 
     <div class="card">
         <div class="card-info">
             <h4>Подписаться на YouTube</h4>
-            <p id="youtube-task-status">Откройте канал, затем посмотрите видео и заберите награду • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action btn-secondary" id="btn-youtube-open" onclick="handleYouTubeSubscriptionTask()">Перейти на YouTube</button>
-            <button class="btn-action" id="btn-youtube-sub-video" onclick="watchCommunityVideo('youtube')" disabled>Смотреть видео</button>
-            <button class="btn-action" id="btn-youtube-claim" onclick="claimCommunityReward('youtube')" disabled>Забрать награду</button>
+            <p id="youtube-task-status">Перейдите на канал, посмотрите видео и получите награду • <span class="gold-text">+5 NEVAR</span></p>
+            <button class="btn-action" style="width:100%" id="btn-youtube-task" onclick="handleCommunityTask('youtube')">Перейти на YouTube</button>
         </div>
     </div>
 
     <div class="card">
         <div class="card-info">
             <h4>Подписаться на X</h4>
-            <p id="x-task-status">Откройте страницу, затем посмотрите видео и заберите награду • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action btn-secondary" id="btn-x-open" onclick="openXChannel()">Перейти в X</button>
-            <button class="btn-action" id="btn-x-video" onclick="watchCommunityVideo('x')" disabled>Смотреть видео</button>
-            <button class="btn-action" id="btn-x-claim" onclick="claimCommunityReward('x')" disabled>Забрать награду</button>
+            <p id="x-task-status">Перейдите на страницу, посмотрите видео и получите награду • <span class="gold-text">+5 NEVAR</span></p>
+            <button class="btn-action" style="width:100%" id="btn-x-task" onclick="handleCommunityTask('x')">Перейти в X</button>
         </div>
     </div>
 </div>
@@ -280,6 +270,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <div class="info-box">
         <h3>Пригласи друзей</h3>
         <p>Приглашайте новых пилотов в NEVAR и развивайте свою команду.</p>
+        <p>За первых 5 приглашённых начисляется по 20 NEVAR за каждого. Начиная с 6-го — по 10 NEVAR.</p>
         <button class="btn-action" style="width:100%;margin-top:10px" onclick="inviteFriend()">Пригласить друга</button>
     </div>
     <div class="section-title">Список экипажа</div>
@@ -334,6 +325,7 @@ const state = {
     boostActiveUntil: 0,
     invitedFriends: 0,
     inviteRewardClaimed: false,
+    inviteRewardsPaid: 0,
     friends: [],
     telegramOpened: false,
     telegramVideoWatched: false,
@@ -355,6 +347,12 @@ let current3DModel = "ship";
 let dailyLoginClaimed = false;
 
 const COMMUNITY_LINKS = {
+    telegram: "",
+    youtube: "",
+    x: ""
+};
+
+const COMMUNITY_VIDEO_LINKS = {
     telegram: "",
     youtube: "",
     x: ""
@@ -407,6 +405,11 @@ function getDailyLoginDay() {
     if (state.lastDailyReward === getToday()) return Math.max(1, state.loginStreak);
     if (state.lastDailyReward === getYesterday()) return Math.max(1, state.loginStreak + 1);
     return 1;
+}
+
+function getInviteRewardTotal(count) {
+    const invited = Math.max(0, Number(count) || 0);
+    return Math.min(invited, 5) * 20 + Math.max(0, invited - 5) * 10;
 }
 
 function render() {
@@ -462,7 +465,13 @@ function render() {
     if (friendsCount) friendsCount.textContent = state.invitedFriends;
 
     const inviteProgress = document.getElementById("invite5-progress");
-    if (inviteProgress) inviteProgress.textContent = "Приглашено: " + Math.min(5, state.invitedFriends) + "/5";
+    if (inviteProgress) inviteProgress.textContent = "Приглашено: " + state.invitedFriends;
+
+    const inviteRewardProgress = document.getElementById("invite-reward-progress");
+    if (inviteRewardProgress) {
+        inviteRewardProgress.textContent = "Награда за приглашения: " +
+            Number(state.inviteRewardsPaid || 0).toFixed(2) + " NEVAR";
+    }
 
     const dailyLoginButton = document.getElementById("btn-daily-login");
     const dailyLoginProgress = document.getElementById("daily-login-progress");
@@ -803,123 +812,127 @@ function inviteFriend() {
             encodeURIComponent(shareUrl) + "&text=" + encodeURIComponent(shareText);
         window.open(shareLink, "_blank");
     } else if (navigator.share) {
-        navigator.share({ title: "NEVAR", text: shareText, url: shareUrl }).catch(() => {});
+        navigator.share({
+            title: "NEVAR",
+            text: shareText,
+            url: shareUrl
+        }).catch(() => {});
     } else {
         window.prompt("Скопируйте ссылку и отправьте другу:", shareUrl);
     }
 }
 
-function openCommunity(platform) {
-    if (state[platform + "Opened"]) return;
-
-    let link = COMMUNITY_LINKS[platform];
+function getCommunityLink(platform, isVideo) {
+    const links = isVideo ? COMMUNITY_VIDEO_LINKS : COMMUNITY_LINKS;
+    let link = links[platform];
 
     if (!link) {
-        link = window.prompt("Вставьте ссылку на официальный канал NEVAR:");
+        link = window.prompt(
+            isVideo
+                ? "Вставьте ссылку на видео для " + platform + ":"
+                : "Вставьте ссылку на официальный канал или страницу " + platform + ":"
+        );
     }
 
-    if (!link) return;
+    if (!link) return "";
 
     try {
         const parsed = new URL(link);
         if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
             alert("Введите корректную ссылку.");
-            return;
+            return "";
         }
-
-        window.open(parsed.href, "_blank");
-        state[platform + "Opened"] = true;
-        saveState();
-        render();
+        return parsed.href;
     } catch (e) {
         alert("Введите корректную ссылку.");
+        return "";
     }
 }
 
-function openTelegramChannel() {
-    openCommunity("telegram");
-}
+function handleCommunityTask(platform) {
+    const openedKey = platform + "Opened";
+    const watchedKey = platform + "VideoWatched";
+    const claimedKey = platform + "RewardClaimed";
 
-function handleYouTubeSubscriptionTask() {
-    openCommunity("youtube");
-}
+    if (state[claimedKey] || isAdCooldown) return;
 
-function openXChannel() {
-    openCommunity("x");
-}
+    const button = document.getElementById("btn-" + platform + "-task");
+    if (!button) return;
 
-function renderCommunityTask(platform) {
-    const labels = {
-        telegram: "telegram",
-        youtube: "youtube",
-        x: "x"
-    };
+    if (!state[openedKey]) {
+        const link = getCommunityLink(platform, false);
+        if (!link) return;
 
-    const opened = state[platform + "Opened"];
-    const watched = state[platform + "VideoWatched"];
-    const claimed = state[platform + "RewardClaimed"];
-
-    const openButton = document.getElementById("btn-" + labels[platform] + "-open");
-    const videoButton = document.getElementById(
-        platform === "youtube" ? "btn-youtube-sub-video" :
-        platform === "telegram" ? "btn-telegram-video" : "btn-x-video"
-    );
-    const claimButton = document.getElementById(
-        platform === "youtube" ? "btn-youtube-claim" :
-        platform === "telegram" ? "btn-telegram-claim" : "btn-x-claim"
-    );
-    const status = document.getElementById(platform + "-task-status");
-
-    if (openButton) {
-        openButton.disabled = opened || claimed;
-        if (opened || claimed) openButton.textContent = "Канал открыт";
+        window.open(link, "_blank");
+        state[openedKey] = true;
+        saveState();
+        render();
+        return;
     }
 
-    if (videoButton) {
-        videoButton.disabled = !opened || watched || claimed || isAdCooldown;
-        if (watched || claimed) videoButton.textContent = "Видео просмотрено";
+    if (!state[watchedKey]) {
+        const link = getCommunityLink(platform, true);
+        if (!link) return;
+
+        window.open(link, "_blank");
+
+        fakeVideo(button, 0, () => {
+            state[watchedKey] = true;
+        });
+        return;
     }
 
-    if (claimButton) {
-        claimButton.disabled = !opened || !watched || claimed;
-        if (claimed) claimButton.textContent = "Награда получена";
-    }
-
-    if (status && claimed) {
-        status.innerHTML = "Награда получена • <span class=\"gold-text\">+5 NEVAR</span>";
-    } else if (status && watched) {
-        status.innerHTML = "Видео просмотрено. Можно забрать награду • <span class=\"gold-text\">+5 NEVAR</span>";
-    } else if (status && opened) {
-        status.innerHTML = "Теперь посмотрите видео • <span class=\"gold-text\">+5 NEVAR</span>";
-    }
-}
-
-function watchCommunityVideo(platform) {
-    if (!state[platform + "Opened"] || state[platform + "VideoWatched"] ||
-        state[platform + "RewardClaimed"] || isAdCooldown) return;
-
-    const button = document.getElementById(
-        platform === "youtube" ? "btn-youtube-sub-video" :
-        platform === "telegram" ? "btn-telegram-video" : "btn-x-video"
-    );
-
-    fakeVideo(button, 0, () => {
-        state[platform + "VideoWatched"] = true;
-    });
-}
-
-function claimCommunityReward(platform) {
-    if (!state[platform + "Opened"] ||
-        !state[platform + "VideoWatched"] ||
-        state[platform + "RewardClaimed"]) return;
-
-    state[platform + "RewardClaimed"] = true;
+    state[claimedKey] = true;
     state.balance += 5;
     saveState();
     render();
 }
 
-function switchPage(pageId) {
+function renderCommunityTask(platform) {
+    const opened = state[platform + "Opened"];
+    const watched = state[platform + "VideoWatched"];
+    const claimed = state[platform + "RewardClaimed"];
+
+    const button = document.getElementById("btn-" + platform + "-task");
+    const status = document.getElementById(platform + "-task-status");
+
+    const names = {
+        telegram: "Telegram",
+        youtube: "YouTube",
+        x: "X"
+    };
+
+    if (button) {
+        button.disabled = claimed || isAdCooldown;
+
+        if (claimed) {
+            button.textContent = "Награда получена";
+        } else if (watched) {
+            button.textContent = "Получить +5 NEVAR";
+        } else if (opened) {
+            button.textContent = "Смотреть видео";
+        } else {
+            button.textContent = platform === "telegram"
+                ? "Перейти в Telegram"
+                : platform === "youtube"
+                    ? "Перейти на YouTube"
+                    : "Перейти в X";
+        }
+    }
+
+    if (status) {
+        if (claimed) {
+            status.innerHTML = "Награда получена • <span class=\"gold-text\">+5 NEVAR</span>";
+        } else if (watched) {
+            status.innerHTML = "Видео просмотрено • <span class=\"gold-text\">+5 NEVAR</span>";
+        } else if (opened) {
+            status.innerHTML = "Теперь посмотрите видео на " + names[platform] + " • <span class=\"gold-text\">+5 NEVAR</span>";
+        } else {
+            status.innerHTML = "Перейдите на " + names[platform] + ", затем посмотрите видео • <span class=\"gold-text\">+5 NEVAR</span>";
+        }
+    }
+                }
+    function switchPage(pageId) {
     document.querySelectorAll(".app-container").forEach(page => {
         page.classList.remove("active");
     });
@@ -936,8 +949,9 @@ function switchPage(pageId) {
 
 function showPage(pageId) {
     switchPage(pageId);
-    }
-    function init3D() {
+}
+
+function init3D() {
     const target = document.getElementById("canvas-3d-target");
     if (!target || typeof THREE === "undefined") return;
 
