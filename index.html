@@ -32,8 +32,9 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .card p{margin:4px 0}
 .info-box h3{color:var(--gold2);font-size:15px}
 .info-box p:last-child{margin-bottom:0}
+.warning-box{border-color:rgba(243,201,105,.22);background:rgba(243,201,105,.06)}
 .gold-text{color:var(--gold);font-weight:800}
-.btn-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;border:1px solid rgba(243,201,105,.35);border-radius:12px;color:#17130a;background:linear-gradient(135deg,var(--gold2),var(--gold));font-size:12px;font-weight:800;line-height:1.25;text-align:center}
+.btn-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;border:1px solid rgba(243,201,105,.35);border-radius:12px;color:#17130a;background:linear-gradient(135deg,var(--gold2),var(--gold));font-size:12px;font-weight:800;line-height:1.25;text-align:center;transition:filter .15s ease,transform .15s ease}
 .btn-action:active:not(:disabled){transform:scale(.98)}
 .btn-action:disabled{color:#aab2c0;border-color:rgba(160,174,192,.15);background:#263247}
 .btn-secondary{color:var(--gold2);border:1px solid var(--border);background:#19253a}
@@ -46,6 +47,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .mining-timer-label{color:var(--muted);font-size:11px;letter-spacing:1.5px}
 .mining-timer{margin-top:7px;color:var(--gold2);font-size:38px;font-weight:900;font-variant-numeric:tabular-nums}
 .mining-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
+.mining-actions .btn-action{width:100%;min-height:46px}
 .boost-card{padding:17px;margin-bottom:16px;border:1px solid rgba(243,201,105,.24);border-radius:18px;background:linear-gradient(145deg,rgba(243,201,105,.09),var(--panel))}
 .boost-heading{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .boost-icon{display:flex;align-items:center;justify-content:center;width:42px;height:42px;flex-shrink:0;border-radius:13px;color:var(--gold2);background:rgba(243,201,105,.12);font-size:22px}
@@ -53,6 +55,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .boost-subtitle{margin-top:4px;color:var(--muted);font-size:11px}
 .boost-status{margin:12px 0 7px;color:var(--muted);font-size:12px;line-height:1.5}
 .boost-progress{margin-bottom:12px;color:var(--gold);font-size:12px;font-weight:700}
+.boost-card .btn-action{width:100%}
 .daily-rewards{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:14px 0}
 .daily-reward{min-width:0;padding:9px 2px;border:1px solid rgba(160,174,192,.15);border-radius:9px;background:#0d1524;text-align:center}
 .daily-reward .day{color:var(--muted);font-size:9px}
@@ -60,6 +63,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .daily-reward .mark{min-height:18px;color:var(--green);font-size:8px;line-height:1.2}
 .daily-reward.current{border-color:var(--gold);background:rgba(243,201,105,.08)}
 .daily-reward.claimed{border-color:rgba(66,214,164,.3);background:rgba(66,214,164,.05)}
+.friends-list{display:flex;flex-direction:column;gap:8px}
 .hangar-item{padding:18px;margin-bottom:14px;border:1px solid rgba(160,174,192,.15);border-radius:17px;background:var(--panel)}
 .hangar-item h3{margin:0 0 8px;color:var(--gold2);font-size:16px}
 .hangar-item p{color:var(--muted);font-size:12px;line-height:1.6}
@@ -147,6 +151,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Смотреть видео (0/3)</button>
     </div>
 </div>
+
 <!-- 3. ЭКСПЕДИЦИИ -->
 <div id="page-expeditions" class="app-container">
     <div class="section-title">🚀 Ангар и Снаряжение</div>
@@ -193,12 +198,47 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
 </div>
 
-<!-- 5. ИНФО -->
+<!-- 5. ИНФО (ОБНОВЛЕННЫЙ РАЗДЕЛ) -->
 <div id="page-info" class="app-container">
-    <div class="section-title">ℹ️ О проекте NEVAR</div>
+    <div class="section-title">ℹ️ Руководство пилота NEVAR</div>
+
     <div class="info-box">
-        <h3>Правила экспедиций</h3>
-        <p>1. Приобретите скафандр и корабль в ангаре.<br>2. Открывайте планеты строго по порядку (Меркурий -&gt; Венера -&gt; Марс и т.д.).<br>3. Каждая открытая экспедиция навсегда увеличивает скорость пассивного майнинга на +1 NEVAR/час!</p>
+        <h3>🪙 Что такое NEVAR?</h3>
+        <p>• <strong>Суть токена:</strong> NEVAR — это внутренняя игровая валюта и будущий токен экосистемы, который пилоты добывают в ходе космической экспедиции.<br>
+        • <strong>Главная цель:</strong> Все монеты, добытые с помощью пассивного майнинга, выполнения заданий и покорения планет, — это ваш капитал и подготовка к будущему <span class="gold-text">аирдропу и официальному листингу</span>.<br>
+        • <strong>Экономика:</strong> Ценность каждого заработанного токена растет вместе с вашим продвижением по Солнечной системе.</p>
+    </div>
+
+    <div class="info-box" style="margin-top:14px">
+        <h3>🌌 Добро пожаловать в NEVAR</h3>
+        <p>Это захватывающее космическое путешествие и экономическая стратегия для Telegram Mini App. Ваша главная цель — пройти путь от земной орбиты через все планеты Солнечной системы к Млечному Пути и подготовиться к грандиозному аирдропу.<br><br>
+        <span class="gold-text">✨ Помните: эта игра — это только начало большого пути развития всей экосистемы NEVAR!</span></p>
+    </div>
+
+    <div class="info-box" style="margin-top:14px">
+        <h3>🚀 Руководство по выживанию и развитию</h3>
+        <p>1. <strong>Ангар и Снаряжение:</strong> Приобретите <span class="gold-text">Скафандр</span> и <span class="gold-text">Корабль</span> (за NEVAR или просмотром видео). Без них экспедиции недоступны.<br>
+        2. <strong>Последовательные экспедиции:</strong> Планеты открываются строго по цепочке (<span class="gold-text">Меркурий → Венера → Марс → Юпитер → Сатурн → Уран → Нептун</span>). Пропустить планету нельзя.<br>
+        3. <strong>Пассивный доход:</strong> Каждая покоренная планета навсегда увеличивает скорость добычи на <span class="gold-text">+1 NEVAR/час</span>!</p>
+    </div>
+
+    <div class="info-box" style="margin-top:14px">
+        <h3>💡 Полезные секреты для пилотов</h3>
+        <p>• <strong>Буст ×2:</strong> Активируйте временное ускорение добычи монеток во вкладке майнинга.<br>
+        • <strong>Награды и Задания:</strong> Регулярный вход и выполнение заданий приносят отличный приток капитала.<br>
+        • <strong>Экипаж:</strong> Приглашайте друзей — первые пилоты дают повышенные бонусы.<br>
+        • <strong>Альтернативный путь:</strong> Нет монет? Продвигайтесь и открывайте контент с помощью просмотра видео!</p>
+    </div>
+
+    <div class="warning-box" style="margin-top:14px;text-align:center">
+        <h3 style="color:var(--gold2);margin-bottom:6px">🌌 Главный секрет экспедиции</h3>
+        <p style="font-style:italic">А вся подлинная тайна токена NEVAR, его настоящие масштабы, токеномика и условия финального Аирдропа раскроются перед вами только тогда, когда ваш корабль пройдет Нептун и доберется до самого сердца <strong>Млечного Пути</strong>... Вперед, к звездам, пилот!</p>
+    </div>
+
+    <div class="card" style="margin-top:14px;text-align:center;flex-direction:column">
+        <h4 style="margin-bottom:6px">📡 Официальный Telegram-канал</h4>
+        <p style="margin-bottom:10px">Будьте в курсе всех свежих новостей, анонсов и обновлений проекта!</p>
+        <button class="btn-action" style="width:100%" onclick="window.open('https://t.me/', '_blank')">Подписаться на канал</button>
     </div>
 </div>
 
@@ -368,8 +408,7 @@ function claimMined() {
     saveState();
     render();
 }
-
-function watchBoostVideo() {
+    function watchBoostVideo() {
     if (state.boostActiveUntil > Date.now()) return alert("Ускоритель уже активен!");
     state.boostVideos++;
     if (state.boostVideos >= 5) {
