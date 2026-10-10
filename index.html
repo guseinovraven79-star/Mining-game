@@ -383,9 +383,9 @@ button {
         <div class="task-row">
             <div class="task-icon">📺</div>
             <div class="task-content">
-                <div class="panel-title">Посмотри 5 видео</div>
-                <div class="description">Выполни ежедневное рекламное задание.</div>
-                <div class="task-reward">Награда: +3 NEVAR</div>
+                <div class="panel-title">Просмотр 5 видео</div>
+                <div class="description">Учитываются рекламные видео, просмотренные в игровых действиях.</div>
+                <div class="task-reward">Награда: +5 NEVAR</div>
                 <div class="progress-track"><div class="progress-fill" id="daily5-progress"></div></div>
                 <div class="status-text" id="daily5-text">0/5</div>
             </div>
@@ -395,25 +395,25 @@ button {
 
     <div class="panel">
         <div class="task-row">
-            <div class="task-icon">🚀</div>
+            <div class="task-icon">▶️</div>
             <div class="task-content">
-                <div class="panel-title">Посмотри 21 видео</div>
-                <div class="description">Выполни расширенное ежедневное задание.</div>
-                <div class="task-reward">Награда: +10 NEVAR</div>
-                <div class="progress-track"><div class="progress-fill" id="daily21-progress"></div></div>
-                <div class="status-text" id="daily21-text">0/21</div>
+                <div class="panel-title">Просмотр видео на YouTube</div>
+                <div class="description">Посмотри видео на YouTube, затем посмотри 1 рекламное видео, чтобы забрать награду.</div>
+                <div class="task-reward">Награда: +5 NEVAR</div>
+                <div class="status-text" id="youtube-video-status">Задание не выполнено</div>
             </div>
         </div>
-        <button class="primary-btn" id="daily21-btn" onclick="claimDailyTask(21)">ПОЛУЧИТЬ НАГРАДУ</button>
+        <button class="secondary-btn" id="youtube-video-open-btn" onclick="openYouTubeTask()">СМОТРЕТЬ НА YOUTUBE</button>
+        <button class="primary-btn" id="youtube-video-claim-btn" onclick="claimYouTubeVideoTask()" disabled>ПОЛУЧИТЬ НАГРАДУ</button>
     </div>
 
     <div class="panel">
         <div class="task-row">
             <div class="task-icon">🎬</div>
             <div class="task-content">
-                <div class="panel-title">Дополнительное видео</div>
-                <div class="description">Посмотри видео и получи небольшое вознаграждение.</div>
-                <div class="task-reward">Награда: +0.25 NEVAR</div>
+                <div class="panel-title">Просмотр видео по усмотрению</div>
+                <div class="description">Посмотри рекламное видео и получи вознаграждение.</div>
+                <div class="task-reward">Награда: +0,25 NEVAR за видео</div>
             </div>
         </div>
         <button class="primary-btn" onclick="watchOptionalVideo()">СМОТРЕТЬ ВИДЕО</button>
@@ -421,26 +421,84 @@ button {
 
     <div class="panel">
         <div class="task-row">
-            <div class="task-icon">📸</div>
+            <div class="task-icon">📊</div>
             <div class="task-content">
-                <div class="panel-title">Подпишись на Instagram</div>
-                <div class="description">Открой страницу проекта.</div>
-                <div class="task-reward">Награда: +1 NEVAR</div>
+                <div class="panel-title">Просмотр 50 видео за день</div>
+                <div class="description">Автоматический счётчик всех засчитанных рекламных видео за день.</div>
+                <div class="task-reward">Награда: +10 NEVAR</div>
+                <div class="progress-track"><div class="progress-fill" id="daily50-progress"></div></div>
+                <div class="status-text" id="daily50-text">0/50</div>
             </div>
         </div>
-        <button class="secondary-btn" id="instagram-btn" onclick="claimSocialTask('instagram')">ПЕРЕЙТИ</button>
+        <button class="primary-btn" id="daily50-btn" onclick="claimDaily50Reward()" disabled>ПОЛУЧИТЬ НАГРАДУ</button>
+    </div>
+
+    <div class="section-title">📅 Ежедневный вход</div>
+
+    <div class="panel">
+        <div class="task-row">
+            <div class="task-icon">🎁</div>
+            <div class="task-content">
+                <div class="panel-title">Награда за ежедневный вход</div>
+                <div class="description">Первые 5 дней нужно посмотреть 3 рекламных видео. Начиная с 6-го дня — 5 видео. С 8-го дня награда составляет 100 NEVAR ежедневно.</div>
+                <div class="task-reward" id="login-reward">Награда: 10 NEVAR</div>
+                <div class="status-text" id="login-day-text">День 1 из 7</div>
+                <div class="progress-track"><div class="progress-fill" id="login-video-progress"></div></div>
+                <div class="status-text" id="login-video-text">0/3 видео</div>
+            </div>
+        </div>
+        <button class="primary-btn" id="login-claim-btn" onclick="claimDailyLoginReward()">ПОЛУЧИТЬ НАГРАДУ</button>
+    </div>
+
+    <div class="section-title">📌 Обязательные задания</div>
+
+    <div class="panel">
+        <div class="task-row">
+            <div class="task-icon">👨‍🚀</div>
+            <div class="task-content">
+                <div class="panel-title">Пригласить 5 друзей</div>
+                <div class="description">Пригласи 5 друзей в NEVAR. Для получения награды после выполнения задания нужно посмотреть 1 рекламное видео.</div>
+                <div class="task-reward">Награда: +20 NEVAR</div>
+                <div class="status-text" id="invite-task-status">Подтверждено друзей: 0/5</div>
+            </div>
+        </div>
+        <button class="secondary-btn" onclick="inviteFriend()">ПРИГЛАСИТЬ ДРУГА</button>
+        <button class="primary-btn" id="invite-task-claim-btn" onclick="claimInviteReward()" disabled>ПОЛУЧИТЬ НАГРАДУ</button>
     </div>
 
     <div class="panel">
         <div class="task-row">
             <div class="task-icon">✈️</div>
             <div class="task-content">
-                <div class="panel-title">Подпишись на Telegram</div>
-                <div class="description">Присоединяйся к сообществу NEVAR.</div>
-                <div class="task-reward">Награда: +1 NEVAR</div>
+                <div class="panel-title">Подписка на Telegram</div>
+                <div class="description">Подпишись на Telegram-канал NEVAR. Для получения награды нужно посмотреть 1 рекламное видео.</div>
+                <div class="task-reward">Награда: +5 NEVAR</div>
             </div>
         </div>
         <button class="secondary-btn" id="telegram-btn" onclick="claimSocialTask('telegram')">ПЕРЕЙТИ</button>
+    </div>
+
+    <div class="panel">
+        <div class="task-row">
+            <div class="task-icon">▶️</div>
+            <div class="task-content">
+                <div class="panel-title">Подписка на YouTube</div>
+                <div class="description">Подпишись на YouTube-канал NEVAR. Для получения награды нужно посмотреть 1 рекламное видео.</div>
+                <div class="task-reward">Награда: +5 NEVAR</div>
+            </div>
+        </div>
+        <button class="secondary-btn" id="youtube-subscription-btn" onclick="claimSocialTask('youtube')">ПЕРЕЙТИ</button>
+    </div>
+
+    <div class="panel">
+        <div class="task-row">
+            <div class="task-icon">𝕏</div>
+            <div class="task-content">
+                <div class="panel-title">Подписка на X</div>
+                <div class="description">Подпишись на X проекта NEVAR. Для получения награды нужно посмотреть 1 рекламное видео.</div>
+            </div>
+        </div>
+        <button class="secondary-btn" id="x-btn" onclick="claimSocialTask('x')">ПЕРЕЙТИ</button>
     </div>
 
     <div class="section-title">🪐 Планетарные экспедиции</div>
@@ -448,8 +506,8 @@ button {
         <div class="description">Экспедиции открываются с 01.11.2026. Для каждой планеты требуется выполнить недельное задание — 100 рекламных видео.</div>
         <button class="secondary-btn" onclick="switchPage('expeditions')">ОТКРЫТЬ ЭКСПЕДИЦИИ</button>
     </div>
-</section>
-<section id="page-expeditions" class="app-container">
+                </section>
+                <section id="page-expeditions" class="app-container">
     <header class="top-header">
         <div>
             <div class="logo">NEVAR</div>
@@ -592,10 +650,12 @@ const PLANET_NAMES = {
     Uranus: "Уран",
     Neptune: "Нептун"
 };
-const DAILY_VIDEO_LIMIT = 21;
+const DAILY_VIDEO_LIMIT = 50;
 const MINING_DURATION = 60 * 60 * 1000;
 const NIGHT_MINING_DURATION = 6 * 60 * 60 * 1000;
 const BOOSTER_DURATION = 60 * 60 * 1000;
+const LOGIN_REWARDS = [10, 20, 30, 40, 50, 75, 100];
+const LOGIN_VIDEO_REQUIREMENTS = [3, 3, 3, 3, 3, 5, 5];
 
 const tg = window.Telegram && window.Telegram.WebApp
     ? window.Telegram.WebApp
@@ -617,6 +677,12 @@ function getTodayKey() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
+function getYesterdayKey() {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    return `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, "0")}-${String(yesterday.getDate()).padStart(2, "0")}`;
+}
+
 function getWeekKey() {
     const now = new Date();
     const start = new Date(now.getFullYear(), 0, 1);
@@ -634,13 +700,18 @@ function defaultState() {
         dailyVideos: 0,
         dailyKey: getTodayKey(),
         daily5Claimed: false,
-        daily21Claimed: false,
+        daily50Claimed: false,
         optionalVideos: 0,
+        youtubeVideoCompleted: false,
+        youtubeVideoClaimed: false,
+        loginStreak: 0,
+        loginLastClaimDate: "",
+        loginClaimedToday: false,
         boosterVideoProgress: 0,
         boosterEnd: 0,
         friends: [],
         inviteRewardClaimed: false,
-        socialClaimed: { instagram: false, telegram: false },
+        socialClaimed: { telegram: false, youtube: false, x: false },
         weekVideos: 0,
         weekKey: getWeekKey(),
         completedPlanets: [],
@@ -662,6 +733,11 @@ function loadState() {
         if (!Array.isArray(state.completedPlanets)) state.completedPlanets = [];
         if (typeof state.nightVideoProgress !== "number") state.nightVideoProgress = 0;
         if (typeof state.boosterVideoProgress !== "number") state.boosterVideoProgress = 0;
+        if (typeof state.loginStreak !== "number") state.loginStreak = 0;
+        if (typeof state.daily50Claimed !== "boolean") state.daily50Claimed = false;
+        if (typeof state.youtubeVideoCompleted !== "boolean") state.youtubeVideoCompleted = false;
+        if (typeof state.youtubeVideoClaimed !== "boolean") state.youtubeVideoClaimed = false;
+        if (typeof state.loginClaimedToday !== "boolean") state.loginClaimedToday = false;
 
         return state;
     } catch (error) {
@@ -723,8 +799,11 @@ function resetDailyAndWeeklyCounters() {
         state.dailyKey = today;
         state.dailyVideos = 0;
         state.daily5Claimed = false;
-        state.daily21Claimed = false;
+        state.daily50Claimed = false;
         state.optionalVideos = 0;
+        state.youtubeVideoCompleted = false;
+        state.youtubeVideoClaimed = false;
+        state.loginClaimedToday = false;
     }
 
     const week = getWeekKey();
@@ -799,14 +878,6 @@ async function watchBoosterVideo() {
         return;
     }
 
-    if (state.boosterVideoProgress >= 5) {
-        state.boosterEnd = Date.now() + BOOSTER_DURATION;
-        state.boosterVideoProgress = 0;
-        saveState();
-        renderUI();
-        return;
-    }
-
     const completed = await showRewardedAd();
     if (!completed) return;
 
@@ -822,12 +893,16 @@ async function watchBoosterVideo() {
     renderUI();
 }
 
-function startMining() {
+async function startMining() {
     if (state.miningEnd > Date.now()) {
         alert("Обычный майнинг уже активен.");
         return;
     }
 
+    const completed = await showRewardedAd();
+    if (!completed) return;
+
+    recordCompletedVideo();
     state.miningEnd = Date.now() + MINING_DURATION;
     saveState();
     renderUI();
@@ -862,6 +937,12 @@ async function startNightMining() {
 
     const completed = await showRewardedAd();
     if (!completed) return;
+
+    if (!isNightMiningTime()) {
+        renderUI();
+        alert("Время запуска ночного майнинга закончилось.");
+        return;
+    }
 
     recordCompletedVideo();
     state.nightVideoProgress = Math.min(5, state.nightVideoProgress + 1);
@@ -903,33 +984,129 @@ function getMiningRate() {
 function claimDailyTask(requiredVideos) {
     resetDailyAndWeeklyCounters();
 
-    if (state.dailyVideos < requiredVideos) {
-        alert(`Сначала нужно посмотреть ${requiredVideos} видео. Сейчас: ${state.dailyVideos}/${requiredVideos}.`);
-        return;
-    }
-
     if (requiredVideos === 5) {
         if (state.daily5Claimed) {
             alert("Награда за это задание уже получена сегодня.");
             return;
         }
 
-        state.daily5Claimed = true;
-        saveState();
-        addBalance(3);
-        return;
-    }
-
-    if (requiredVideos === 21) {
-        if (state.daily21Claimed) {
-            alert("Награда за это задание уже получена сегодня.");
+        if (state.dailyVideos < 5) {
+            alert(`Сначала нужно посмотреть 5 видео. Сейчас: ${state.dailyVideos}/5.`);
             return;
         }
 
-        state.daily21Claimed = true;
+        state.daily5Claimed = true;
         saveState();
-        addBalance(10);
+        addBalance(5);
     }
+}
+
+function claimDaily50Reward() {
+    resetDailyAndWeeklyCounters();
+
+    if (state.daily50Claimed) {
+        alert("Награда за это задание уже получена сегодня.");
+        return;
+    }
+
+    if (state.dailyVideos < 50) {
+        alert(`Нужно посмотреть 50 рекламных видео за день. Сейчас: ${state.dailyVideos}/50.`);
+        return;
+    }
+
+    state.daily50Claimed = true;
+    saveState();
+    addBalance(10);
+}
+
+function openYouTubeTask() {
+    const link = "https://www.youtube.com/";
+
+    if (tg && typeof tg.openLink === "function") {
+        tg.openLink(link);
+    } else {
+        window.open(link, "_blank", "noopener");
+    }
+
+    state.youtubeVideoCompleted = true;
+    saveState();
+    renderUI();
+}
+
+async function claimYouTubeVideoTask() {
+    resetDailyAndWeeklyCounters();
+
+    if (!state.youtubeVideoCompleted) {
+        alert("Сначала открой задание на YouTube.");
+        return;
+    }
+
+    if (state.youtubeVideoClaimed) {
+        alert("Награда за это задание уже получена сегодня.");
+        return;
+    }
+
+    const completed = await showRewardedAd();
+    if (!completed) return;
+
+    recordCompletedVideo();
+    state.youtubeVideoClaimed = true;
+    saveState();
+    addBalance(5);
+}
+
+function getLoginDayIndex() {
+    if (
+        state.loginLastClaimDate === getTodayKey() &&
+        state.loginStreak > 0
+    ) {
+        return Math.min(state.loginStreak, 7);
+    }
+
+    if (state.loginLastClaimDate === getYesterdayKey()) {
+        return Math.min(state.loginStreak + 1, 8);
+    }
+
+    return 1;
+}
+
+function getLoginReward(dayIndex) {
+    return LOGIN_REWARDS[Math.min(dayIndex, 7) - 1] || 100;
+}
+
+function getLoginVideoRequirement(dayIndex) {
+    return LOGIN_VIDEO_REQUIREMENTS[Math.min(dayIndex, 7) - 1] || 5;
+}
+
+async function claimDailyLoginReward() {
+    resetDailyAndWeeklyCounters();
+
+    if (state.loginLastClaimDate === getTodayKey()) {
+        alert("Награда за сегодняшний вход уже получена.");
+        return;
+    }
+
+    const dayIndex = getLoginDayIndex();
+    const requiredVideos = getLoginVideoRequirement(dayIndex);
+
+    if (state.dailyVideos < requiredVideos) {
+        alert(`Для получения награды нужно посмотреть ${requiredVideos} рекламных видео. Сейчас: ${state.dailyVideos}/${requiredVideos}.`);
+        return;
+    }
+
+    const reward = getLoginReward(dayIndex);
+    const today = getTodayKey();
+
+    if (state.loginLastClaimDate === getYesterdayKey()) {
+        state.loginStreak = Math.min(state.loginStreak + 1, 8);
+    } else {
+        state.loginStreak = 1;
+    }
+
+    state.loginLastClaimDate = today;
+    state.loginClaimedToday = true;
+    saveState();
+    addBalance(reward);
 }
 
 async function claimSocialTask(type) {
@@ -939,8 +1116,15 @@ async function claimSocialTask(type) {
     }
 
     const links = {
-        instagram: "https://www.instagram.com/",
-        telegram: "https://t.me/"
+        telegram: "https://t.me/",
+        youtube: "https://www.youtube.com/",
+        x: "https://x.com/"
+    };
+
+    const rewards = {
+        telegram: 5,
+        youtube: 5,
+        x: 5
     };
 
     const link = links[type];
@@ -952,12 +1136,16 @@ async function claimSocialTask(type) {
         window.open(link, "_blank", "noopener");
     }
 
-    const confirmed = confirm("Подтверди получение награды. В этой версии подписка автоматически не проверяется.");
+    const confirmed = confirm("Подтверди выполнение задания. Подписка автоматически не проверяется.");
     if (!confirmed) return;
 
+    const completed = await showRewardedAd();
+    if (!completed) return;
+
+    recordCompletedVideo();
     state.socialClaimed[type] = true;
     saveState();
-    addBalance(1);
+    addBalance(rewards[type]);
 }
 
 function inviteFriend() {
@@ -979,7 +1167,7 @@ function inviteFriend() {
     }
 }
 
-function claimInviteReward() {
+async function claimInviteReward() {
     if (state.inviteRewardClaimed) {
         alert("Награда за приглашение уже получена.");
         return;
@@ -990,6 +1178,10 @@ function claimInviteReward() {
         return;
     }
 
+    const completed = await showRewardedAd();
+    if (!completed) return;
+
+    recordCompletedVideo();
     state.inviteRewardClaimed = true;
     saveState();
     addBalance(20);
@@ -1103,7 +1295,7 @@ function updateDailyTaskUI(requiredVideos) {
     }
 
     const button = document.getElementById(`daily${requiredVideos}-btn`);
-    const claimed = requiredVideos === 5 ? state.daily5Claimed : state.daily21Claimed;
+    const claimed = requiredVideos === 5 ? state.daily5Claimed : state.daily50Claimed;
 
     if (button) {
         button.disabled = claimed || state.dailyVideos < requiredVideos;
@@ -1164,7 +1356,7 @@ function renderUI() {
 
     if (nightBtn) {
         nightBtn.style.display = nightActive || nightDone ? "none" : "block";
-        nightBtn.disabled = !isNightMiningTime() && Number(state.nightVideoProgress || 0) < 5;
+        nightBtn.disabled = !isNightMiningTime();
         nightBtn.textContent = Number(state.nightVideoProgress || 0) >= 5
             ? "ЗАПУСТИТЬ НОЧНОЙ МАЙНИНГ"
             : `НОЧНОЙ МАЙНИНГ · ${Number(state.nightVideoProgress || 0)}/5 ВИДЕО`;
@@ -1179,8 +1371,8 @@ function renderUI() {
     const boosterStatus = document.getElementById("booster-status");
     const boosterActive = state.boosterEnd > Date.now();
 
-    if (boosterProgressText) boosterProgressText.textContent = `${boosterActive ? 5 : boosterProgress}/5`;
-    if (boosterProgressBar) boosterProgressBar.style.width = `${(boosterActive ? 5 : boosterProgress) * 20}%`;
+    if (boosterProgressText) boosterProgressText.textContent = `${boosterProgress}/5`;
+    if (boosterProgressBar) boosterProgressBar.style.width = `${boosterProgress * 20}%`;
 
     if (boosterStatus) {
         boosterStatus.textContent = boosterActive
@@ -1196,10 +1388,49 @@ function renderUI() {
     }
 
     updateDailyTaskUI(5);
-    updateDailyTaskUI(21);
+    updateDailyTaskUI(50);
+
+    const daily50Text = document.getElementById("daily50-text");
+    if (daily50Text) {
+        daily50Text.textContent = `${state.dailyVideos}/50`;
+    }
+
+    const loginDayIndex = getLoginDayIndex();
+    const loginRequiredVideos = getLoginVideoRequirement(loginDayIndex);
+    const loginReward = document.getElementById("login-reward");
+    const loginDayText = document.getElementById("login-day-text");
+    const loginVideoProgress = document.getElementById("login-video-progress");
+    const loginVideoText = document.getElementById("login-video-text");
+    const loginClaimBtn = document.getElementById("login-claim-btn");
+    const loginAlreadyClaimed = state.loginLastClaimDate === getTodayKey();
+
+    if (loginReward) {
+        loginReward.textContent = `Награда: ${getLoginReward(loginDayIndex)} NEVAR`;
+    }
+
+    if (loginDayText) {
+        loginDayText.textContent = loginDayIndex <= 7
+            ? `День ${loginDayIndex} из 7`
+            : "Ежедневная награда";
+    }
+
+    if (loginVideoProgress) {
+        loginVideoProgress.style.width = `${Math.min(100, state.dailyVideos / loginRequiredVideos * 100)}%`;
+    }
+
+    if (loginVideoText) {
+        loginVideoText.textContent = `${Math.min(state.dailyVideos, loginRequiredVideos)}/${loginRequiredVideos} видео`;
+    }
+
+    if (loginClaimBtn) {
+        loginClaimBtn.disabled = loginAlreadyClaimed || state.dailyVideos < loginRequiredVideos;
+        loginClaimBtn.textContent = loginAlreadyClaimed ? "НАГРАДА ПОЛУЧЕНА" : "ПОЛУЧИТЬ НАГРАДУ";
+    }
 
     const inviteBtn = document.getElementById("claim-invite-btn");
+    const inviteTaskBtn = document.getElementById("invite-task-claim-btn");
     const inviteStatus = document.getElementById("invite-status");
+    const inviteTaskStatus = document.getElementById("invite-task-status");
 
     if (inviteBtn) {
         inviteBtn.disabled = state.friends.length < 5 || state.inviteRewardClaimed;
@@ -1208,10 +1439,21 @@ function renderUI() {
             : "ПОЛУЧИТЬ +20 NEVAR";
     }
 
+    if (inviteTaskBtn) {
+        inviteTaskBtn.disabled = state.friends.length < 5 || state.inviteRewardClaimed;
+        inviteTaskBtn.textContent = state.inviteRewardClaimed
+            ? "НАГРАДА ПОЛУЧЕНА"
+            : "ПОЛУЧИТЬ НАГРАДУ";
+    }
+
     if (inviteStatus) {
         inviteStatus.textContent = state.inviteRewardClaimed
             ? "Награда за приглашение получена."
             : `Подтверждено друзей: ${state.friends.length}/5.`;
+    }
+
+    if (inviteTaskStatus) {
+        inviteTaskStatus.textContent = `Подтверждено друзей: ${state.friends.length}/5`;
     }
 
     const walletStart = document.getElementById("wallet-start-balance");
@@ -1227,86 +1469,13 @@ function renderUI() {
     if (weekProgressText) weekProgressText.textContent = `${weekProgress}/100`;
     if (weekProgressBar) weekProgressBar.style.width = `${weekProgress}%`;
 
-    const instagramBtn = document.getElementById("instagram-btn");
     const telegramBtn = document.getElementById("telegram-btn");
-
-    if (instagramBtn) {
-        instagramBtn.textContent = state.socialClaimed.instagram ? "НАГРАДА ПОЛУЧЕНА" : "ПЕРЕЙТИ";
-        instagramBtn.disabled = state.socialClaimed.instagram;
-    }
+    const youtubeSubscriptionBtn = document.getElementById("youtube-subscription-btn");
+    const xBtn = document.getElementById("x-btn");
 
     if (telegramBtn) {
         telegramBtn.textContent = state.socialClaimed.telegram ? "НАГРАДА ПОЛУЧЕНА" : "ПЕРЕЙТИ";
         telegramBtn.disabled = state.socialClaimed.telegram;
     }
 
-    renderPlanets();
-}
-
-function formatTime(milliseconds) {
-    const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-
-    return [hours, minutes, seconds]
-        .map(value => String(value).padStart(2, "0"))
-        .join(":");
-}
-
-function updateTimers() {
-    const now = Date.now();
-    const miningTimer = document.getElementById("mining-timer");
-    const nightTimer = document.getElementById("night-mining-timer");
-
-    if (miningTimer) {
-        miningTimer.textContent = state.miningEnd > now
-            ? formatTime(state.miningEnd - now)
-            : "00:00:00";
-    }
-
-    if (nightTimer) {
-        nightTimer.textContent = state.nightMiningEnd > now
-            ? formatTime(state.nightMiningEnd - now)
-            : "00:00:00";
-    }
-
-    if (state.boosterEnd && now >= state.boosterEnd) {
-        state.boosterEnd = 0;
-        saveState();
-        renderUI();
-    } else if (state.boosterEnd > now) {
-        const status = document.getElementById("booster-status");
-        if (status) status.textContent = `Активен · ${formatTime(state.boosterEnd - now)}`;
-    }
-
-    const nightBtn = document.getElementById("night-mining-btn");
-    if (nightBtn && state.nightMiningEnd <= now && state.nightMiningEnd === 0) {
-        nightBtn.disabled = !isNightMiningTime() && Number(state.nightVideoProgress || 0) < 5;
-    }
-}
-
-function initialiseGame() {
-    resetDailyAndWeeklyCounters();
-
-    if (typeof state.nightVideoProgress !== "number") {
-        state.nightVideoProgress = 0;
-    }
-
-    renderUI();
-    updateTimers();
-    setInterval(updateTimers, 1000);
-
-    if (tg && typeof tg.setHeaderColor === "function") {
-        tg.setHeaderColor("#080d1b");
-    }
-
-    if (tg && typeof tg.setBackgroundColor === "function") {
-        tg.setBackgroundColor("#080d1b");
-    }
-}
-
-document.addEventListener("DOMContentLoaded", initialiseGame);
-</script>
-</body>
-</html>
+    if (youtubeSubscript
