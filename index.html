@@ -32,14 +32,13 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .card p{margin:4px 0}
 .info-box h3{color:var(--gold2);font-size:15px}
 .info-box p:last-child{margin-bottom:0}
-.warning-box{border-color:rgba(243,201,105,.22);background:rgba(243,201,105,.06)}
 .gold-text{color:var(--gold);font-weight:800}
-.btn-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;border:1px solid rgba(243,201,105,.35);border-radius:12px;color:#17130a;background:linear-gradient(135deg,var(--gold2),var(--gold));font-size:12px;font-weight:800;line-height:1.25;text-align:center;transition:filter .15s ease,transform .15s ease}
+.btn-action{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 14px;border:1px solid rgba(243,201,105,.35);border-radius:12px;color:#17130a;background:linear-gradient(135deg,var(--gold2),var(--gold));font-size:12px;font-weight:800;line-height:1.25;text-align:center}
 .btn-action:active:not(:disabled){transform:scale(.98)}
 .btn-action:disabled{color:#aab2c0;border-color:rgba(160,174,192,.15);background:#263247}
 .btn-secondary{color:var(--gold2);border:1px solid var(--border);background:#19253a}
+.btn-group{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
 .mining-hero{position:relative;overflow:hidden;padding:22px 17px;margin-bottom:16px;border:1px solid var(--border);border-radius:22px;background:radial-gradient(circle at 80% 15%,rgba(243,201,105,.12),transparent 35%),linear-gradient(145deg,#17243b,#101726)}
-.mining-hero:after{content:"";position:absolute;right:-25px;top:-35px;width:140px;height:140px;border:1px solid rgba(243,201,105,.12);border-radius:50%;box-shadow:0 0 0 18px rgba(243,201,105,.025),0 0 0 38px rgba(243,201,105,.02);pointer-events:none}
 .mining-label{position:relative;z-index:1;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:2px}
 .mining-title{position:relative;z-index:1;margin:9px 0 4px;color:var(--gold2);font-size:23px;font-weight:900}
 .mining-description{position:relative;z-index:1;color:var(--muted);font-size:12px;line-height:1.5}
@@ -47,7 +46,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .mining-timer-label{color:var(--muted);font-size:11px;letter-spacing:1.5px}
 .mining-timer{margin-top:7px;color:var(--gold2);font-size:38px;font-weight:900;font-variant-numeric:tabular-nums}
 .mining-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:16px}
-.mining-actions .btn-action{width:100%;min-height:46px}
 .boost-card{padding:17px;margin-bottom:16px;border:1px solid rgba(243,201,105,.24);border-radius:18px;background:linear-gradient(145deg,rgba(243,201,105,.09),var(--panel))}
 .boost-heading{display:flex;align-items:center;gap:10px;margin-bottom:9px}
 .boost-icon{display:flex;align-items:center;justify-content:center;width:42px;height:42px;flex-shrink:0;border-radius:13px;color:var(--gold2);background:rgba(243,201,105,.12);font-size:22px}
@@ -55,7 +53,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .boost-subtitle{margin-top:4px;color:var(--muted);font-size:11px}
 .boost-status{margin:12px 0 7px;color:var(--muted);font-size:12px;line-height:1.5}
 .boost-progress{margin-bottom:12px;color:var(--gold);font-size:12px;font-weight:700}
-.boost-card .btn-action{width:100%}
 .daily-rewards{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:14px 0}
 .daily-reward{min-width:0;padding:9px 2px;border:1px solid rgba(160,174,192,.15);border-radius:9px;background:#0d1524;text-align:center}
 .daily-reward .day{color:var(--muted);font-size:9px}
@@ -63,15 +60,11 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .daily-reward .mark{min-height:18px;color:var(--green);font-size:8px;line-height:1.2}
 .daily-reward.current{border-color:var(--gold);background:rgba(243,201,105,.08)}
 .daily-reward.claimed{border-color:rgba(66,214,164,.3);background:rgba(66,214,164,.05)}
-.friends-list{display:flex;flex-direction:column;gap:8px}
 .hangar-item{padding:18px;margin-bottom:14px;border:1px solid rgba(160,174,192,.15);border-radius:17px;background:var(--panel)}
 .hangar-item h3{margin:0 0 8px;color:var(--gold2);font-size:16px}
 .hangar-item p{color:var(--muted);font-size:12px;line-height:1.6}
 .hangar-status{margin:12px 0 8px;color:var(--gold);font-size:13px;font-weight:800}
 .hangar-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:12px}
-.fuel-select{width:100%;min-height:44px;padding:10px;margin:10px 0;border:1px solid var(--border);border-radius:10px;color:var(--text);background:#0c1423}
-.fuel-meter{width:100%;height:8px;margin:12px 0;overflow:hidden;border-radius:10px;background:#27344a}
-#fuel-meter-fill{display:block;width:0;height:100%;border-radius:10px;background:var(--green);transition:width .2s ease}
 .nav-bar{position:fixed;z-index:100;right:0;bottom:0;left:0;display:flex;justify-content:space-around;gap:2px;padding:8px 4px calc(8px + env(safe-area-inset-bottom));border-top:1px solid rgba(160,174,192,.15);background:rgba(8,13,25,.97);backdrop-filter:blur(14px)}
 .nav-item{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;padding:6px 1px;border:0;border-radius:10px;color:var(--muted);background:transparent}
 .nav-item.active{color:var(--gold2);background:rgba(243,201,105,.08)}
@@ -85,8 +78,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
 <!-- 1. МАЙНИНГ -->
 <div class="app-container active" id="page-mining">
     <div class="top-header">
-        <div><div class="brand">NEVAR</div><div class="brand-subtitle">COSMIC EXPEDITION</div></div>
-        <div class="gold-text">🚀 PILOT</div>
+        <div><div class="brand">NEVAR</div><div class="brand-subtitle">СОЛНЕЧНАЯ СИСТЕМА</div></div>
+        <div class="gold-text" id="speed-indicator">⚡ 1 NEVAR/ч</div>
     </div>
     <div class="header-card">
         <div class="balance-title">ВАШ БАЛАНС</div>
@@ -94,16 +87,16 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <div class="balance-unit">NEVAR</div>
     </div>
     <div class="mining-hero">
-        <div class="mining-label">ЦЕНТР УПРАВЛЕНИЯ</div>
-        <div class="mining-title">⛏️ Космический майнинг</div>
-        <div class="mining-description">Запускайте добычу NEVAR и развивайте свою космическую экспедицию.</div>
+        <div class="mining-label">БАЗА: ЗЕМЛЯ</div>
+        <div class="mining-title">⛏️ Пассивный майнинг</div>
+        <div class="mining-description">Добыча идет непрерывно. Скорость увеличивается с каждой покоренной экспедицией.</div>
         <div class="mining-timer-wrap">
-            <div class="mining-timer-label">ОСТАЛОСЬ ВРЕМЕНИ</div>
-            <div class="mining-timer" id="mining-timer">00:00</div>
+            <div class="mining-timer-label">ДОБЫТО ЗА СЕССИЮ</div>
+            <div class="mining-timer" id="mined-session">0.00</div>
         </div>
         <div class="mining-actions">
-            <button class="btn-action" id="btn-start-mining" onclick="watchVideoForMining()">Включить майнинг (Смотреть 1 видео)</button>
-            <button class="btn-action btn-secondary" id="btn-night-mining" onclick="startNightMining()">Запустить ночной майнинг (Смотреть 5 видео)</button>
+            <button class="btn-action" onclick="claimMined()">Собрать добычу</button>
+            <button class="btn-action btn-secondary" onclick="addTestBalance()">+ Тестовые 50000 NEVAR</button>
         </div>
     </div>
     <div class="boost-card">
@@ -111,7 +104,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
             <div class="boost-icon">⚡</div>
             <div><div class="boost-title">Ускоритель майнинга ×2</div><div class="boost-subtitle">Ускорение добычи на 60 минут</div></div>
         </div>
-        <p class="boost-status" id="boost-status">Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.</p>
+        <p class="boost-status" id="boost-status">Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2.</p>
         <p class="boost-progress" id="boost-progress">Прогресс: 0/5</p>
         <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">Активировать</button>
     </div>
@@ -125,37 +118,21 @@ button:disabled{cursor:not-allowed;opacity:.55}
             <h4>Посмотреть 5 видео</h4>
             <p id="desc-daily-videos">Прогресс: 0/5 • <span class="gold-text">+3.0 NEVAR</span></p>
         </div>
-        <button class="btn-action" id="btn-daily-videos" onclick="completeDailyVideos(this)">Смотреть</button>
+        <button class="btn-action" id="btn-daily-videos" onclick="completeDailyVideos()">Смотреть</button>
     </div>
 
     <div class="card">
         <div class="card-info">
-            <h4>Посмотреть видео на YouTube</h4>
-            <p id="desc-youtube-daily">Ежедневное задание • <span class="gold-text">+5 NEVAR</span></p>
+            <h4>Свободный просмотр видео</h4>
+            <p>Свободный просмотр • <span class="gold-text">+1 NEVAR</span></p>
         </div>
-        <button class="btn-action" id="btn-youtube-daily" onclick="completeYouTubeDailyTask(this)">Смотреть</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Просмотр видео по усмотрению</h4>
-            <p>Свободный просмотр • <span class="gold-text">+0.25 NEVAR</span></p>
-        </div>
-        <button class="btn-action" id="btn-optional-video" onclick="watchOptionalVideo(this)">Смотреть</button>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Суммарно 50 видео за день</h4>
-            <p id="desc-total-50">Прогресс: 0/50 • <span class="gold-text">+25 NEVAR</span></p>
-        </div>
-        <button class="btn-action" id="btn-total-50" onclick="claimTotal50()" disabled>В процессе</button>
+        <button class="btn-action" onclick="watchOptionalVideo()">Смотреть</button>
     </div>
 
     <div class="section-title" style="margin-top:25px">🎁 Ежедневная серия входов</div>
     <div class="info-box">
         <h3>Ежедневные награды</h3>
-        <p>Заходите каждый день и получайте награду. Если пропустить день, серия начнётся заново.</p>
+        <p>Заходите каждый день и получайте бонусные NEVAR.</p>
         <p id="daily-login-status">День 1 • Награда: 10 NEVAR</p>
         <div class="daily-rewards" id="daily-rewards">
             <div class="daily-reward"><div class="day">День 1</div><div class="reward">10</div><div class="mark"></div></div>
@@ -169,420 +146,397 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <p id="daily-login-progress">Посмотрите 3 видео, чтобы открыть награду: 0/3</p>
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Смотреть видео (0/3)</button>
     </div>
-
-    <div class="section-title" style="margin-top:25px">👥 Задания сообщества</div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Приглашение друзей</h4>
-            <p id="invite5-progress">Приглашено: 0</p>
-            <p id="invite-reward-progress">Получено за приглашения: 0 NEVAR</p>
-            <p>Первые 5 приглашённых: по <span class="gold-text">20 NEVAR</span> за каждого. С 6-го: по <span class="gold-text">10 NEVAR</span>.</p>
-            <button class="btn-action" style="width:100%;margin-top:10px" id="btn-claim-invite-reward" onclick="claimInviteReward()">Получить награду</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Подписаться на Telegram-канал</h4>
-            <p id="telegram-task-status">Выполните задание • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action" style="width:100%" id="btn-telegram-task" onclick="handleCommunityTask('telegram')">Подписаться на канал</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Подписаться на YouTube</h4>
-            <p id="youtube-task-status">Выполните задание • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action" style="width:100%" id="btn-youtube-task" onclick="handleCommunityTask('youtube')">Подписаться на канал</button>
-        </div>
-    </div>
-
-    <div class="card">
-        <div class="card-info">
-            <h4>Подписаться на X</h4>
-            <p id="x-task-status">Выполните задание • <span class="gold-text">+5 NEVAR</span></p>
-            <button class="btn-action" style="width:100%" id="btn-x-task" onclick="handleCommunityTask('x')">Подписаться на канал</button>
-        </div>
-    </div>
-                                                                       </div>
-                                                   <!-- 3. ЭКСПЕДИЦИИ -->
+</div>
+<!-- 3. ЭКСПЕДИЦИИ -->
 <div id="page-expeditions" class="app-container">
-    <div class="section-title">🚀 Подготовка к экспедиции</div>
+    <div class="section-title">🚀 Ангар и Снаряжение</div>
 
-    <div id="canvas-3d-target" style="width:100%;height:230px;overflow:hidden;border:1px solid var(--border);border-radius:18px;background:#101820;margin-bottom:16px"></div>
+    <div id="canvas-3d-target" style="width:100%;height:200px;overflow:hidden;border:1px solid var(--border);border-radius:18px;background:#101820;margin-bottom:16px"></div>
 
     <div class="hangar-item">
         <h3>🧑‍🚀 Скафандр пилота</h3>
-        <p>Снаряжение, необходимое для подготовки пилота к космической экспедиции.</p>
+        <p>Необходим для выхода в открытый космос и экспедиций (покупается 1 раз).</p>
         <div class="hangar-status" id="suit-status">Не приобретён</div>
         <div class="hangar-actions">
-            <button class="btn-action" data-suit-button onclick="buySuit(this)">Получить за видео</button>
-            <button class="btn-action btn-secondary" onclick="switch3DModel('suit')">Посмотреть модель</button>
+            <button class="btn-action" id="btn-buy-suit-nevar" onclick="buySuit('nevar')">Купить за 1000 🪙</button>
+            <button class="btn-action" id="btn-buy-suit-video" onclick="buySuit('video')">Видео (0/100) 📺</button>
+            <button class="btn-action btn-secondary" onclick="switch3DModel('suit')">3D Модель</button>
         </div>
     </div>
 
     <div class="hangar-item">
         <h3>🛸 Космический корабль</h3>
-        <p>Корабль для будущих экспедиций по Солнечной системе.</p>
+        <p>Требуется для старта межпланетных экспедиций (покупается 1 раз).</p>
         <div class="hangar-status" id="ship-status">Не приобретён</div>
         <div class="hangar-actions">
-            <button class="btn-action" data-ship-button onclick="buyShip(this)">Получить за видео</button>
-            <button class="btn-action btn-secondary" onclick="switch3DModel('ship')">Посмотреть модель</button>
+            <button class="btn-action" id="btn-buy-ship-nevar" onclick="buyShip('nevar')">Купить за 5000 🪙</button>
+            <button class="btn-action" id="btn-buy-ship-video" onclick="buyShip('video')">Видео (0/250) 📺</button>
+            <button class="btn-action btn-secondary" onclick="switch3DModel('ship')">3D Модель</button>
         </div>
     </div>
 
-    <div class="section-title" style="margin-top:25px">⛽ Энергия для экспедиции</div>
-    <div class="info-box">
-        <h3>Зарядка корабля</h3>
-        <p>Выберите планету и приобретите энергию за NEVAR или накопите её за просмотр рекламных видео.</p>
-        <select id="fuel-planet" class="fuel-select" onchange="updateFuelPrice()">
-            <option value="mercury">Меркурий</option>
-            <option value="venus">Венера</option>
-            <option value="earth">Земля</option>
-            <option value="mars">Марс</option>
-            <option value="jupiter">Юпитер</option>
-            <option value="saturn">Сатурн</option>
-            <option value="uranus">Уран</option>
-            <option value="neptune">Нептун</option>
-        </select>
-        <p id="fuel-price">Меркурий: 250 NEVAR или 25 видео</p>
-        <div class="fuel-meter"><span id="fuel-meter-fill"></span></div>
-        <p id="fuel-status">Корабль не заряжен</p>
-        <div class="hangar-actions">
-            <button class="btn-action" id="btn-fuel-buy" onclick="buyFuel()">Купить энергию</button>
-            <button class="btn-action btn-secondary" id="btn-fuel-video" onclick="watchFuelVideos()">Смотреть видео</button>
-        </div>
-    </div>
-
-    <div class="section-title" style="margin-top:25px">🪐 Планетарные экспедиции</div>
-    <div class="card"><div class="card-info"><h4>Меркурий</h4></div><button class="btn-action" disabled>Скоро</button></div>
-    <div class="card"><div class="card-info"><h4>Венера</h4></div><button class="btn-action" disabled>Скоро</button></div>
-    <div class="card"><div class="card-info"><h4>Земля</h4></div><button class="btn-action" disabled>В разработке</button></div>
+    <div class="section-title" style="margin-top:25px">🪐 Последовательные экспедиции по планетам</div>
+    <div id="planets-list"></div>
 </div>
-    <!-- 4. ЭКИПАЖ -->
+<!-- 4. ЭКИПАЖ -->
 <div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
     <div class="header-card">
         <div class="balance-title">ПРИГЛАШЁННЫЕ ПИЛОТЫ</div>
         <div class="balance-amount" id="friends-count">0</div>
-        <p style="font-size:12px;color:var(--muted);margin-top:8px">Чем больше экипаж, тем выше скорость майнинга.</p>
+        <p style="font-size:12px;color:var(--muted);margin-top:8px">Приглашайте пилотов и получайте бонусы.</p>
     </div>
     <div class="info-box">
-        <h3>Пригласи друзей</h3>
-        <p>Приглашайте новых пилотов в NEVAR и развивайте свою команду.</p>
-        <p>За первых 5 приглашённых начисляется по 20 NEVAR за каждого. Начиная с 6-го — по 10 NEVAR.</p>
+        <h3>Пригласить друзей</h3>
+        <p>За первых 5 друзей начисляется по 20 NEVAR, с 6-го — по 10 NEVAR.</p>
         <button class="btn-action" style="width:100%;margin-top:10px" onclick="inviteFriend()">Пригласить друга</button>
     </div>
-    <div class="section-title">Список экипажа</div>
-    <div class="friends-list" id="friends-list"></div>
 </div>
 
 <!-- 5. ИНФО -->
 <div id="page-info" class="app-container">
     <div class="section-title">ℹ️ О проекте NEVAR</div>
     <div class="info-box">
-        <h3>Добро пожаловать в NEVAR</h3>
-        <p>NEVAR — космическая игра для пилотов.</p>
+        <h3>Правила экспедиций</h3>
+        <p>1. Приобретите скафандр и корабль в ангаре.<br>2. Открывайте планеты строго по порядку (Меркурий -&gt; Венера -&gt; Марс и т.д.).<br>3. Каждая открытая экспедиция навсегда увеличивает скорость пассивного майнинга на +1 NEVAR/час!</p>
     </div>
 </div>
 
-<!-- Нижняя навигационная панель -->
+<!-- Нижняя навигация -->
 <nav class="nav-bar">
-    <button class="nav-item active" data-page="mining" onclick="showPage('mining')">
-        <span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span>
-    </button>
-    <button class="nav-item" data-page="tasks" onclick="showPage('tasks')">
-        <span class="nav-icon">📋</span><span class="nav-label">Задания</span>
-    </button>
-    <button class="nav-item" data-page="expeditions" onclick="showPage('expeditions')">
-        <span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span>
-    </button>
-    <button class="nav-item" data-page="friends" onclick="showPage('friends')">
-        <span class="nav-icon">👥</span><span class="nav-label">Экипаж</span>
-    </button>
-    <button class="nav-item" data-page="info" onclick="showPage('info')">
-        <span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span>
-    </button>
+    <button class="nav-item active" data-page="mining" onclick="showPage('mining')"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
+    <button class="nav-item" data-page="tasks" onclick="showPage('tasks')"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
+    <button class="nav-item" data-page="expeditions" onclick="showPage('expeditions')"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
+    <button class="nav-item" data-page="friends" onclick="showPage('friends')"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
+    <button class="nav-item" data-page="info" onclick="showPage('info')"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
 </nav>
 <script>
 const state = {
     balance: 0,
-    totalVideos: 0,
+    unclaimedMined: 0,
     dailyVideos: 0,
-    dailyYouTube: false,
-    optionalVideos: 0,
-    total50Claimed: false,
     loginStreak: 0,
     lastDailyReward: "",
     dailyLoginVideos: 0,
     suitOwned: false,
+    suitVideosWatched: 0,
     shipOwned: false,
-    fuel: 0,
-    miningEnd: 0,
-    nightMining: false,
+    shipVideosWatched: 0,
+    unlockedPlanets: [], 
+    planetVideosWatched: {}, 
     boostVideos: 0,
     boostActiveUntil: 0,
     invitedFriends: 0,
-    inviteRewardClaimed: false,
-    inviteRewardsPaid: 0,
-    friends: [],
-    telegramOpened: false,
-    telegramVideoWatched: false,
-    telegramRewardClaimed: false,
-    youtubeOpened: false,
-    youtubeVideoWatched: false,
-    youtubeRewardClaimed: false,
-    xOpened: false,
-    xVideoWatched: false,
-    xRewardClaimed: false,
     currentDay: ""
 };
 
-let isAdCooldown = false;
-let adCooldownTimer = 0;
-let adCooldownInterval = null;
+const PLANETS_DATA = [
+    { id: "mercury", name: "Меркурий (1-я экспедиция)", costNevar: 10000, costVideos: 300 },
+    { id: "venus", name: "Венера (2-я экспедиция)", costNevar: 20000, costVideos: 350 },
+    { id: "mars", name: "Марс (3-я экспедиция)", costNevar: 30000, costVideos: 400 },
+    { id: "jupiter", name: "Юпитер (4-я экспедиция)", costNevar: 40000, costVideos: 450 },
+    { id: "saturn", name: "Сатурн (5-я экспедиция)", costNevar: 50000, costVideos: 500 },
+    { id: "uranus", name: "Уран (6-я экспедиция)", costNevar: 60000, costVideos: 550 },
+    { id: "neptune", name: "Нептун (7-я экспедиция)", costNevar: 70000, costVideos: 600 }
+];
+
 let scene, camera, renderer, modelGroup;
 let current3DModel = "ship";
 let dailyLoginClaimed = false;
 
-const COMMUNITY_LINKS = { telegram: "", youtube: "", x: "" };
-const COMMUNITY_VIDEO_LINKS = { telegram: "", youtube: "", x: "" };
-
-const FUEL_COSTS = {
-    mercury: { name: "Меркурий", nevar: 250, videos: 25 },
-    venus: { name: "Венера", nevar: 400, videos: 40 },
-    earth: { name: "Земля", nevar: 500, videos: 50 },
-    mars: { name: "Марс", nevar: 600, videos: 60 },
-    jupiter: { name: "Юпитер", nevar: 800, videos: 80 },
-    saturn: { name: "Сатурн", nevar: 1000, videos: 100 },
-    uranus: { name: "Уран", nevar: 1200, videos: 120 },
-    neptune: { name: "Нептун", nevar: 1500, videos: 150 }
-};
-
 function saveState() {
-    try { localStorage.setItem("nevarState", JSON.stringify(state)); } catch (e) {}
+    try { localStorage.setItem("nevarFullGameCombinedState", JSON.stringify(state)); } catch (e) {}
 }
 
 function loadState() {
     try {
-        const saved = localStorage.getItem("nevarState");
+        const saved = localStorage.getItem("nevarFullGameCombinedState");
         if (saved) Object.assign(state, JSON.parse(saved));
     } catch (e) {}
 }
 
 function getToday() { return new Date().toDateString(); }
-function getYesterday() {
-    const date = new Date();
-    date.setDate(date.getDate() - 1);
-    return date.toDateString();
-}
 
-function getDailyLoginReward(day) {
-    if (day <= 1) return 10;
-    if (day === 2) return 20;
-    if (day === 3) return 30;
-    if (day === 4) return 40;
-    return 50;
-}
-
-function getDailyLoginDay() {
-    if (!state.lastDailyReward) return 1;
-    if (state.lastDailyReward === getToday()) return Math.max(1, state.loginStreak);
-    if (state.lastDailyReward === getYesterday()) return Math.max(1, state.loginStreak + 1);
-    return 1;
-}
-
-function getInviteRewardTotal(count) {
-    const invited = Math.max(0, Number(count) || 0);
-    return Math.min(invited, 5) * 20 + Math.max(0, invited - 5) * 10;
-}
-
-function getMiningTimerText() {
-    if (!state.miningEnd || Date.now() >= state.miningEnd) return "00:00";
-    const diff = Math.ceil((state.miningEnd - Date.now()) / 1000);
-    const m = Math.floor(diff / 60).toString().padStart(2, '0');
-    const s = (diff % 60).toString().padStart(2, '0');
-    return m + ":" + s;
-}
-
-function dailyReset() {
-    const today = getToday();
-    if (state.currentDay !== today) {
-        state.currentDay = today;
-        state.dailyVideos = 0;
-        state.dailyYouTube = false;
-        state.optionalVideos = 0;
-        state.total50Claimed = false;
-        state.totalVideos = 0;
-        state.dailyLoginVideos = 0;
-        saveState();
+function getCurrentSpeed() {
+    let base = 1 + state.unlockedPlanets.length;
+    if (state.boostActiveUntil > Date.now()) {
+        base *= 2;
     }
+    return base;
 }
 
-function updateFuelPrice() {
-    const select = document.getElementById("fuel-planet");
-    if (!select) return;
-    const cost = FUEL_COSTS[select.value];
-    const priceEl = document.getElementById("fuel-price");
-    if (priceEl && cost) {
-        priceEl.textContent = cost.name + ": " + cost.nevar + " NEVAR или " + cost.videos + " видео";
+function addTestBalance() {
+    state.balance += 50000;
+    saveState();
+    render();
+}
+
+function buySuit(method) {
+    if (state.suitOwned) return;
+    if (method === 'nevar') {
+        if (state.balance < 1000) return alert("Недостаточно NEVAR! Нужно 1000.");
+        state.balance -= 1000;
+        state.suitOwned = true;
+        alert("🎉 Скафандр успешно приобретён за NEVAR!");
+    } else if (method === 'video') {
+        state.suitVideosWatched += 20;
+        if (state.suitVideosWatched >= 100) {
+            state.suitVideosWatched = 100;
+            state.suitOwned = true;
+            alert("🎉 Вы посмотрели 100 видео и получили скафандр!");
+        } else {
+            alert(`Просмотрено видео для скафандра: ${state.suitVideosWatched} / 100`);
+        }
     }
+    saveState();
+    render();
 }
 
-function updateFuelDisplay() {
-    const fill = document.getElementById("fuel-meter-fill");
-    const status = document.getElementById("fuel-status");
-    const select = document.getElementById("fuel-planet");
-    if (!select) return;
-    const cost = FUEL_COSTS[select.value];
-    if (!cost) return;
+function buyShip(method) {
+    if (state.shipOwned) return;
+    if (!state.suitOwned) return alert("Сначала нужно получить скафандр пилота!");
 
-    const percent = Math.min(100, (state.fuel / cost.nevar) * 100);
-    if (fill) fill.style.width = percent + "%";
-    if (status) {
-        status.textContent = state.fuel >= cost.nevar ? "Корабль полностью заряжен!" : "Заряжено: " + state.fuel + " / " + cost.nevar + " NEVAR";
+    if (method === 'nevar') {
+        if (state.balance < 5000) return alert("Недостаточно NEVAR! Нужно 5000.");
+        state.balance -= 5000;
+        state.shipOwned = true;
+        alert("🎉 Космический корабль успешно приобретён за NEVAR!");
+    } else if (method === 'video') {
+        state.shipVideosWatched += 50;
+        if (state.shipVideosWatched >= 250) {
+            state.shipVideosWatched = 250;
+            state.shipOwned = true;
+            alert("🎉 Вы посмотрели 250 видео и построили корабль! Теперь доступны экспедиции.");
+        } else {
+            alert(`Просмотрено видео для корабля: ${state.shipVideosWatched} / 250`);
+        }
     }
+    saveState();
+    render();
 }
 
-function renderCommunityTask(type) {
-    const statusEl = document.getElementById(type + "-task-status");
-    const btnEl = document.getElementById("btn-" + type + "-task");
-    if (!statusEl || !btnEl) return;
+function canUnlockPlanet(planetIndex) {
+    if (planetIndex === 0) return true;
+    const previousPlanet = PLANETS_DATA[planetIndex - 1];
+    return state.unlockedPlanets.includes(previousPlanet.id);
+}
 
-    if (state[type + "RewardClaimed"]) {
-        statusEl.innerHTML = "Награда получена • <span class=\"gold-text\">+5 NEVAR</span>";
-        btnEl.disabled = true;
-        btnEl.textContent = "Выполнено";
+function unlockPlanet(planetId, method) {
+    if (!state.suitOwned || !state.shipOwned) {
+        return alert("Для экспедиций необходимо сначала приобрести скафандр и корабль в ангаре!");
+    }
+
+    const planetIndex = PLANETS_DATA.findIndex(p => p.id === planetId);
+    if (planetIndex === -1) return;
+
+    if (!canUnlockPlanet(planetIndex)) {
+        const prevName = PLANETS_DATA[planetIndex - 1].name;
+        return alert(`🔒 Сначала нужно завершить экспедицию на ${prevName}!`);
+    }
+
+    if (state.unlockedPlanets.includes(planetId)) return;
+
+    const planet = PLANETS_DATA[planetIndex];
+
+    if (method === 'nevar') {
+        if (state.balance < planet.costNevar) {
+            return alert(`Недостаточно NEVAR! Нужно ${planet.costNevar} NEVAR.`);
+        }
+        state.balance -= planet.costNevar;
+        state.unlockedPlanets.push(planet.id);
+        alert(`🎉 Экспедиция на ${planet.name} успешно завершена! Скорость майнинга увеличена на +1 NEVAR/ч.`);
+    } else if (method === 'video') {
+        if (!state.planetVideosWatched[planetId]) state.planetVideosWatched[planetId] = 0;
+        state.planetVideosWatched[planetId] += 50;
+
+        if (state.planetVideosWatched[planetId] >= planet.costVideos) {
+            state.planetVideosWatched[planetId] = planet.costVideos;
+            state.unlockedPlanets.push(planet.id);
+            alert(`🎉 Экспедиция на ${planet.name} завершена за просмотр видео! Скорость увеличена.`);
+        } else {
+            alert(`Просмотрено! Прогресс ${planet.name}: ${state.planetVideosWatched[planetId]} / ${planet.costVideos} видео`);
+        }
+    }
+    saveState();
+    render();
+}
+
+function claimMined() {
+    if (state.unclaimedMined <= 0) return;
+    state.balance += state.unclaimedMined;
+    state.unclaimedMined = 0;
+    saveState();
+    render();
+}
+
+function watchBoostVideo() {
+    if (state.boostActiveUntil > Date.now()) return alert("Ускоритель уже активен!");
+    state.boostVideos++;
+    if (state.boostVideos >= 5) {
+        state.boostVideos = 0;
+        state.boostActiveUntil = Date.now() + 60 * 60 * 1000;
+        alert("⚡ Ускоритель ×2 успешно активирован на 60 минут!");
     } else {
-        statusEl.innerHTML = "Выполните задание • <span class=\"gold-text\">+5 NEVAR</span>";
-        btnEl.disabled = false;
-        btnEl.textContent = "Подписаться";
+        alert(`Просмотрено видео для буста: ${state.boostVideos}/5`);
     }
+    saveState();
+    render();
+}
+
+function completeDailyVideos() {
+    if (state.dailyVideos >= 5) return;
+    state.dailyVideos++;
+    if (state.dailyVideos === 5) {
+        state.balance += 3.0;
+        alert("🎉 Задание выполнено! Получено +3.0 NEVAR");
+    } else {
+        alert(`Прогресс ежедневных видео: ${state.dailyVideos}/5`);
+    }
+    saveState();
+    render();
+}
+
+function watchOptionalVideo() {
+    state.balance += 1.0;
+    alert("Вы посмотрели видео и получили +1 NEVAR!");
+    saveState();
+    render();
+}
+
+function handleDailyLoginButton() {
+    const today = getToday();
+    if (state.lastDailyReward === today) return;
+    state.dailyLoginVideos++;
+    if (state.dailyLoginVideos >= 3) {
+        const reward = 10 + (state.loginStreak * 10);
+        state.balance += reward;
+        state.lastDailyReward = today;
+        state.loginStreak++;
+        state.dailyLoginVideos = 0;
+        alert(`🎁 Получена ежедневная награда: +${reward} NEVAR!`);
+    } else {
+        alert(`Просмотрено видео для ежедневной награды: ${state.dailyLoginVideos}/3`);
+    }
+    saveState();
+    render();
+}
+
+function inviteFriend() {
+    state.invitedFriends++;
+    state.balance += 20;
+    alert("👥 Новый пилот успешно приглашен в ваш экипаж! Получено +20 NEVAR.");
+    saveState();
+    render();
+}
+
+function renderPlanetsList() {
+    const container = document.getElementById("planets-list");
+    if (!container) return;
+
+    let html = "";
+    PLANETS_DATA.forEach((planet, index) => {
+        const isUnlocked = state.unlockedPlanets.includes(planet.id);
+        const isAvailable = canUnlockPlanet(index);
+        const watched = state.planetVideosWatched[planet.id] || 0;
+
+        let statusText = '';
+        if (isUnlocked) {
+            statusText = '<span style="color:var(--green)">⭐ Покорено (+1 NEVAR/ч)</span>';
+        } else if (!isAvailable) {
+            const prevName = PLANETS_DATA[index - 1].name;
+            statusText = `<span style="color:var(--red)">🔒 Закрыто (нужно пройти ${prevName})</span>`;
+        } else {
+            statusText = `Цена: <span class="gold-text">${planet.costNevar} NEVAR</span> или ${planet.costVideos} видео`;
+        }
+
+        html += `
+            <div class="card" style="flex-direction:column;align-items:stretch;opacity:${!isAvailable && !isUnlocked ? 0.6 : 1}">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <h4 style="margin:0">${planet.name}</h4>
+                        <p style="margin:4px 0 0">${statusText}</p>
+                    </div>
+                    <div>${isUnlocked ? '<span style="color:var(--green);font-weight:bold">Открыто</span>' : `<span style="font-size:11px;color:var(--muted)">📺 ${watched}/${planet.costVideos}</span>`}</div>
+                </div>
+                ${!isUnlocked ? `
+                <div class="btn-group" style="margin-top:10px">
+                    <button class="btn-action" ${!isAvailable ? 'disabled' : ''} onclick="unlockPlanet('${planet.id}', 'nevar')">
+                        ${!isAvailable ? '🔒 Закрыто' : `Купить за ${planet.costNevar} 🪙`}
+                    </button>
+                    <button class="btn-action btn-secondary" ${!isAvailable ? 'disabled' : ''} onclick="unlockPlanet('${planet.id}', 'video')">
+                        ${!isAvailable ? '🔒 Закрыто' : `Видео (${watched}/${planet.costVideos}) 📺`}
+                    </button>
+                </div>` : ''}
+            </div>
+        `;
+    });
+    container.innerHTML = html;
 }
 
 function render() {
-    const balanceElement = document.getElementById("balance");
-    if (balanceElement) balanceElement.textContent = Number(state.balance).toFixed(2);
-
-    const dailyVideosElement = document.getElementById("desc-daily-videos");
-    if (dailyVideosElement) {
-        dailyVideosElement.innerHTML = "Прогресс: " + state.dailyVideos + "/5 • <span class=\"gold-text\">+3.0 NEVAR</span>";
-    }
-
-    const totalVideosElement = document.getElementById("desc-total-50");
-    if (totalVideosElement) {
-        totalVideosElement.innerHTML = "Прогресс: " + Math.min(50, state.totalVideos) + "/50 • <span class=\"gold-text\">+25 NEVAR</span>";
-    }
-
-    const dailyVideoButton = document.getElementById("btn-daily-videos");
-    if (dailyVideoButton) {
-        dailyVideoButton.disabled = state.dailyVideos >= 5 || isAdCooldown;
-        dailyVideoButton.textContent = state.dailyVideos >= 5 ? "Выполнено" : "Смотреть";
-    }
-
-    const youtubeDailyButton = document.getElementById("btn-youtube-daily");
-    if (youtubeDailyButton) {
-        youtubeDailyButton.disabled = state.dailyYouTube || isAdCooldown;
-        youtubeDailyButton.textContent = state.dailyYouTube ? "Выполнено" : "Смотреть";
-    }
-
-    const total50Button = document.getElementById("btn-total-50");
-    if (total50Button) {
-        total50Button.disabled = state.totalVideos < 50 || state.total50Claimed;
-        total50Button.textContent = state.total50Claimed ? "Получено" : (state.totalVideos >= 50 ? "Забрать награду" : "В процессе");
-    }
-
-    const timerElement = document.getElementById("mining-timer");
-    if (timerElement) timerElement.textContent = getMiningTimerText();
-
-    document.querySelectorAll("[data-suit-button]").forEach(button => { button.disabled = state.suitOwned || isAdCooldown; });
-    document.querySelectorAll("[data-ship-button]").forEach(button => { button.disabled = state.shipOwned || isAdCooldown; });
+    document.getElementById("balance").textContent = Number(state.balance).toFixed(2);
+    document.getElementById("mined-session").textContent = Number(state.unclaimedMined).toFixed(4);
+    
+    const speed = getCurrentSpeed();
+    document.getElementById("speed-indicator").textContent = `⚡ ${speed} NEVAR/ч`;
 
     const suitStatus = document.getElementById("suit-status");
-    if (suitStatus) suitStatus.textContent = state.suitOwned ? "Приобретён" : "Не приобретён";
+    const btnSuitNevar = document.getElementById("btn-buy-suit-nevar");
+    const btnSuitVideo = document.getElementById("btn-buy-suit-video");
+    if (state.suitOwned) {
+        suitStatus.innerHTML = '<span style="color:var(--green)">Приобретён</span>';
+        btnSuitNevar.disabled = true;
+        btnSuitVideo.disabled = true;
+        btnSuitVideo.textContent = "Куплено";
+    } else {
+        suitStatus.textContent = `Прогресс: ${state.suitVideosWatched} / 100 видео`;
+        btnSuitVideo.textContent = `Видео (${state.suitVideosWatched}/100) 📺`;
+    }
 
     const shipStatus = document.getElementById("ship-status");
-    if (shipStatus) shipStatus.textContent = state.shipOwned ? "Приобретён" : "Не приобретён";
+    const btnShipNevar = document.getElementById("btn-buy-ship-nevar");
+    const btnShipVideo = document.getElementById("btn-buy-ship-video");
+    if (state.shipOwned) {
+        shipStatus.innerHTML = '<span style="color:var(--green)">Приобретён</span>';
+        btnShipNevar.disabled = true;
+        btnShipVideo.disabled = true;
+        btnShipVideo.textContent = "Куплено";
+    } else {
+        shipStatus.textContent = `Прогресс: ${state.shipVideosWatched} / 250 видео`;
+        btnShipVideo.textContent = `Видео (${state.shipVideosWatched}/250) 📺`;
+    }
+
+    const dailyVideosDesc = document.getElementById("desc-daily-videos");
+    if (dailyVideosDesc) dailyVideosDesc.innerHTML = `Прогресс: ${state.dailyVideos}/5 • <span class="gold-text">+3.0 NEVAR</span>`;
 
     const friendsCount = document.getElementById("friends-count");
     if (friendsCount) friendsCount.textContent = state.invitedFriends;
 
-    const inviteProgress = document.getElementById("invite5-progress");
-    if (inviteProgress) inviteProgress.textContent = "Приглашено: " + state.invitedFriends;
-
-    const inviteRewardProgress = document.getElementById("invite-reward-progress");
-    if (inviteRewardProgress) {
-        inviteRewardProgress.textContent = "Получено за приглашения: " + Number(state.inviteRewardsPaid || 0).toFixed(2) + " NEVAR";
-    }
-
-    const inviteRewardButton = document.getElementById("btn-claim-invite-reward");
-    const availableInviteReward = getInviteRewardTotal(state.invitedFriends) - Number(state.inviteRewardsPaid || 0);
-
-    if (inviteRewardButton) {
-        inviteRewardButton.disabled = availableInviteReward <= 0;
-        inviteRewardButton.textContent = availableInviteReward > 0 ? "Получить " + availableInviteReward + " NEVAR" : "Нет доступной награды";
-    }
-
-    const dailyLoginButton = document.getElementById("btn-daily-login");
-    const dailyLoginProgress = document.getElementById("daily-login-progress");
-    const dailyLoginStatus = document.getElementById("daily-login-status");
-    const today = getToday();
-    dailyLoginClaimed = state.lastDailyReward === today;
-
-    if (dailyLoginProgress) {
-        dailyLoginProgress.textContent = dailyLoginClaimed ? "Награда за сегодня уже получена" : "Посмотрите 3 видео, чтобы открыть награду: " + Math.min(3, state.dailyLoginVideos) + "/3";
-    }
-
-    if (dailyLoginButton) {
-        dailyLoginButton.disabled = dailyLoginClaimed || isAdCooldown;
-        dailyLoginButton.textContent = dailyLoginClaimed ? "Награда получена" : (state.dailyLoginVideos >= 3 ? "Получить награду" : "Смотреть видео (" + state.dailyLoginVideos + "/3)");
-    }
-
-    const loginDay = getDailyLoginDay();
-    if (dailyLoginStatus) {
-        dailyLoginStatus.textContent = "День " + Math.min(loginDay, 7) + " • Награда: " + getDailyLoginReward(loginDay) + " NEVAR";
-    }
-
-    document.querySelectorAll("#daily-rewards .daily-reward").forEach((item, index) => {
-        item.classList.remove("current", "claimed");
-        const mark = item.querySelector(".mark");
-        if (mark) mark.textContent = "";
-
-        if (state.lastDailyReward === today && index < state.loginStreak) {
-            item.classList.add("claimed");
-            if (mark) mark.textContent = "✓";
-        } else if (index === Math.min(loginDay, 7) - 1 && !dailyLoginClaimed) {
-            item.classList.add("current");
-        }
-    });
-
-    renderCommunityTask("telegram");
-    renderCommunityTask("youtube");
-    renderCommunityTask("x");
-
     const boostProgress = document.getElementById("boost-progress");
-    if (boostProgress) boostProgress.textContent = "Прогресс: " + Math.min(5, state.boostVideos) + "/5";
-
     const boostStatus = document.getElementById("boost-status");
-    const boostButton = document.getElementById("btn-activate-boost");
+    const btnBoost = document.getElementById("btn-activate-boost");
     if (state.boostActiveUntil > Date.now()) {
-        if (boostStatus) boostStatus.textContent = "Ускоритель ×2 активен до " + new Date(state.boostActiveUntil).toLocaleTimeString();
-        if (boostButton) { boostButton.disabled = true; boostButton.textContent = "Активен"; }
+        const remainingMin = Math.ceil((state.boostActiveUntil - Date.now()) / 60000);
+        if (boostStatus) boostStatus.textContent = `Ускоритель ×2 активен! Осталось ~${remainingMin} мин.`;
+        if (boostProgress) boostProgress.textContent = "Активно";
+        if (btnBoost) { btnBoost.disabled = true; btnBoost.textContent = "Активен"; }
     } else {
         if (boostStatus) boostStatus.textContent = "Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.";
-        if (boostButton) {
-            boostButton.disabled = state.boostVideos < 5 || isAdCooldown;
-            boostButton.textContent = state.boostVideos >= 5 ? "Активировать ×2" : "Активировать";
-        }
+        if (boostProgress) boostProgress.textContent = `Прогресс: ${state.boostVideos}/5`;
+        if (btnBoost) { btnBoost.disabled = false; btnBoost.textContent = "Активировать"; }
     }
 
-    updateFuelDisplay();
-    saveState();
+    renderPlanetsList();
+}
+
+function gameTick() {
+    const speed = getCurrentSpeed();
+    state.unclaimedMined += (speed / 3600);
+    render();
 }
 
 function switchPage(pageId) {
-    document.querySelectorAll(".app-container").forEach(page => { page.classList.remove("active"); });
+    document.querySelectorAll(".app-container").forEach(page => page.classList.remove("active"));
     const targetPage = document.getElementById("page-" + pageId);
     if (targetPage) targetPage.classList.add("active");
 
@@ -666,58 +620,11 @@ function animate3D() {
     if (renderer && scene && camera) { renderer.render(scene, camera); }
 }
 
-function updateMining() {
-    if (state.miningEnd && Date.now() >= state.miningEnd) {
-        state.miningEnd = 0;
-        state.nightMining = false;
-        state.balance += 1;
-        saveState();
-        render();
-    } else {
-        const timerElement = document.getElementById("mining-timer");
-        if (timerElement) timerElement.textContent = getMiningTimerText();
-    }
-
-    if (state.boostActiveUntil && Date.now() >= state.boostActiveUntil) {
-        state.boostActiveUntil = 0;
-        state.boostVideos = 0;
-        render();
-    }
-}
-
-// Заглушки для кнопок интерфейса
-function watchVideoForMining() { alert("Запуск видео для майнинга"); }
-function startNightMining() { alert("Ночной майнинг запущен"); }
-function watchBoostVideo() { alert("Просмотр видео для ускорителя"); }
-function completeDailyVideos(btn) { alert("Ежедневные видео"); }
-function completeYouTubeDailyTask(btn) { alert("YouTube задание"); }
-function watchOptionalVideo(btn) { alert("Видео по усмотрению"); }
-function claimTotal50() { alert("Награда за 50 видео"); }
-function handleDailyLoginButton() { alert("Ежедневный вход"); }
-function claimInviteReward() { alert("Награда за друзей"); }
-function handleCommunityTask(type) { alert("Задание: " + type); }
-function inviteFriend() { alert("Пригласить друга"); }
-function buySuit(btn) { alert("Покупка скафандра"); }
-function buyShip(btn) { alert("Покупка корабля"); }
-function buyFuel() { alert("Покупка топлива"); }
-function watchFuelVideos() { alert("Видео для топлива"); }
-
-document.querySelectorAll(".nav-item").forEach(item => {
-    item.addEventListener("click", () => {
-        const pageId = item.dataset.page;
-        if (pageId) switchPage(pageId);
-    });
-});
-
 window.addEventListener("resize", () => { if (renderer) init3D(); });
 
 loadState();
-dailyReset();
-updateFuelPrice();
 render();
-
-setInterval(dailyReset, 60000);
-setInterval(updateMining, 1000);
+setInterval(gameTick, 1000);
 </script>
 </body>
 </html>
