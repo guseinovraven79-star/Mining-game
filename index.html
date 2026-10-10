@@ -327,6 +327,20 @@ button:disabled{cursor:not-allowed;opacity:.55}
 const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
+// 1. Вспомогательные функции (объявляем первым делом)
+function getToday() { 
+    return new Date().toDateString(); 
+}
+
+function formatTimeMS(ms) {
+    if (!ms || ms <= 0) return "00:00:00";
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600).toString().padStart(2, '0');
+    const m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0');
+    const s = (totalSec % 60).toString().padStart(2, '0');
+    return `${h}:${m}:${s}`;
+}
+
 const state = {
     balance: 0,
     dailyVideos: 0,
@@ -350,8 +364,6 @@ const state = {
     nightMiningVideos: 0,
     nightMiningActiveUntil: 0,
     lastMiningRewardAmount: 0,
-    
-    // Новые поля для автосчетчика и заданий
     todayDateString: "",
     dailyVideoCount: 0,
     youtubeVideoCompleted: false,
@@ -384,8 +396,6 @@ function loadState() {
     } catch (e) {}
 }
 
-function getToday() { return new Date().toDateString(); }
-
 function checkDailyReset() {
     const today = getToday();
     if (state.todayDateString !== today) {
@@ -397,7 +407,6 @@ function checkDailyReset() {
     }
 }
 
-// Учет просмотра видео во всех местах, кроме экспедиций
 function recordVideoView() {
     checkDailyReset();
     state.dailyVideoCount++;
@@ -405,16 +414,34 @@ function recordVideoView() {
 }
 
 function getCurrentSpeed() {
-    let base = 1 + state.unlockedPlanets.length;
+    let base = 1 + (state.unlockedPlanets ? state.unlockedPlanets.length : 0);
     if (state.boostActiveUntil > Date.now()) {
         base *= 2;
     }
     return base;
 }
 
+// 2. Переключение страниц
+function switchPage(pageId) {
+    document.querySelectorAll(".app-container").forEach(page => page.classList.remove("active"));
+    const targetPage = document.getElementById("page-" + pageId);
+    if (targetPage) {
+        targetPage.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+        item.classList.toggle("active", item.getAttribute("data-page") === pageId);
+    });
+}
+
+function showPage(pageId) { 
+    switchPage(pageId); 
+}
+
+// 3. Функции действий
 function startMiningSession() {
     if (state.miningActiveUntil > Date.now()) return alert("Майнинг уже запущен!");
-    state.miningActiveUntil = Date.now() + 60 * 60 * 1000; // 1 час
+    state.miningActiveUntil = Date.now() + 60 * 60 * 1000;
     recordVideoView();
     alert("🚀 Просмотр засчитан! Майнинг успешно запущен на 1 час.");
     saveState();
@@ -435,7 +462,7 @@ function watchNightMiningVideo() {
 
     if (state.nightMiningVideos >= 5) {
         state.nightMiningVideos = 0;
-        state.nightMiningActiveUntil = Date.now() + 6 * 60 * 60 * 1000; // 6 часов
+        state.nightMiningActiveUntil = Date.now() + 6 * 60 * 60 * 1000;
         alert("🌙 Ночной майнинг успешно запущен на 6 часов!");
     } else {
         alert(`Просмотрено видео для ночного майнинга: ${state.nightMiningVideos}/5`);
@@ -516,6 +543,7 @@ function handleDailyLoginButton() {
 }
 
 function completeSocialTask(platform) {
+    if (!state.socialTasks) state.socialTasks = {};
     if (state.socialTasks[platform]) return alert("Вы уже получили награду за эту подписку!");
     
     let reward = 10;
@@ -530,6 +558,7 @@ function completeSocialTask(platform) {
 }
 
 function claimFriendsTask() {
+    if (!state.socialTasks) state.socialTasks = {};
     if (state.socialTasks.friendsClaimed) return alert("Награда за приглашение друзей уже получена!");
     if (state.invitedFriends < 5) return alert(`Нужно пригласить минимум 5 друзей. Приглашено: ${state.invitedFriends}/5`);
 
@@ -595,7 +624,7 @@ function buyShip(method) {
 function canUnlockPlanet(planetIndex) {
     if (planetIndex === 0) return true;
     const previousPlanet = PLANETS_DATA[planetIndex - 1];
-    return state.unlockedPlanets.includes(previousPlanet.id);
+    return state.unlockedPlanets && state.unlockedPlanets.includes(previousPlanet.id);
 }
 
 function unlockPlanet(planetId, method) {
@@ -611,6 +640,7 @@ function unlockPlanet(planetId, method) {
         return alert(`🔒 Сначала нужно завершить экспедицию на ${prevName}!`);
     }
 
+    if (!state.unlockedPlanets) state.unlockedPlanets = [];
     if (state.unlockedPlanets.includes(planetId)) return;
 
     const planet = PLANETS_DATA[planetIndex];
@@ -623,6 +653,7 @@ function unlockPlanet(planetId, method) {
         state.unlockedPlanets.push(planet.id);
         alert(`🎉 Экспедиция на ${planet.name} успешно завершена! Скорость майнинга увеличена на +1 NEVAR/ч.`);
     } else if (method === 'video') {
+        if (!state.planetVideosWatched) state.planetVideosWatched = {};
         if (!state.planetVideosWatched[planetId]) state.planetVideosWatched[planetId] = 0;
         state.planetVideosWatched[planetId] += 1;
 
@@ -663,7 +694,8 @@ function copyStatusLink() {
 }
 
 function triggerStatusUpload() {
-    document.getElementById("status-file-input").click();
+    const input = document.getElementById("status-file-input");
+    if (input) input.click();
 }
 
 async function computeFileHash(file) {
@@ -749,24 +781,15 @@ function updateStatusTaskUI() {
     }
 }
 
-function formatTimeMS(ms) {
-    if (ms <= 0) return "00:00:00";
-    const totalSec = Math.floor(ms / 1000);
-    const h = Math.floor(totalSec / 3600).toString().padStart(2, '0');
-    const m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0');
-    const s = (totalSec % 60).toString().padStart(2, '0');
-    return `${h}:${m}:${s}`;
-}
-
 function renderPlanetsList() {
     const container = document.getElementById("planets-list");
     if (!container) return;
 
     let html = "";
     PLANETS_DATA.forEach((planet, index) => {
-        const isUnlocked = state.unlockedPlanets.includes(planet.id);
+        const isUnlocked = state.unlockedPlanets && state.unlockedPlanets.includes(planet.id);
         const isAvailable = canUnlockPlanet(index);
-        const watched = state.planetVideosWatched[planet.id] || 0;
+        const watched = (state.planetVideosWatched && state.planetVideosWatched[planet.id]) || 0;
 
         let statusText = '';
         if (isUnlocked) {
@@ -778,5 +801,67 @@ function renderPlanetsList() {
             statusText = `Цена: <span class="gold-text">${planet.costNevar} NEVAR</span> или ${planet.costVideos} видео`;
         }
 
-        html
+        html += `
+            <div class="card" style="flex-direction:column;align-items:stretch;opacity:${!isAvailable && !isUnlocked ? 0.6 : 1}">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <h4 style="margin:0">${planet.name}</h4>
+                        <p style="margin:4px 0 0">${statusText}</p>
+                    </div>
+                    <div>${isUnlocked ? '<span style="color:var(--green);font-weight:bold">Открыто</span>' : `<span style="font-size:11px;color:var(--muted)">📺 ${watched}/${planet.costVideos}</span>`}</div>
+                </div>
+                ${!isUnlocked ? `
+                <div class="btn-group" style="margin-top:10px">
+                    <button class="btn-action" ${!isAvailable ? 'disabled' : ''} onclick="unlockPlanet('${planet.id}', 'nevar')">
+                        ${!isAvailable ? '🔒 Закрыто' : `Купить за ${planet.costNevar} NEVAR`}
+                    </button>
+                    <button class="btn-action btn-secondary" ${!isAvailable ? 'disabled' : ''} onclick="unlockPlanet('${planet.id}', 'video')">
+                        ${!isAvailable ? '🔒 Закрыто' : `Видео (${watched}/${planet.costVideos}) 📺`}
+                    </button>
+                </div>` : ''}
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function render() {
+    const balElem = document.getElementById("balance");
+    if (balElem) balElem.textContent = Number(state.balance || 0).toFixed(2);
     
+    const speed = getCurrentSpeed();
+    const speedElem = document.getElementById("speed-indicator");
+    if (speedElem) speedElem.textContent = `⚡ ${speed} NEVAR/ч`;
+
+    const videoCounterElem = document.getElementById("daily-total-videos-counter");
+    if (videoCounterElem) videoCounterElem.textContent = state.dailyVideoCount || 0;
+
+    const btnStartMining = document.getElementById("btn-start-mining");
+    const miningLabel = document.getElementById("mining-status-label");
+    const miningTimerDisplay = document.getElementById("mining-timer-display");
+
+    const now = Date.now();
+    if (state.miningActiveUntil > now) {
+        const rem = state.miningActiveUntil - now;
+        if (miningLabel) miningLabel.textContent = "ИДЕТ ДОБЫЧА (1 ЧАС)...";
+        if (miningTimerDisplay) miningTimerDisplay.textContent = formatTimeMS(rem);
+        if (btnStartMining) { btnStartMining.disabled = true; btnStartMining.textContent = "Майнинг запущен"; }
+    } else {
+        if (miningLabel) miningLabel.textContent = "МАЙНИНГ НЕ АКТИВЕН";
+        if (miningTimerDisplay) miningTimerDisplay.textContent = "00:00:00";
+        if (btnStartMining) { btnStartMining.disabled = false; btnStartMining.textContent = "Запустить майнинг (1 ч) 📺"; }
+    }
+
+    const btnNight = document.getElementById("btn-night-mining");
+    const nightStatus = document.getElementById("night-mining-status");
+    const nightProgress = document.getElementById("night-mining-progress");
+
+    const nightAvailable = isNightMiningTime();
+
+    if (state.nightMiningActiveUntil > now) {
+        const remNight = state.nightMiningActiveUntil - now;
+        if (nightStatus) nightStatus.textContent = `🌙 Ночной майнинг активен! Осталось: ${formatTimeMS(remNight)}`;
+        if (nightProgress) nightProgress.textContent = "Активно";
+        if (btnNight) { btnNight.disabled = true; btnNight.textContent = "Ночной майнинг запущен"; }
+    } else {
+        if (nightProgress) nightProgress.textContent = `Прогресс: 
