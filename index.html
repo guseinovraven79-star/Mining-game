@@ -82,6 +82,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
 </head>
 <body>
 
+<!-- 1. МАЙНИНГ -->
 <div class="app-container active" id="page-mining">
     <div class="top-header">
         <div><div class="brand">NEVAR</div><div class="brand-subtitle">COSMIC EXPEDITION</div></div>
@@ -204,9 +205,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
             <button class="btn-action" style="width:100%" id="btn-x-task" onclick="handleCommunityTask('x')">Подписаться на канал</button>
         </div>
     </div>
-</div>
-
-<!-- 3. ЭКСПЕДИЦИИ -->
+                                                                       </div>
+                                                   <!-- 3. ЭКСПЕДИЦИИ -->
 <div id="page-expeditions" class="app-container">
     <div class="section-title">🚀 Подготовка к экспедиции</div>
 
@@ -260,7 +260,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <div class="card"><div class="card-info"><h4>Венера</h4></div><button class="btn-action" disabled>Скоро</button></div>
     <div class="card"><div class="card-info"><h4>Земля</h4></div><button class="btn-action" disabled>В разработке</button></div>
 </div>
-<!-- 4. ЭКИПАЖ -->
+    <!-- 4. ЭКИПАЖ -->
 <div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
     <div class="header-card">
@@ -278,7 +278,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <div class="friends-list" id="friends-list"></div>
 </div>
 
-<!-- 6. ИНФО -->
+<!-- 5. ИНФО -->
 <div id="page-info" class="app-container">
     <div class="section-title">ℹ️ О проекте NEVAR</div>
     <div class="info-box">
@@ -287,7 +287,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
 </div>
 
-<!-- Нижняя навигация. Страница кошелька удалена. -->
+<!-- Нижняя навигационная панель -->
 <nav class="nav-bar">
     <button class="nav-item active" data-page="mining" onclick="showPage('mining')">
         <span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span>
@@ -305,7 +305,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span>
     </button>
 </nav>
-
 <script>
 const state = {
     balance: 0,
@@ -347,17 +346,8 @@ let scene, camera, renderer, modelGroup;
 let current3DModel = "ship";
 let dailyLoginClaimed = false;
 
-const COMMUNITY_LINKS = {
-    telegram: "",
-    youtube: "",
-    x: ""
-};
-
-const COMMUNITY_VIDEO_LINKS = {
-    telegram: "",
-    youtube: "",
-    x: ""
-};
+const COMMUNITY_LINKS = { telegram: "", youtube: "", x: "" };
+const COMMUNITY_VIDEO_LINKS = { telegram: "", youtube: "", x: "" };
 
 const FUEL_COSTS = {
     mercury: { name: "Меркурий", nevar: 250, videos: 25 },
@@ -371,9 +361,7 @@ const FUEL_COSTS = {
 };
 
 function saveState() {
-    try {
-        localStorage.setItem("nevarState", JSON.stringify(state));
-    } catch (e) {}
+    try { localStorage.setItem("nevarState", JSON.stringify(state)); } catch (e) {}
 }
 
 function loadState() {
@@ -383,10 +371,7 @@ function loadState() {
     } catch (e) {}
 }
 
-function getToday() {
-    return new Date().toDateString();
-}
-
+function getToday() { return new Date().toDateString(); }
 function getYesterday() {
     const date = new Date();
     date.setDate(date.getDate() - 1);
@@ -411,6 +396,69 @@ function getDailyLoginDay() {
 function getInviteRewardTotal(count) {
     const invited = Math.max(0, Number(count) || 0);
     return Math.min(invited, 5) * 20 + Math.max(0, invited - 5) * 10;
+}
+
+function getMiningTimerText() {
+    if (!state.miningEnd || Date.now() >= state.miningEnd) return "00:00";
+    const diff = Math.ceil((state.miningEnd - Date.now()) / 1000);
+    const m = Math.floor(diff / 60).toString().padStart(2, '0');
+    const s = (diff % 60).toString().padStart(2, '0');
+    return m + ":" + s;
+}
+
+function dailyReset() {
+    const today = getToday();
+    if (state.currentDay !== today) {
+        state.currentDay = today;
+        state.dailyVideos = 0;
+        state.dailyYouTube = false;
+        state.optionalVideos = 0;
+        state.total50Claimed = false;
+        state.totalVideos = 0;
+        state.dailyLoginVideos = 0;
+        saveState();
+    }
+}
+
+function updateFuelPrice() {
+    const select = document.getElementById("fuel-planet");
+    if (!select) return;
+    const cost = FUEL_COSTS[select.value];
+    const priceEl = document.getElementById("fuel-price");
+    if (priceEl && cost) {
+        priceEl.textContent = cost.name + ": " + cost.nevar + " NEVAR или " + cost.videos + " видео";
+    }
+}
+
+function updateFuelDisplay() {
+    const fill = document.getElementById("fuel-meter-fill");
+    const status = document.getElementById("fuel-status");
+    const select = document.getElementById("fuel-planet");
+    if (!select) return;
+    const cost = FUEL_COSTS[select.value];
+    if (!cost) return;
+
+    const percent = Math.min(100, (state.fuel / cost.nevar) * 100);
+    if (fill) fill.style.width = percent + "%";
+    if (status) {
+        status.textContent = state.fuel >= cost.nevar ? "Корабль полностью заряжен!" : "Заряжено: " + state.fuel + " / " + cost.nevar + " NEVAR";
+    }
+}
+
+function renderCommunityTask(type) {
+    const statusEl = document.getElementById(type + "-task-status");
+    const btnEl = document.getElementById("btn-" + type + "-task");
+    if (!statusEl || !btnEl) return;
+
+    if (state[type + "RewardClaimed"]) {
+        statusEl.innerHTML = "Награда получена • <span class=\"gold-text\">+5 NEVAR</span>";
+        btnEl.disabled = true;
+        btnEl.textContent = "Выполнено";
+    } else {
+        statusEl.innerHTML = "Выполните задание • <span class=\"gold-text\">+5 NEVAR</span>";
+        btnEl.disabled = false;
+        btnEl.textContent = "Подписаться";
+    }
 }
 
 function render() {
@@ -448,13 +496,8 @@ function render() {
     const timerElement = document.getElementById("mining-timer");
     if (timerElement) timerElement.textContent = getMiningTimerText();
 
-    document.querySelectorAll("[data-suit-button]").forEach(button => {
-        button.disabled = state.suitOwned || isAdCooldown;
-    });
-
-    document.querySelectorAll("[data-ship-button]").forEach(button => {
-        button.disabled = state.shipOwned || isAdCooldown;
-    });
+    document.querySelectorAll("[data-suit-button]").forEach(button => { button.disabled = state.suitOwned || isAdCooldown; });
+    document.querySelectorAll("[data-ship-button]").forEach(button => { button.disabled = state.shipOwned || isAdCooldown; });
 
     const suitStatus = document.getElementById("suit-status");
     if (suitStatus) suitStatus.textContent = state.suitOwned ? "Приобретён" : "Не приобретён";
@@ -470,19 +513,15 @@ function render() {
 
     const inviteRewardProgress = document.getElementById("invite-reward-progress");
     if (inviteRewardProgress) {
-        inviteRewardProgress.textContent = "Получено за приглашения: " +
-            Number(state.inviteRewardsPaid || 0).toFixed(2) + " NEVAR";
+        inviteRewardProgress.textContent = "Получено за приглашения: " + Number(state.inviteRewardsPaid || 0).toFixed(2) + " NEVAR";
     }
 
     const inviteRewardButton = document.getElementById("btn-claim-invite-reward");
-    const availableInviteReward = getInviteRewardTotal(state.invitedFriends) -
-        Number(state.inviteRewardsPaid || 0);
+    const availableInviteReward = getInviteRewardTotal(state.invitedFriends) - Number(state.inviteRewardsPaid || 0);
 
     if (inviteRewardButton) {
         inviteRewardButton.disabled = availableInviteReward <= 0;
-        inviteRewardButton.textContent = availableInviteReward > 0
-            ? "Получить " + availableInviteReward + " NEVAR"
-            : "Нет доступной награды";
+        inviteRewardButton.textContent = availableInviteReward > 0 ? "Получить " + availableInviteReward + " NEVAR" : "Нет доступной награды";
     }
 
     const dailyLoginButton = document.getElementById("btn-daily-login");
@@ -492,16 +531,12 @@ function render() {
     dailyLoginClaimed = state.lastDailyReward === today;
 
     if (dailyLoginProgress) {
-        dailyLoginProgress.textContent = dailyLoginClaimed
-            ? "Награда за сегодня уже получена"
-            : "Посмотрите 3 видео, чтобы открыть награду: " + Math.min(3, state.dailyLoginVideos) + "/3";
+        dailyLoginProgress.textContent = dailyLoginClaimed ? "Награда за сегодня уже получена" : "Посмотрите 3 видео, чтобы открыть награду: " + Math.min(3, state.dailyLoginVideos) + "/3";
     }
 
     if (dailyLoginButton) {
         dailyLoginButton.disabled = dailyLoginClaimed || isAdCooldown;
-        dailyLoginButton.textContent = dailyLoginClaimed
-            ? "Награда получена"
-            : (state.dailyLoginVideos >= 3 ? "Получить награду" : "Смотреть видео (" + state.dailyLoginVideos + "/3)");
+        dailyLoginButton.textContent = dailyLoginClaimed ? "Награда получена" : (state.dailyLoginVideos >= 3 ? "Получить награду" : "Смотреть видео (" + state.dailyLoginVideos + "/3)");
     }
 
     const loginDay = getDailyLoginDay();
@@ -533,10 +568,7 @@ function render() {
     const boostButton = document.getElementById("btn-activate-boost");
     if (state.boostActiveUntil > Date.now()) {
         if (boostStatus) boostStatus.textContent = "Ускоритель ×2 активен до " + new Date(state.boostActiveUntil).toLocaleTimeString();
-        if (boostButton) {
-            boostButton.disabled = true;
-            boostButton.textContent = "Активен";
-        }
+        if (boostButton) { boostButton.disabled = true; boostButton.textContent = "Активен"; }
     } else {
         if (boostStatus) boostStatus.textContent = "Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.";
         if (boostButton) {
@@ -548,406 +580,9 @@ function render() {
     updateFuelDisplay();
     saveState();
 }
-    <script>
-function getMiningTimerText() {
-    if (!state.miningEnd || state.miningEnd <= Date.now()) return "Майнинг не активен";
 
-    const seconds = Math.floor((state.miningEnd - Date.now()) / 1000);
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const remainingSeconds = seconds % 60;
-
-    return String(hours).padStart(2, "0") + ":" +
-        String(minutes).padStart(2, "0") + ":" +
-        String(remainingSeconds).padStart(2, "0");
-}
-
-function startCooldownForButton(button, defaultText, callback) {
-    if (isAdCooldown || (button && button.disabled)) return;
-
-    isAdCooldown = true;
-    adCooldownTimer = 10;
-
-    if (button) {
-        button.disabled = true;
-        button.textContent = "Подождите " + adCooldownTimer + " сек.";
-    }
-
-    if (adCooldownInterval) clearInterval(adCooldownInterval);
-
-    adCooldownInterval = setInterval(() => {
-        adCooldownTimer--;
-
-        if (button) {
-            button.textContent = "Подождите " + Math.max(0, adCooldownTimer) + " сек.";
-        }
-
-        if (adCooldownTimer <= 0) {
-            clearInterval(adCooldownInterval);
-            adCooldownInterval = null;
-            isAdCooldown = false;
-
-            if (typeof callback === "function") callback();
-
-            if (button && document.body.contains(button)) {
-                button.disabled = false;
-                button.textContent = defaultText;
-            }
-
-            render();
-        }
-    }, 1000);
-}
-
-function fakeVideo(button, reward, callback) {
-    if (isAdCooldown || (button && button.disabled)) return;
-
-    const defaultText = button ? button.textContent : "Смотреть видео";
-
-    startCooldownForButton(button, defaultText, () => {
-        state.totalVideos = Math.min(50, Number(state.totalVideos || 0) + 1);
-
-        if (typeof reward === "number") state.balance += reward;
-        if (typeof callback === "function") callback();
-
-        saveState();
-        render();
-    });
-}
-
-function watchVideoForMining() {
-    const button = document.getElementById("btn-start-mining");
-    fakeVideo(button, 10, () => {
-        state.miningEnd = Date.now() + 60 * 60 * 1000;
-    });
-}
-
-function startNightMining() {
-    const button = document.getElementById("btn-night-mining");
-    fakeVideo(button, 5, () => {
-        state.nightMining = true;
-        state.miningEnd = Date.now() + 8 * 60 * 60 * 1000;
-    });
-}
-
-function watchBoostVideo() {
-    if (state.boostActiveUntil > Date.now() || state.boostVideos >= 5) return;
-
-    const button = document.getElementById("btn-activate-boost");
-    fakeVideo(button, 0, () => {
-        state.boostVideos = Math.min(5, state.boostVideos + 1);
-
-        if (state.boostVideos >= 5) {
-            state.boostActiveUntil = Date.now() + 60 * 60 * 1000;
-        }
-    });
-}
-
-function dailyReset() {
-    const today = getToday();
-
-    if (state.currentDay !== today) {
-        state.currentDay = today;
-        state.totalVideos = 0;
-        state.dailyVideos = 0;
-        state.dailyYouTube = false;
-        state.optionalVideos = 0;
-        state.total50Claimed = false;
-        state.dailyLoginVideos = 0;
-        state.boostVideos = 0;
-        state.boostActiveUntil = 0;
-        saveState();
-        render();
-    }
-}
-
-function completeDailyVideos(button) {
-    if (state.dailyVideos >= 5 || isAdCooldown) return;
-
-    fakeVideo(button, 0, () => {
-        state.dailyVideos = Math.min(5, state.dailyVideos + 1);
-
-        if (state.dailyVideos === 5) {
-            state.balance += 3;
-        }
-    });
-}
-
-function completeYouTubeDailyTask(button) {
-    if (state.dailyYouTube || isAdCooldown) return;
-
-    fakeVideo(button, 0, () => {
-        state.dailyYouTube = true;
-        state.balance += 5;
-    });
-}
-
-function watchOptionalVideo(button) {
-    fakeVideo(button, 0.25, () => {
-        state.optionalVideos++;
-    });
-}
-
-function handleDailyLoginButton() {
-    if (dailyLoginClaimed || isAdCooldown) return;
-
-    const button = document.getElementById("btn-daily-login");
-
-    if (state.dailyLoginVideos < 3) {
-        fakeVideo(button, 0, () => {
-            state.dailyLoginVideos = Math.min(3, state.dailyLoginVideos + 1);
-        });
-        return;
-    }
-
-    const today = getToday();
-    let nextStreak;
-
-    if (state.lastDailyReward === getYesterday()) {
-        nextStreak = Math.max(1, state.loginStreak + 1);
-    } else if (state.lastDailyReward === today) {
-        return;
-    } else {
-        nextStreak = 1;
-    }
-
-    state.loginStreak = nextStreak;
-    state.lastDailyReward = today;
-    state.balance += getDailyLoginReward(nextStreak);
-
-    saveState();
-    render();
-}
-
-function claimTotal50() {
-    if (state.totalVideos < 50 || state.total50Claimed) return;
-
-    state.total50Claimed = true;
-    state.balance += 25;
-    saveState();
-    render();
-}
-
-function claimInviteReward() {
-    const totalReward = getInviteRewardTotal(state.invitedFriends);
-    const alreadyPaid = Math.max(0, Number(state.inviteRewardsPaid) || 0);
-    const reward = totalReward - alreadyPaid;
-
-    if (reward <= 0) return;
-
-    state.balance += reward;
-    state.inviteRewardsPaid = totalReward;
-
-    saveState();
-    render();
-}
-
-function spendBalance(amount) {
-    if (state.balance < amount) return false;
-
-    state.balance -= amount;
-    saveState();
-    render();
-    return true;
-}
-
-function buySuit(button) {
-    if (state.suitOwned || isAdCooldown) return;
-
-    fakeVideo(button, 0, () => {
-        state.suitOwned = true;
-    });
-}
-
-function buyShip(button) {
-    if (state.shipOwned || isAdCooldown) return;
-
-    fakeVideo(button, 0, () => {
-        state.shipOwned = true;
-    });
-}
-
-function updateFuelPrice() {
-    const select = document.getElementById("fuel-planet");
-    if (!select) return;
-
-    const cost = FUEL_COSTS[select.value];
-    if (!cost) return;
-
-    const price = document.getElementById("fuel-price");
-    if (price) price.textContent = cost.name + ": " + cost.nevar + " NEVAR или " + cost.videos + " видео";
-
-    updateFuelDisplay();
-}
-
-function updateFuelDisplay() {
-    const fill = document.getElementById("fuel-meter-fill");
-    const status = document.getElementById("fuel-status");
-
-    if (fill) fill.style.width = state.fuel > 0 ? "100%" : "0%";
-    if (status) status.textContent = state.fuel > 0 ? "Корабль заряжен" : "Корабль не заряжен";
-}
-
-function buyFuel() {
-    const select = document.getElementById("fuel-planet");
-    const cost = select && FUEL_COSTS[select.value];
-    if (!cost || state.fuel > 0) return;
-
-    if (!spendBalance(cost.nevar)) {
-        alert("Недостаточно NEVAR.");
-        return;
-    }
-
-    state.fuel = 1;
-    saveState();
-    render();
-}
-
-function watchFuelVideos() {
-    const select = document.getElementById("fuel-planet");
-    const cost = select && FUEL_COSTS[select.value];
-    const button = document.getElementById("btn-fuel-video");
-
-    if (!cost || state.fuel > 0 || isAdCooldown) return;
-
-    let watched = 0;
-
-    function nextFuelVideo() {
-        if (watched >= cost.videos) {
-            state.fuel = 1;
-            saveState();
-            render();
-            return;
-        }
-
-        fakeVideo(button, 0, () => {
-            watched++;
-            if (button) button.textContent = "Видео: " + watched + "/" + cost.videos;
-            nextFuelVideo();
-        });
-    }
-
-    nextFuelVideo();
-}
-
-function inviteFriend() {
-    const shareUrl = window.location.href;
-    const shareText = "Присоединяйся к NEVAR — космической экспедиции!";
-
-    if (window.Telegram && window.Telegram.WebApp) {
-        const shareLink = "https://t.me/share/url?url=" +
-            encodeURIComponent(shareUrl) + "&text=" + encodeURIComponent(shareText);
-        window.open(shareLink, "_blank");
-    } else if (navigator.share) {
-        navigator.share({
-            title: "NEVAR",
-            text: shareText,
-            url: shareUrl
-        }).catch(() => {});
-    } else {
-        window.prompt("Скопируйте ссылку и отправьте другу:", shareUrl);
-    }
-}
-
-function getCommunityLink(platform, isVideo) {
-    const links = isVideo ? COMMUNITY_VIDEO_LINKS : COMMUNITY_LINKS;
-    let link = links[platform];
-
-    if (!link) {
-        link = window.prompt(
-            isVideo
-                ? "Вставьте ссылку на видео для " + platform + ":"
-                : "Вставьте ссылку на официальный канал или страницу " + platform + ":"
-        );
-    }
-
-    if (!link) return "";
-
-    try {
-        const parsed = new URL(link);
-        if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-            alert("Введите корректную ссылку.");
-            return "";
-        }
-        return parsed.href;
-    } catch (e) {
-        alert("Введите корректную ссылку.");
-        return "";
-    }
-}
-
-function handleCommunityTask(platform) {
-    const openedKey = platform + "Opened";
-    const watchedKey = platform + "VideoWatched";
-    const claimedKey = platform + "RewardClaimed";
-
-    if (state[claimedKey] || isAdCooldown) return;
-
-    const button = document.getElementById("btn-" + platform + "-task");
-    if (!button) return;
-
-    if (!state[openedKey]) {
-        const link = getCommunityLink(platform, false);
-        if (!link) return;
-
-        window.open(link, "_blank");
-        state[openedKey] = true;
-        saveState();
-        render();
-        return;
-    }
-
-    if (!state[watchedKey]) {
-        const link = getCommunityLink(platform, true);
-        if (!link) return;
-
-        window.open(link, "_blank");
-
-        fakeVideo(button, 0, () => {
-            state[watchedKey] = true;
-        });
-        return;
-    }
-
-    state[claimedKey] = true;
-    state.balance += 5;
-    saveState();
-    render();
-}
-
-function renderCommunityTask(platform) {
-    const opened = state[platform + "Opened"];
-    const watched = state[platform + "VideoWatched"];
-    const claimed = state[platform + "RewardClaimed"];
-
-    const button = document.getElementById("btn-" + platform + "-task");
-    const status = document.getElementById(platform + "-task-status");
-
-    if (button) {
-        button.disabled = claimed || isAdCooldown;
-
-        if (claimed) {
-            button.textContent = "Награда получена";
-        } else if (watched) {
-            button.textContent = "Получить награду";
-        } else {
-            button.textContent = "Подписаться на канал";
-        }
-    }
-
-    if (status) {
-        if (claimed) {
-            status.innerHTML = "Награда получена • <span class=\"gold-text\">+5 NEVAR</span>";
-        } else {
-            status.innerHTML = "Награда за выполнение • <span class=\"gold-text\">+5 NEVAR</span>";
-        }
-    }
-                         }
-    function switchPage(pageId) {
-    document.querySelectorAll(".app-container").forEach(page => {
-        page.classList.remove("active");
-    });
-
+function switchPage(pageId) {
+    document.querySelectorAll(".app-container").forEach(page => { page.classList.remove("active"); });
     const targetPage = document.getElementById("page-" + pageId);
     if (targetPage) targetPage.classList.add("active");
 
@@ -955,12 +590,10 @@ function renderCommunityTask(platform) {
         item.classList.toggle("active", item.dataset.page === pageId);
     });
 
-    if (pageId === "expeditions") init3D();
+    if (pageId === "expeditions") { setTimeout(init3D, 50); }
 }
 
-function showPage(pageId) {
-    switchPage(pageId);
-}
+function showPage(pageId) { switchPage(pageId); }
 
 function init3D() {
     const target = document.getElementById("canvas-3d-target");
@@ -970,13 +603,7 @@ function init3D() {
         scene = new THREE.Scene();
         scene.background = new THREE.Color(0x101820);
 
-        camera = new THREE.PerspectiveCamera(
-            60,
-            Math.max(1, target.clientWidth / Math.max(1, target.clientHeight)),
-            0.1,
-            1000
-        );
-
+        camera = new THREE.PerspectiveCamera(60, Math.max(1, target.clientWidth / Math.max(1, target.clientHeight)), 0.1, 1000);
         camera.position.z = 5;
 
         renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -1007,57 +634,21 @@ function init3D() {
 
 function build3DModel() {
     if (!scene || !modelGroup) return;
-
-    while (modelGroup.children.length) {
-        modelGroup.remove(modelGroup.children[0]);
-    }
+    while (modelGroup.children.length) { modelGroup.remove(modelGroup.children[0]); }
 
     if (current3DModel === "suit") {
-        const body = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.45, 0.55, 1.5, 16),
-            new THREE.MeshStandardMaterial({ color: 0xd9d9d9 })
-        );
-
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.45, 0.55, 1.5, 16), new THREE.MeshStandardMaterial({ color: 0xd9d9d9 }));
         modelGroup.add(body);
-
-        const helmet = new THREE.Mesh(
-            new THREE.SphereGeometry(0.4, 24, 24),
-            new THREE.MeshStandardMaterial({
-                color: 0x80cfff,
-                metalness: 0.5,
-                roughness: 0.2
-            })
-        );
-
+        const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.4, 24, 24), new THREE.MeshStandardMaterial({ color: 0x80cfff, metalness: 0.5, roughness: 0.2 }));
         helmet.position.y = 1;
         modelGroup.add(helmet);
     } else {
-        const body = new THREE.Mesh(
-            new THREE.CylinderGeometry(0.25, 0.5, 2.2, 12),
-            new THREE.MeshStandardMaterial({
-                color: 0xc9a44c,
-                metalness: 0.6,
-                roughness: 0.35
-            })
-        );
-
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.5, 2.2, 12), new THREE.MeshStandardMaterial({ color: 0xc9a44c, metalness: 0.6, roughness: 0.35 }));
         modelGroup.add(body);
-
-        const nose = new THREE.Mesh(
-            new THREE.ConeGeometry(0.25, 0.6, 12),
-            new THREE.MeshStandardMaterial({ color: 0xe8e8e8 })
-        );
-
+        const nose = new THREE.Mesh(new THREE.ConeGeometry(0.25, 0.6, 12), new THREE.MeshStandardMaterial({ color: 0xe8e8e8 }));
         nose.position.y = 1.4;
         modelGroup.add(nose);
-
-        const wingMaterial = new THREE.MeshStandardMaterial({
-            color: 0x4d6b80,
-            metalness: 0.4
-        });
-
-        const wingGeometry = new THREE.BoxGeometry(1.8, 0.08, 0.5);
-        const wing = new THREE.Mesh(wingGeometry, wingMaterial);
+        const wing = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.08, 0.5), new THREE.MeshStandardMaterial({ color: 0x4d6b80, metalness: 0.4 }));
         wing.position.y = -0.3;
         modelGroup.add(wing);
     }
@@ -1071,12 +662,8 @@ function switch3DModel(model) {
 
 function animate3D() {
     requestAnimationFrame(animate3D);
-
     if (modelGroup) modelGroup.rotation.y += 0.005;
-
-    if (renderer && scene && camera) {
-        renderer.render(scene, camera);
-    }
+    if (renderer && scene && camera) { renderer.render(scene, camera); }
 }
 
 function updateMining() {
@@ -1098,6 +685,23 @@ function updateMining() {
     }
 }
 
+// Заглушки для кнопок интерфейса
+function watchVideoForMining() { alert("Запуск видео для майнинга"); }
+function startNightMining() { alert("Ночной майнинг запущен"); }
+function watchBoostVideo() { alert("Просмотр видео для ускорителя"); }
+function completeDailyVideos(btn) { alert("Ежедневные видео"); }
+function completeYouTubeDailyTask(btn) { alert("YouTube задание"); }
+function watchOptionalVideo(btn) { alert("Видео по усмотрению"); }
+function claimTotal50() { alert("Награда за 50 видео"); }
+function handleDailyLoginButton() { alert("Ежедневный вход"); }
+function claimInviteReward() { alert("Награда за друзей"); }
+function handleCommunityTask(type) { alert("Задание: " + type); }
+function inviteFriend() { alert("Пригласить друга"); }
+function buySuit(btn) { alert("Покупка скафандра"); }
+function buyShip(btn) { alert("Покупка корабля"); }
+function buyFuel() { alert("Покупка топлива"); }
+function watchFuelVideos() { alert("Видео для топлива"); }
+
 document.querySelectorAll(".nav-item").forEach(item => {
     item.addEventListener("click", () => {
         const pageId = item.dataset.page;
@@ -1105,9 +709,7 @@ document.querySelectorAll(".nav-item").forEach(item => {
     });
 });
 
-window.addEventListener("resize", () => {
-    if (renderer) init3D();
-});
+window.addEventListener("resize", () => { if (renderer) init3D(); });
 
 loadState();
 dailyReset();
