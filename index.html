@@ -91,17 +91,29 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
     <div class="mining-hero">
         <div class="mining-label">БАЗА: ЗЕМЛЯ</div>
-        <div class="mining-title">⛏️ Пассивный майнинг</div>
-        <div class="mining-description">Добыча идет непрерывно. Скорость увеличивается с каждой покоренной экспедицией.</div>
+        <div class="mining-title">⛏️ Сессионный майнинг</div>
+        <div class="mining-description">Скорость увеличивается с каждой покоренной экспедицией.</div>
         <div class="mining-timer-wrap">
-            <div class="mining-timer-label">ДОБЫТО ЗА СЕССИЮ</div>
-            <div class="mining-timer" id="mined-session">0.00</div>
+            <div class="mining-timer-label" id="mining-status-label">МАЙНИНГ НЕ АКТИВЕН</div>
+            <div class="mining-timer" id="mining-timer-display">00:00:00</div>
         </div>
         <div class="mining-actions">
-            <button class="btn-action" onclick="claimMined()">Собрать добычу</button>
-            <button class="btn-action btn-secondary" onclick="addTestBalance()">+ Тестовые 50000 NEVAR</button>
+            <button class="btn-action" id="btn-start-mining" onclick="startMiningSession()">Запустить майнинг (1 ч) 📺</button>
         </div>
     </div>
+
+    <!-- БЛОК НОЧНОГО МАЙНИНГА -->
+    <div class="boost-card">
+        <div class="boost-heading">
+            <div class="boost-icon">🌙</div>
+            <div><div class="boost-title">Ночной майнинг (6 часов)</div><div class="boost-subtitle">Доступен строго с 22:00 до 23:59</div></div>
+        </div>
+        <p class="boost-status" id="night-mining-status">Доступен с 22:00 до 23:59. Посмотрите 5 рекламных видео для запуска на 6 часов.</p>
+        <p class="boost-progress" id="night-mining-progress">Прогресс: 0/5</p>
+        <button class="btn-action" id="btn-night-mining" onclick="watchNightMiningVideo()">Запустить ночной майнинг (0/5) 📺</button>
+    </div>
+
+    <!-- УСКОРИТЕЛЬ -->
     <div class="boost-card">
         <div class="boost-heading">
             <div class="boost-icon">⚡</div>
@@ -193,7 +205,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" style="width:100%;margin-top:10px" onclick="inviteFriend()">Пригласить друга</button>
     </div>
 
-    <!-- ЗАДАНИЕ СО СТАТУСОМ СОЦСЕТЕЙ -->
     <div class="info-box" style="margin-top:16px;border-color:var(--border)">
         <h3>📸 Поделитесь ссылкой в статусах и получите вознаграждение</h3>
         <p>1. Скопируйте вашу реферальную ссылку и выложите её в статус/сторис социальной сети.<br>
@@ -204,7 +215,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <p id="status-task-info" style="margin-top:10px;font-weight:bold;color:var(--gold2)">Статус: Ссылка ещё не скопирована</p>
         <p id="status-timer-display" style="font-size:16px;font-weight:bold;color:var(--text);margin:6px 0"></p>
 
-        <!-- Элемент выбора скриншота -->
         <input type="file" id="status-file-input" accept="image/*" style="display:none" onchange="handleStatusImageUpload(event)">
 
         <div class="btn-group" style="margin-top:10px;flex-direction:column;gap:8px">
@@ -221,7 +231,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <div class="info-box">
         <h3>🪙 Что такое NEVAR?</h3>
         <p>• <strong>Суть токена:</strong> NEVAR — это внутренняя игровая валюта и будущий токен экосистемы, который пилоты добывают в ходе космической экспедиции.<br>
-        • <strong>Главная цель:</strong> Все монеты, добытые с помощью пассивного майнинга, выполнения заданий и покорения планет, — это ваш капитал и подготовка к будущему <span class="gold-text">аирдропу и официальному листингу</span>.<br>
+        • <strong>Главная цель:</strong> Все монеты, добытые с помощью сессионного майнинга, выполнения заданий и покорения планет, — это ваш капитал и подготовка к будущему <span class="gold-text">аирдропу и официальному листингу</span>.<br>
         • <strong>Экономика:</strong> Ценность каждого заработанного токена растет вместе с вашим продвижением по Солнечной системе.</p>
     </div>
 
@@ -240,10 +250,10 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="info-box" style="margin-top:14px">
         <h3>💡 Полезные секреты для пилотов</h3>
-        <p>• <strong>Буст ×2:</strong> Активируйте временное ускорение добычи монеток во вкладке майнинга.<br>
+        <p>• <strong>Запуск Майнинга:</strong> Смотрите видео, чтобы запустить добычу на 1 час или на 6 часов ночью.<br>
+        • <strong>Буст ×2:</strong> Активируйте временное ускорение добычи монеток во вкладке майнинга.<br>
         • <strong>Награды и Задания:</strong> Регулярный вход и выполнение заданий приносят отличный приток капитала.<br>
-        • <strong>Экипаж:</strong> Приглашайте друзей — первые пилоты дают повышенные бонусы.<br>
-        • <strong>Альтернативный путь:</strong> Нет монет? Продвигайтесь и открывайте контент с помощью просмотра видео!</p>
+        • <strong>Экипаж:</strong> Приглашайте друзей — первые пилоты дают повышенные бонусы.</p>
     </div>
 
     <div class="warning-box" style="margin-top:14px;text-align:center">
@@ -269,7 +279,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
 <script>
 const state = {
     balance: 0,
-    unclaimedMined: 0,
     dailyVideos: 0,
     loginStreak: 0,
     lastDailyReward: "",
@@ -286,7 +295,12 @@ const state = {
     currentDay: "",
     statusTaskStartTime: 0,
     statusUploadCount: 0,
-    usedImageHashes: [] // Массив для хранения хэшей уже использованных скриншотов
+    usedImageHashes: [],
+    // Логика нового майнинга
+    miningActiveUntil: 0,
+    nightMiningVideos: 0,
+    nightMiningActiveUntil: 0,
+    lastMiningRewardAmount: 0
 };
 
 const PLANETS_DATA = [
@@ -300,12 +314,12 @@ const PLANETS_DATA = [
 ];
 
 function saveState() {
-    try { localStorage.setItem("nevarFullGameCombinedState", JSON.stringify(state)); } catch (e) {}
+    try { localStorage.setItem("nevarFullGameCombinedState_v2", JSON.stringify(state)); } catch (e) {}
 }
 
 function loadState() {
     try {
-        const saved = localStorage.getItem("nevarFullGameCombinedState");
+        const saved = localStorage.getItem("nevarFullGameCombinedState_v2");
         if (saved) Object.assign(state, JSON.parse(saved));
     } catch (e) {}
 }
@@ -320,8 +334,31 @@ function getCurrentSpeed() {
     return base;
 }
 
-function addTestBalance() {
-    state.balance += 50000;
+function startMiningSession() {
+    if (state.miningActiveUntil > Date.now()) return alert("Майнинг уже запущен!");
+    state.miningActiveUntil = Date.now() + 60 * 60 * 1000; // 1 час
+    alert("🚀 Просмотр засчитан! Майнинг успешно запущен на 1 час.");
+    saveState();
+    render();
+}
+
+function isNightMiningTime() {
+    const hours = new Date().getHours();
+    return hours >= 22 && hours <= 23;
+}
+
+function watchNightMiningVideo() {
+    if (!isNightMiningTime()) return alert("⏰ Ночной майнинг доступен только с 22:00 до 23:59!");
+    if (state.nightMiningActiveUntil > Date.now()) return alert("Ночной майнинг уже запущен!");
+
+    state.nightMiningVideos++;
+    if (state.nightMiningVideos >= 5) {
+        state.nightMiningVideos = 0;
+        state.nightMiningActiveUntil = Date.now() + 6 * 60 * 60 * 1000; // 6 часов
+        alert("🌙 Ночной майнинг успешно запущен на 6 часов!");
+    } else {
+        alert(`Просмотрено видео для ночного майнинга: ${state.nightMiningVideos}/5`);
+    }
     saveState();
     render();
 }
@@ -415,14 +452,6 @@ function unlockPlanet(planetId, method) {
     saveState();
     render();
 }
-
-function claimMined() {
-    if (state.unclaimedMined <= 0) return;
-    state.balance += state.unclaimedMined;
-    state.unclaimedMined = 0;
-    saveState();
-    render();
-}
     const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
@@ -454,7 +483,6 @@ function triggerStatusUpload() {
     document.getElementById("status-file-input").click();
 }
 
-// Функция для генерации цифрового слепка (хэша) загруженного файла
 async function computeFileHash(file) {
     const buffer = await file.arrayBuffer();
     const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
@@ -470,10 +498,8 @@ async function handleStatusImageUpload(event) {
     const elapsed = now - state.statusTaskStartTime;
 
     if (elapsed >= TWELVE_HOURS_MS && elapsed < TWENTY_FOUR_HOURS_MS) {
-        // Проверяем хэш файла на повторное использование
         try {
             const fileHash = await computeFileHash(file);
-            
             if (!state.usedImageHashes) state.usedImageHashes = [];
 
             if (state.usedImageHashes.includes(fileHash)) {
@@ -482,9 +508,7 @@ async function handleStatusImageUpload(event) {
                 return;
             }
 
-            // Запоминаем новый хэш
             state.usedImageHashes.push(fileHash);
-
             state.statusUploadCount++;
             const reward = state.statusUploadCount <= 10 ? 50 : 20;
             state.balance += reward;
@@ -543,6 +567,7 @@ function updateStatusTaskUI() {
 }
 
 function formatTimeMS(ms) {
+    if (ms <= 0) return "00:00:00";
     const totalSec = Math.floor(ms / 1000);
     const h = Math.floor(totalSec / 3600).toString().padStart(2, '0');
     const m = Math.floor((totalSec % 3600) / 60).toString().padStart(2, '0');
@@ -656,11 +681,66 @@ function renderPlanetsList() {
 
 function render() {
     document.getElementById("balance").textContent = Number(state.balance).toFixed(2);
-    document.getElementById("mined-session").textContent = Number(state.unclaimedMined).toFixed(4);
     
     const speed = getCurrentSpeed();
     document.getElementById("speed-indicator").textContent = `⚡ ${speed} NEVAR/ч`;
 
+    // Майнинг сессии (1 час)
+    const btnStartMining = document.getElementById("btn-start-mining");
+    const miningLabel = document.getElementById("mining-status-label");
+    const miningTimerDisplay = document.getElementById("mining-timer-display");
+
+    const now = Date.now();
+    if (state.miningActiveUntil > now) {
+        const rem = state.miningActiveUntil - now;
+        if (miningLabel) miningLabel.textContent = "ИДЕТ ДОБЫЧА (1 ЧАС)...";
+        if (miningTimerDisplay) miningTimerDisplay.textContent = formatTimeMS(rem);
+        if (btnStartMining) { btnStartMining.disabled = true; btnStartMining.textContent = "Майнинг запущен"; }
+    } else {
+        if (miningLabel) miningLabel.textContent = "МАЙНИНГ НЕ АКТИВЕН";
+        if (miningTimerDisplay) miningTimerDisplay.textContent = "00:00:00";
+        if (btnStartMining) { btnStartMining.disabled = false; btnStartMining.textContent = "Запустить майнинг (1 ч) 📺"; }
+    }
+
+    // Ночной майнинг (6 часов)
+    const btnNight = document.getElementById("btn-night-mining");
+    const nightStatus = document.getElementById("night-mining-status");
+    const nightProgress = document.getElementById("night-mining-progress");
+
+    const nightAvailable = isNightMiningTime();
+
+    if (state.nightMiningActiveUntil > now) {
+        const remNight = state.nightMiningActiveUntil - now;
+        if (nightStatus) nightStatus.textContent = `🌙 Ночной майнинг активен! Осталось: ${formatTimeMS(remNight)}`;
+        if (nightProgress) nightProgress.textContent = "Активно";
+        if (btnNight) { btnNight.disabled = true; btnNight.textContent = "Ночной майнинг запущен"; }
+    } else {
+        if (nightProgress) nightProgress.textContent = `Прогресс: ${state.nightMiningVideos}/5`;
+        if (nightAvailable) {
+            if (nightStatus) nightStatus.textContent = "Окно открыто (22:00-23:59)! Посмотрите 5 видео для запуска.";
+            if (btnNight) { btnNight.disabled = false; btnNight.textContent = `Запустить ночной майнинг (${state.nightMiningVideos}/5) 📺`; }
+        } else {
+            if (nightStatus) nightStatus.textContent = "🔒 Доступен строго с 22:00 до 23:59. Сейчас запустить нельзя.";
+            if (btnNight) { btnNight.disabled = true; btnNight.textContent = "Закрыто до 22:00"; }
+        }
+    }
+
+    // Ускоритель
+    const boostProgress = document.getElementById("boost-progress");
+    const boostStatus = document.getElementById("boost-status");
+    const btnBoost = document.getElementById("btn-activate-boost");
+    if (state.boostActiveUntil > now) {
+        const remainingMin = Math.ceil((state.boostActiveUntil - now) / 60000);
+        if (boostStatus) boostStatus.textContent = `Ускоритель ×2 активен! Осталось ~${remainingMin} мин.`;
+        if (boostProgress) boostProgress.textContent = "Активно";
+        if (btnBoost) { btnBoost.disabled = true; btnBoost.textContent = "Активен"; }
+    } else {
+        if (boostStatus) boostStatus.textContent = "Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.";
+        if (boostProgress) boostProgress.textContent = `Прогресс: ${state.boostVideos}/5`;
+        if (btnBoost) { btnBoost.disabled = false; btnBoost.textContent = "Активировать"; }
+    }
+
+    // Снаряжение
     const suitStatus = document.getElementById("suit-status");
     const btnSuitNevar = document.getElementById("btn-buy-suit-nevar");
     const btnSuitVideo = document.getElementById("btn-buy-suit-video");
@@ -707,27 +787,32 @@ function render() {
     const friendsCount = document.getElementById("friends-count");
     if (friendsCount) friendsCount.textContent = state.invitedFriends;
 
-    const boostProgress = document.getElementById("boost-progress");
-    const boostStatus = document.getElementById("boost-status");
-    const btnBoost = document.getElementById("btn-activate-boost");
-    if (state.boostActiveUntil > Date.now()) {
-        const remainingMin = Math.ceil((state.boostActiveUntil - Date.now()) / 60000);
-        if (boostStatus) boostStatus.textContent = `Ускоритель ×2 активен! Осталось ~${remainingMin} мин.`;
-        if (boostProgress) boostProgress.textContent = "Активно";
-        if (btnBoost) { btnBoost.disabled = true; btnBoost.textContent = "Активен"; }
-    } else {
-        if (boostStatus) boostStatus.textContent = "Посмотрите 5 рекламных видео, чтобы активировать ускоритель ×2 на 60 минут.";
-        if (boostProgress) boostProgress.textContent = `Прогресс: ${state.boostVideos}/5`;
-        if (btnBoost) { btnBoost.disabled = false; btnBoost.textContent = "Активировать"; }
-    }
-
     renderPlanetsList();
     updateStatusTaskUI();
 }
 
 function gameTick() {
+    const now = Date.now();
     const speed = getCurrentSpeed();
-    state.unclaimedMined += (speed / 3600);
+
+    // Начисление за дневной майнинг (1 сек = speed / 3600)
+    if (state.miningActiveUntil > now) {
+        state.balance += (speed / 3600);
+    } else if (state.miningActiveUntil > 0) {
+        state.miningActiveUntil = 0;
+        alert("🎉 Дневной майнинг завершен! Монеты зачислены на баланс.");
+        saveState();
+    }
+
+    // Начисление за ночной майнинг
+    if (state.nightMiningActiveUntil > now) {
+        state.balance += (speed / 3600);
+    } else if (state.nightMiningActiveUntil > 0) {
+        state.nightMiningActiveUntil = 0;
+        alert("🎉 Ночной майнинг завершен! Все монеты зачислены на баланс.");
+        saveState();
+    }
+
     render();
 }
 
