@@ -141,10 +141,19 @@ button:disabled{cursor:not-allowed;opacity:.55}
 <div id="page-tasks" class="app-container">
     <div class="section-title">📋 Ежедневные задания</div>
 
+    <div class="section-title" style="margin-top:25px">📺 Счётчик просмотренных видео</div>
+    <div class="info-box">
+        <h3>Просмотренные видео за день</h3>
+        <div class="balance-amount" style="font-size:28px">
+            <span id="video-counter">0</span><span style="font-size:18px;color:var(--muted)">/59</span>
+        </div>
+        <p id="video-counter-status">Просмотрено 0 из 59 видео</p>
+    </div>
+
     <div class="card">
         <div class="card-info">
             <h4>▶️ Посмотреть видео на YouTube</h4>
-            <p><span class="gold-text">+5 NEVAR</span></p>
+            <p><span class="gold-text">+10 NEVAR</span></p>
             <p id="desc-youtube-video">Прогресс: 0/1</p>
         </div>
         <button class="btn-action" id="btn-youtube-video" onclick="completeYouTubeVideo()">Смотреть</button>
@@ -152,27 +161,18 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="card">
         <div class="card-info">
-            <h4>Посмотреть 5 видео в день</h4>
-            <p id="desc-daily-videos">Прогресс: 0/5 • <span class="gold-text">+5.0 NEVAR</span></p>
+            <h4>Посмотреть 5 видео</h4>
+            <p id="desc-daily-videos">Прогресс: 0/5 • <span class="gold-text">+10.0 NEVAR</span></p>
         </div>
         <button class="btn-action" id="btn-daily-videos" onclick="completeDailyVideos()">Смотреть</button>
     </div>
 
     <div class="card">
         <div class="card-info">
-            <h4>Посмотреть видео по усмотрению</h4>
-            <p><span class="gold-text">+50 NEVAR</span></p>
+            <h4>Свободный просмотр видео</h4>
+            <p><span class="gold-text">+3 NEVAR</span></p>
         </div>
         <button class="btn-action" onclick="watchOptionalVideo()">Смотреть</button>
-    </div>
-
-    <!-- ПРОСТО СЧЁТЧИК (ПЕРЕНЕСЕН ПОД ВИДЕО ПО УСМОТРЕНИЮ) -->
-    <div class="info-box" style="margin-top:12px">
-        <h3>Просто счётчик</h3>
-        <div class="balance-amount" style="font-size:28px">
-            <span id="video-counter">0</span><span style="font-size:18px;color:var(--muted)">/50</span>
-        </div>
-        <p id="video-counter-status">Учтено видео за сегодня: 0 из 50</p>
     </div>
 
     <div class="section-title" style="margin-top:25px">🎁 Ежедневная серия входов</div>
@@ -193,7 +193,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Получить награду за вход</button>
     </div>
 
-    <!-- ПОДПИСКИ (В САМОМ КОНЦЕ СТРАНИЦЫ) -->
+    <!-- ПОДПИСКИ (В САМОМ КОНЦЕ) -->
     <div class="section-title" style="margin-top:25px">🌐 Поддержи NEVAR</div>
 
     <div class="card">
@@ -222,7 +222,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="card">
         <div class="card-info">
-            <h4>𝕏 X</h4>
+            <h4>𝕏 X (Twitter)</h4>
             <p class="gold-text">+10 NEVAR</p>
             <p id="x-bonus-status">Бонус доступен</p>
         </div>
@@ -467,25 +467,29 @@ function resetDailyVideoCounterIfNeeded() {
         state.boostVideos = 0;
         state.dailyTasksClaimed = {};
 
-        // Подписки на соцсети не сбрасываются — они строгие и разовые!
-
         saveState();
     }
 }
 
-/* Учёт просмотров: Флаг isHangarOrExpedition исключает видео экспедиции из "Просто счётчика" */
-function countVideoView(isHangarOrExpedition = false) {
+// Обновленная логика счётчика видео с лимитом до 59 и супер-бонусом 50 NEVAR
+function countVideoView() {
     resetDailyVideoCounterIfNeeded();
 
-    if (!isHangarOrExpedition) {
-        if (state.dailyVideosWatched >= 50) {
-            alert("Дневной лимит — 50 видео. Попробуйте завтра!");
-            return false;
-        }
-        state.dailyVideosWatched++;
+    if (state.dailyVideosWatched >= 59) {
+        alert("Дневной лимит — 59 видео. Попробуйте завтра!");
+        return false;
     }
 
+    state.dailyVideosWatched++;
     state.totalVideosWatched++;
+
+    if (state.dailyVideosWatched === 59 && !state.dailyTasksClaimed.fiftyNineBonus) {
+        state.dailyTasksClaimed.fiftyNineBonus = true;
+        state.balance += 50;
+        setTimeout(() => {
+            alert("🎉 Поздравляем! Вы просмотрели 59 видео за день и получили супер-награду +50 NEVAR!");
+        }, 200);
+    }
 
     saveState();
     updateVideoCounter();
@@ -504,9 +508,9 @@ function updateVideoCounter() {
     }
 
     if (status) {
-        status.textContent = state.dailyVideosWatched >= 50
-            ? "Дневной лимит видео выполнен"
-            : `Учтено видео за сегодня: ${state.dailyVideosWatched}/50`;
+        status.textContent = state.dailyVideosWatched >= 59
+            ? "Дневной лимит видео выполнен (59/59)"
+            : `Просмотрено сегодня: ${state.dailyVideosWatched}/59`;
     }
 }
 
@@ -532,7 +536,7 @@ function startMiningSession() {
         return;
     }
 
-    if (!countVideoView(false)) return;
+    if (!countVideoView()) return;
 
     state.miningStartedAt = Date.now();
     state.miningEndsAt = Date.now() + 60 * 60 * 1000;
@@ -560,7 +564,7 @@ function watchNightMiningVideo() {
         return;
     }
 
-    if (!countVideoView(false)) return;
+    if (!countVideoView()) return;
 
     state.nightMiningVideos++;
 
@@ -580,7 +584,7 @@ function watchBoostVideo() {
         return;
     }
 
-    if (!countVideoView(false)) return;
+    if (!countVideoView()) return;
 
     state.boostVideos++;
 
@@ -594,7 +598,7 @@ function watchBoostVideo() {
     render();
 }
 
-/* Соцсети (Разовые подписки) */
+/* Соцсети (Разовые бонусы по +10 NEVAR) */
 const SOCIAL_LINKS = {
     youtube: "https://youtube.com/",
     telegram: "https://t.me/",
@@ -652,7 +656,7 @@ function renderSocialBonuses() {
     });
 }
 
-/* Ангар и Покупка снаряжения (Видео здесь не идут в общий счетчик заданий) */
+/* Ангар и Покупка снаряжения */
 function buySuit(method) {
     if (state.suitPurchased) {
         alert("Скафандр уже куплен!");
@@ -668,7 +672,7 @@ function buySuit(method) {
         state.suitPurchased = true;
         alert("🎉 Скафандр успешно приобретён за 1000 NEVAR!");
     } else if (method === "video") {
-        if (!countVideoView(true)) return;
+        if (!countVideoView()) return;
         state.suitVideosWatched = (state.suitVideosWatched || 0) + 1;
         if (state.suitVideosWatched >= 100) {
             state.suitPurchased = true;
@@ -695,7 +699,7 @@ function buyShip(method) {
         state.shipPurchased = true;
         alert("🎉 Космический корабль успешно приобретён за 5000 NEVAR!");
     } else if (method === "video") {
-        if (!countVideoView(true)) return;
+        if (!countVideoView()) return;
         state.shipVideosWatched = (state.shipVideosWatched || 0) + 1;
         if (state.shipVideosWatched >= 250) {
             state.shipPurchased = true;
@@ -840,11 +844,13 @@ function render() {
     resetDailyVideoCounterIfNeeded();
 
     const balanceElement = document.getElementById("balance");
+
     if (balanceElement) {
         balanceElement.textContent = Number(state.balance || 0).toFixed(2);
     }
 
     const speedIndicator = document.getElementById("speed-indicator");
+
     if (speedIndicator) {
         speedIndicator.textContent = `⚡ ${getMiningSpeed()} NEVAR/ч`;
     }
@@ -885,7 +891,7 @@ function updateMiningDisplay() {
                 (state.miningEndsAt - state.miningStartedAt) / 1000
             );
 
-            const earned = (elapsedSeconds / 3600) *
+            const earned = elapsedSeconds / 3600 *
                 getMiningSpeed() *
                 (state.boostActiveUntil > state.miningStartedAt ? 2 : 1);
 
@@ -949,6 +955,7 @@ function updateMiningDisplay() {
 
 function updateFriendsDisplay() {
     const count = document.getElementById("friends-count");
+
     if (count) {
         count.textContent = String(state.invitedFriends || 0);
     }
@@ -1009,11 +1016,13 @@ function copyStatusLink() {
 
 function triggerStatusUpload() {
     const input = document.getElementById("status-file-input");
+
     if (input) input.click();
 }
 
 function handleStatusImageUpload(event) {
     const file = event.target.files && event.target.files[0];
+
     if (!file) return;
 
     if (!state.statusLinkCopiedAt) {
@@ -1043,24 +1052,27 @@ function handleStatusImageUpload(event) {
     saveState();
     render();
 
-    alert(`Файл выбран. Начислено ${reward} NEVAR в тестовом режиме.`);
+    alert(
+        `Файл выбран. Начислено ${reward} NEVAR в тестовом режиме.`
+    );
 
     event.target.value = "";
 }
 
-/* Обновление отображения ежедневных заданий */
+/* Обновление заданий (с учетом лимита 59 и вознаграждений 10 NEVAR) */
 
 function updateDailyTaskDisplay() {
     const dailyProgress = document.getElementById("desc-daily-videos");
+
     if (dailyProgress) {
         dailyProgress.textContent =
-            `Прогресс: ${Math.min(state.dailyVideosWatched, 5)}/5 • +5.0 NEVAR`;
+            `Просмотрено видео сегодня: ${state.dailyVideosWatched}/59 • +10.0 NEVAR`;
     }
 
     updateVideoCounter();
 }
 
-/* Ежедневный вход */
+/* Награда за ежедневный вход */
 
 function handleDailyLoginButton() {
     const today = getToday();
@@ -1088,33 +1100,33 @@ function handleDailyLoginButton() {
     alert(`🎁 Награда за вход: ${reward} NEVAR!`);
 }
 
-/* Посмотреть видео по усмотрению (+50 NEVAR) */
+/* Свободный просмотр видео (+3 NEVAR) */
 
 function watchOptionalVideo() {
-    if (!countVideoView(false)) return;
+    if (!countVideoView()) return;
 
-    state.balance += 50;
+    state.balance += 3;
 
     saveState();
     render();
 
-    alert("🎉 Начислено +50 NEVAR за просмотр видео по усмотрению.");
+    alert("Начислено +3 NEVAR за просмотр видео.");
 }
 
-/* Задание YouTube */
+/* Дополнительные видеозадания (+10 NEVAR на YouTube) */
 
 function completeYouTubeVideo() {
-    if (!countVideoView(false)) return;
+    if (!countVideoView()) return;
 
-    state.balance += 5;
+    state.balance += 10;
 
     saveState();
     render();
 
-    alert("🎉 Начислено +5 NEVAR за просмотр YouTube видео!");
+    alert("🎉 Начислено +10 NEVAR за просмотр YouTube видео!");
 }
 
-/* Отдельное задание: Посмотреть 5 видео в день */
+/* Ежедневное задание: 5 видео (+10 NEVAR) */
 
 function completeDailyVideos() {
     resetDailyVideoCounterIfNeeded();
@@ -1130,15 +1142,15 @@ function completeDailyVideos() {
     }
 
     state.dailyTasksClaimed.fiveVideos = true;
-    state.balance += 5;
+    state.balance += 10;
 
     saveState();
     render();
 
-    alert("🎉 Начислено +5 NEVAR за выполнение задания «Посмотреть 5 видео в день»!");
+    alert("🎉 Начислено +10 NEVAR за выполнение ежедневного задания!");
 }
 
-/* Инициализация Telegram WebApp и приложения */
+/* Инициализация приложения */
 
 document.addEventListener("DOMContentLoaded", () => {
     resetDailyVideoCounterIfNeeded();
