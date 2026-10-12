@@ -136,8 +136,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <p class="boost-progress" id="boost-progress">Прогресс: 0/5</p>
         <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">Активировать</button>
     </div>
-    </div>
-    <!-- 2. ЗАДАНИЯ -->
+</div>
+<!-- 2. ЗАДАНИЯ -->
 <div id="page-tasks" class="app-container">
     <div class="section-title">📋 Ежедневные задания</div>
 
@@ -193,7 +193,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Получить награду за вход</button>
     </div>
 
-    <!-- ПОДПИСКИ -->
+    <!-- ПОДПИСКИ (В САМОМ КОНЦЕ) -->
     <div class="section-title" style="margin-top:25px">🌐 Поддержи NEVAR</div>
 
     <div class="card">
@@ -259,8 +259,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="section-title" style="margin-top:25px">🪐 Последовательные экспедиции по планетам</div>
     <div id="planets-list"></div>
-            </div>
-            <!-- 4. ЭКИПАЖ -->
+                </div>
+                <!-- 4. ЭКИПАЖ -->
 <div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
 
@@ -324,6 +324,16 @@ button:disabled{cursor:not-allowed;opacity:.55}
             1. <strong>Ангар и Снаряжение:</strong> Приобретите <span class="gold-text">Скафандр</span> и <span class="gold-text">Корабль</span> (за NEVAR или просмотром видео). Без них экспедиции недоступны.<br>
             2. <strong>Последовательные экспедиции:</strong> Планеты открываются строго по цепочке (<span class="gold-text">Меркурий → Венера → Марс → Юпитер → Сатурн → Уран → Нептун</span>). Пропустить планету нельзя.<br>
             3. <strong>Пассивный доход:</strong> Каждая покоренная планета навсегда увеличивает скорость добычи на <span class="gold-text">+1 NEVAR/час</span>!
+        </p>
+    </div>
+
+    <div class="info-box" style="margin-top:14px">
+        <h3>💡 Полезные секреты для пилотов</h3>
+        <p>
+            • <strong>Запуск Майнинга:</strong> Смотрите видео, чтобы запустить добычу на 1 час или на 6 часов ночью.<br>
+            • <strong>Буст ×2:</strong> Активируйте временное ускорение добычи монеток во вкладке майнинга.<br>
+            • <strong>Награды и Задания:</strong> Регулярный вход и выполнение заданий приносят отличный приток капитала.<br>
+            • <strong>Экипаж:</strong> Приглашайте друзей — первые пилоты дают повышенные бонусы.
         </p>
     </div>
 
@@ -461,6 +471,7 @@ function resetDailyVideoCounterIfNeeded() {
     }
 }
 
+// Главная функция подсчета общих просмотров видео (до 50 с бонусом 50 NEVAR)
 function countVideoView() {
     resetDailyVideoCounterIfNeeded();
 
@@ -519,15 +530,9 @@ function isNightMiningActive() {
     return state.nightMiningEndsAt > Date.now();
 }
 
-/* ЗАПУСК МАЙНИНГА С ВЗАИМНОЙ БЛОКИРОВКОЙ */
 function startMiningSession() {
     if (isMiningActive()) {
         alert("Сессионный майнинг уже активен!");
-        return;
-    }
-
-    if (isNightMiningActive()) {
-        alert("Нельзя запустить обычный майнинг, пока активен ночной!");
         return;
     }
 
@@ -551,11 +556,6 @@ function watchNightMiningVideo() {
 
     if (isNightMiningActive()) {
         alert("Ночной майнинг уже активен!");
-        return;
-    }
-
-    if (isMiningActive()) {
-        alert("Нельзя запустить ночной майнинг, пока активен обычный!");
         return;
     }
 
@@ -597,14 +597,32 @@ function watchBoostVideo() {
     saveState();
     render();
 }
-    <script>
-/* Соцсети */
+
+/* Соцсети (Разовые бонусы по +10 NEVAR) */
+const SOCIAL_LINKS = {
+    youtube: "https://youtube.com/",
+    telegram: "https://t.me/",
+    x: "https://x.com/"
+};
+
+const SOCIAL_NAMES = {
+    youtube: "YouTube",
+    telegram: "Telegram",
+    x: "X"
+};
+
 function openSocial(platform) {
-    const links = { youtube: "https://youtube.com/", telegram: "https://t.me/", x: "https://x.com/" };
-    if (links[platform]) window.open(links[platform], "_blank");
+    const url = SOCIAL_LINKS[platform];
+    if (!url) {
+        alert("Ссылка пока недоступна.");
+        return;
+    }
+    window.open(url, "_blank");
 }
 
 function claimSocialBonus(platform) {
+    if (!Object.prototype.hasOwnProperty.call(SOCIAL_NAMES, platform)) return;
+
     if (state.socialBonuses[platform]) {
         alert("Бонус за эту подписку уже получен.");
         return;
@@ -616,7 +634,7 @@ function claimSocialBonus(platform) {
     saveState();
     render();
 
-    alert("🎉 Начислено 10 NEVAR за подписку!");
+    alert(`🎉 Начислено 10 NEVAR за подписку на ${SOCIAL_NAMES[platform]}!`);
 }
 
 function renderSocialBonuses() {
@@ -638,7 +656,7 @@ function renderSocialBonuses() {
     });
 }
 
-/* Ангар и Снаряжение */
+/* Ангар и Покупка снаряжения */
 function buySuit(method) {
     if (state.suitPurchased) {
         alert("Скафандр уже куплен!");
@@ -790,8 +808,10 @@ function renderPlanets() {
         list.appendChild(card);
     });
 }
+    /* ==========================================
+   НАВИГАЦИЯ И ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
+   ========================================== */
 
-/* Навигация и интерфейс */
 function showPage(pageId) {
     document.querySelectorAll(".app-container").forEach(page => {
         page.classList.remove("active");
@@ -824,11 +844,13 @@ function render() {
     resetDailyVideoCounterIfNeeded();
 
     const balanceElement = document.getElementById("balance");
+
     if (balanceElement) {
         balanceElement.textContent = Number(state.balance || 0).toFixed(2);
     }
 
     const speedIndicator = document.getElementById("speed-indicator");
+
     if (speedIndicator) {
         speedIndicator.textContent = `⚡ ${getMiningSpeed()} NEVAR/ч`;
     }
@@ -853,12 +875,26 @@ function updateMiningDisplay() {
 
     if (isMiningActive()) {
         if (miningLabel) miningLabel.textContent = "МАЙНИНГ АКТИВЕН";
-        if (miningTimer) miningTimer.textContent = formatTime(state.miningEndsAt - now);
+
+        if (miningTimer) {
+            miningTimer.textContent = formatTime(state.miningEndsAt - now);
+        }
+
         if (miningButton) miningButton.textContent = "Майнинг запущен";
     } else {
-        if (state.miningEndsAt > 0 && state.lastMiningPaidAt < state.miningEndsAt) {
-            const elapsedSeconds = Math.max(0, (state.miningEndsAt - state.miningStartedAt) / 1000);
-            const earned = elapsedSeconds / 3600 * getMiningSpeed() * (state.boostActiveUntil > state.miningStartedAt ? 2 : 1);
+        if (
+            state.miningEndsAt > 0 &&
+            state.lastMiningPaidAt < state.miningEndsAt
+        ) {
+            const elapsedSeconds = Math.max(
+                0,
+                (state.miningEndsAt - state.miningStartedAt) / 1000
+            );
+
+            const earned = elapsedSeconds / 3600 *
+                getMiningSpeed() *
+                (state.boostActiveUntil > state.miningStartedAt ? 2 : 1);
+
             state.balance += earned;
             state.lastMiningPaidAt = state.miningEndsAt;
             saveState();
@@ -866,7 +902,10 @@ function updateMiningDisplay() {
 
         if (miningLabel) miningLabel.textContent = "МАЙНИНГ НЕ АКТИВЕН";
         if (miningTimer) miningTimer.textContent = "00:00:00";
-        if (miningButton) miningButton.textContent = "Запустить майнинг (1 ч) 📺";
+
+        if (miningButton) {
+            miningButton.textContent = "Запустить майнинг (1 ч) 📺";
+        }
     }
 
     const nightStatus = document.getElementById("night-mining-status");
@@ -912,31 +951,50 @@ function updateMiningDisplay() {
     }
 }
 
-/* Экипаж */
+/* Экипаж и приглашения */
+
 function updateFriendsDisplay() {
     const count = document.getElementById("friends-count");
-    if (count) count.textContent = String(state.invitedFriends || 0);
+
+    if (count) {
+        count.textContent = String(state.invitedFriends || 0);
+    }
 }
 
 function inviteFriend() {
     const telegram = window.Telegram && window.Telegram.WebApp;
-    const user = telegram && telegram.initDataUnsafe ? telegram.initDataUnsafe.user : null;
+    const user = telegram && telegram.initDataUnsafe
+        ? telegram.initDataUnsafe.user
+        : null;
+
     const botUsername = "Raventravelbot";
     const userId = user && user.id ? user.id : "";
-    const link = userId ? `https://t.me/${botUsername}?start=${userId}` : `https://t.me/${botUsername}`;
+
+    const link = userId
+        ? `https://t.me/${botUsername}?start=${userId}`
+        : `https://t.me/${botUsername}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link).then(() => alert("Пригласительная ссылка скопирована!")).catch(() => prompt("Скопируйте ссылку:", link));
+        navigator.clipboard.writeText(link)
+            .then(() => alert("Пригласительная ссылка скопирована!"))
+            .catch(() => prompt("Скопируйте ссылку:", link));
     } else {
         prompt("Скопируйте ссылку:", link);
     }
 }
 
+/* Задание со статусом */
+
 function copyStatusLink() {
     const telegram = window.Telegram && window.Telegram.WebApp;
-    const user = telegram && telegram.initDataUnsafe ? telegram.initDataUnsafe.user : null;
+    const user = telegram && telegram.initDataUnsafe
+        ? telegram.initDataUnsafe.user
+        : null;
+
     const userId = user && user.id ? user.id : "";
-    const link = userId ? `https://t.me/Raventravelbot?start=${userId}` : "https://t.me/Raventravelbot";
+    const link = userId
+        ? `https://t.me/Raventravelbot?start=${userId}`
+        : "https://t.me/Raventravelbot";
 
     state.statusLinkCopiedAt = Date.now();
     saveState();
@@ -948,7 +1006,9 @@ function copyStatusLink() {
     if (uploadButton) uploadButton.disabled = false;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link).then(() => alert("Ссылка скопирована!")).catch(() => prompt("Скопируйте ссылку:", link));
+        navigator.clipboard.writeText(link)
+            .then(() => alert("Ссылка скопирована!"))
+            .catch(() => prompt("Скопируйте ссылку:", link));
     } else {
         prompt("Скопируйте ссылку:", link);
     }
@@ -956,11 +1016,13 @@ function copyStatusLink() {
 
 function triggerStatusUpload() {
     const input = document.getElementById("status-file-input");
+
     if (input) input.click();
 }
 
 function handleStatusImageUpload(event) {
     const file = event.target.files && event.target.files[0];
+
     if (!file) return;
 
     if (!state.statusLinkCopiedAt) {
@@ -976,38 +1038,55 @@ function handleStatusImageUpload(event) {
     }
 
     const today = getToday();
+
     if (state.statusUploadDate !== today) {
         state.statusUploadDate = today;
         state.statusUploadsToday = 0;
     }
 
     const reward = state.statusUploadsToday < 10 ? 50 : 20;
+
     state.statusUploadsToday++;
     state.balance += reward;
 
     saveState();
     render();
-    alert(`Файл выбран. Начислено ${reward} NEVAR в тестовом режиме.`);
+
+    alert(
+        `Файл выбран. Начислено ${reward} NEVAR в тестовом режиме.`
+    );
+
     event.target.value = "";
 }
 
+/* Обновление заданий */
+
 function updateDailyTaskDisplay() {
     const dailyProgress = document.getElementById("desc-daily-videos");
+
     if (dailyProgress) {
-        dailyProgress.textContent = `Просмотрено видео сегодня: ${state.dailyVideosWatched}/50 • +10.0 NEVAR`;
+        dailyProgress.textContent =
+            `Просмотрено видео сегодня: ${state.dailyVideosWatched}/50 • +10.0 NEVAR`;
     }
+
     updateVideoCounter();
 }
 
+/* Награда за ежедневный вход */
+
 function handleDailyLoginButton() {
     const today = getToday();
+
     if (state.dailyLoginDate === today) {
         alert("Вы уже получили награду за сегодняшний вход.");
         return;
     }
 
     state.dailyLoginStreak = (state.dailyLoginStreak || 0) + 1;
-    if (state.dailyLoginStreak > 7) state.dailyLoginStreak = 1;
+
+    if (state.dailyLoginStreak > 7) {
+        state.dailyLoginStreak = 1;
+    }
 
     const rewards = [10, 20, 30, 40, 50, 50, 50];
     const reward = rewards[state.dailyLoginStreak - 1];
@@ -1017,31 +1096,46 @@ function handleDailyLoginButton() {
 
     saveState();
     render();
+
     alert(`🎁 Награда за вход: ${reward} NEVAR!`);
 }
 
+/* Свободный просмотр видео (+3 NEVAR) */
+
 function watchOptionalVideo() {
     if (!countVideoView()) return;
+
     state.balance += 3;
+
     saveState();
     render();
+
     alert("Начислено +3 NEVAR за просмотр видео.");
 }
 
+/* Дополнительные видеозадания (+10 NEVAR на YouTube) */
+
 function completeYouTubeVideo() {
     if (!countVideoView()) return;
+
     state.balance += 10;
+
     saveState();
     render();
+
     alert("🎉 Начислено +10 NEVAR за просмотр YouTube видео!");
 }
 
+/* Ежедневное задание: 5 видео (+10 NEVAR) */
+
 function completeDailyVideos() {
     resetDailyVideoCounterIfNeeded();
+
     if (state.dailyTasksClaimed.fiveVideos) {
         alert("Награда за это задание уже получена сегодня.");
         return;
     }
+
     if (state.dailyVideosWatched < 5) {
         alert("Для выполнения задания нужно посмотреть хотя бы 5 видео.");
         return;
@@ -1049,21 +1143,31 @@ function completeDailyVideos() {
 
     state.dailyTasksClaimed.fiveVideos = true;
     state.balance += 10;
+
     saveState();
     render();
+
     alert("🎉 Начислено +10 NEVAR за выполнение ежедневного задания!");
 }
 
+/* Инициализация приложения */
+
 document.addEventListener("DOMContentLoaded", () => {
     resetDailyVideoCounterIfNeeded();
+
     const telegram = window.Telegram && window.Telegram.WebApp;
+
     if (telegram) {
         telegram.ready();
         telegram.expand();
     }
+
     render();
+
     setInterval(() => {
         render();
     }, 1000);
 });
 </script>
+</body>
+</html>
