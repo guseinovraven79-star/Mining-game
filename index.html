@@ -78,7 +78,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
 </head>
 <body>
 
-<!-- 1. МАЙНИНГ -->
 <div class="app-container active" id="page-mining">
     <div class="top-header">
         <div>
@@ -109,7 +108,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         </div>
     </div>
 
-    <!-- НОЧНОЙ МАЙНИНГ -->
     <div class="boost-card">
         <div class="boost-heading">
             <div class="boost-icon">🌙</div>
@@ -123,7 +121,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" id="btn-night-mining" onclick="watchNightMiningVideo()">Запустить ночной майнинг (0/5) 📺</button>
     </div>
 
-    <!-- УСКОРИТЕЛЬ -->
     <div class="boost-card">
         <div class="boost-heading">
             <div class="boost-icon">⚡</div>
@@ -137,7 +134,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">Активировать</button>
     </div>
 </div>
-<!-- 2. ЗАДАНИЯ -->
 <div id="page-tasks" class="app-container">
     <div class="section-title">📋 Ежедневные задания</div>
 
@@ -193,7 +189,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Получить награду за вход</button>
     </div>
 
-    <!-- ПОДПИСКИ (В САМОМ КОНЦЕ) -->
     <div class="section-title" style="margin-top:25px">🌐 Поддержи NEVAR</div>
 
     <div class="card">
@@ -231,10 +226,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
             <button class="btn-action" id="btn-x-bonus" onclick="claimSocialBonus('x')">Получить</button>
         </div>
     </div>
-</div>
-
-<!-- 3. ЭКСПЕДИЦИИ -->
-<div id="page-expeditions" class="app-container">
+            </div>
+            <div id="page-expeditions" class="app-container">
     <div class="section-title">🚀 Ангар и Снаряжение</div>
 
     <div class="hangar-item">
@@ -260,8 +253,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <div class="section-title" style="margin-top:25px">🪐 Последовательные экспедиции по планетам</div>
     <div id="planets-list"></div>
             </div>
-            <!-- 4. ЭКИПАЖ -->
-<div id="page-friends" class="app-container">
+            <div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
 
     <div class="header-card">
@@ -297,7 +289,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
 </div>
 
-<!-- 5. ИНФО -->
 <div id="page-info" class="app-container">
     <div class="section-title">ℹ️ Руководство пилота NEVAR</div>
 
@@ -351,7 +342,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
 </div>
 
-<!-- НИЖНЯЯ НАВИГАЦИЯ -->
 <nav class="nav-bar">
     <button class="nav-item active" data-page="mining" onclick="showPage('mining')"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
     <button class="nav-item" data-page="tasks" onclick="showPage('tasks')"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
@@ -360,10 +350,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <button class="nav-item" data-page="info" onclick="showPage('info')"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
 </nav>
 <script>
-/* ==========================================
-   СОСТОЯНИЕ И МАЙНИНГ
-   ========================================== */
-
 const STORAGE_KEY = "nevarGameState";
 
 const PLANETS = [
@@ -471,7 +457,6 @@ function resetDailyVideoCounterIfNeeded() {
     }
 }
 
-// Главная функция подсчета общих просмотров видео (до 50 с бонусом 50 NEVAR)
 function countVideoView() {
     resetDailyVideoCounterIfNeeded();
 
@@ -571,6 +556,11 @@ function watchNightMiningVideo() {
     if (state.nightMiningVideos >= 5) {
         state.nightMiningStartedAt = Date.now();
         state.nightMiningEndsAt = Date.now() + 6 * 60 * 60 * 1000;
+        
+        // Автоматически останавливаем обычный майнинг при запуске ночного
+        state.miningStartedAt = 0;
+        state.miningEndsAt = 0;
+
         alert("🌙 Ночной майнинг запущен на 6 часов!");
     }
 
@@ -598,7 +588,7 @@ function watchBoostVideo() {
     render();
 }
 
-/* Соцсети (Разовые бонусы по +10 NEVAR) */
+/* Соцсети */
 const SOCIAL_LINKS = {
     youtube: "https://youtube.com/",
     telegram: "https://t.me/",
@@ -656,7 +646,7 @@ function renderSocialBonuses() {
     });
 }
 
-/* Ангар и Покупка снаряжения */
+/* Ангар и Снаряжение */
 function buySuit(method) {
     if (state.suitPurchased) {
         alert("Скафандр уже куплен!");
@@ -808,10 +798,8 @@ function renderPlanets() {
         list.appendChild(card);
     });
 }
-    /* ==========================================
-   НАВИГАЦИЯ И ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
-   ========================================== */
 
+/* Навигация */
 function showPage(pageId) {
     document.querySelectorAll(".app-container").forEach(page => {
         page.classList.remove("active");
@@ -951,11 +939,9 @@ function updateMiningDisplay() {
     }
 }
 
-/* Экипаж и приглашения */
-
+/* Экипаж и задания со статусом */
 function updateFriendsDisplay() {
     const count = document.getElementById("friends-count");
-
     if (count) {
         count.textContent = String(state.invitedFriends || 0);
     }
@@ -963,16 +949,10 @@ function updateFriendsDisplay() {
 
 function inviteFriend() {
     const telegram = window.Telegram && window.Telegram.WebApp;
-    const user = telegram && telegram.initDataUnsafe
-        ? telegram.initDataUnsafe.user
-        : null;
-
+    const user = telegram && telegram.initDataUnsafe ? telegram.initDataUnsafe.user : null;
     const botUsername = "Raventravelbot";
     const userId = user && user.id ? user.id : "";
-
-    const link = userId
-        ? `https://t.me/${botUsername}?start=${userId}`
-        : `https://t.me/${botUsername}`;
+    const link = userId ? `https://t.me/${botUsername}?start=${userId}` : `https://t.me/${botUsername}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(link)
@@ -983,18 +963,11 @@ function inviteFriend() {
     }
 }
 
-/* Задание со статусом */
-
 function copyStatusLink() {
     const telegram = window.Telegram && window.Telegram.WebApp;
-    const user = telegram && telegram.initDataUnsafe
-        ? telegram.initDataUnsafe.user
-        : null;
-
+    const user = telegram && telegram.initDataUnsafe ? telegram.initDataUnsafe.user : null;
     const userId = user && user.id ? user.id : "";
-    const link = userId
-        ? `https://t.me/Raventravelbot?start=${userId}`
-        : "https://t.me/Raventravelbot";
+    const link = userId ? `https://t.me/Raventravelbot?start=${userId}` : "https://t.me/Raventravelbot";
 
     state.statusLinkCopiedAt = Date.now();
     saveState();
@@ -1016,13 +989,11 @@ function copyStatusLink() {
 
 function triggerStatusUpload() {
     const input = document.getElementById("status-file-input");
-
     if (input) input.click();
 }
 
 function handleStatusImageUpload(event) {
     const file = event.target.files && event.target.files[0];
-
     if (!file) return;
 
     if (!state.statusLinkCopiedAt) {
@@ -1038,136 +1009,29 @@ function handleStatusImageUpload(event) {
     }
 
     const today = getToday();
-
     if (state.statusUploadDate !== today) {
         state.statusUploadDate = today;
         state.statusUploadsToday = 0;
     }
 
     const reward = state.statusUploadsToday < 10 ? 50 : 20;
-
     state.statusUploadsToday++;
     state.balance += reward;
 
     saveState();
     render();
 
-    alert(
-        `Файл выбран. Начислено ${reward} NEVAR в тестовом режиме.`
-    );
-
+    alert(`Файл выбран. Начислено ${reward} NEVAR в тестовом режиме.`);
     event.target.value = "";
 }
 
-/* Обновление заданий */
-
 function updateDailyTaskDisplay() {
     const dailyProgress = document.getElementById("desc-daily-videos");
-
     if (dailyProgress) {
-        dailyProgress.textContent =
-            `Просмотрено видео сегодня: ${state.dailyVideosWatched}/50 • +10.0 NEVAR`;
+        dailyProgress.textContent = `Просмотрено видео сегодня: ${state.dailyVideosWatched}/50 • +10.0 NEVAR`;
     }
-
     updateVideoCounter();
 }
 
-/* Награда за ежедневный вход */
-
 function handleDailyLoginButton() {
-    const today = getToday();
-
-    if (state.dailyLoginDate === today) {
-        alert("Вы уже получили награду за сегодняшний вход.");
-        return;
-    }
-
-    state.dailyLoginStreak = (state.dailyLoginStreak || 0) + 1;
-
-    if (state.dailyLoginStreak > 7) {
-        state.dailyLoginStreak = 1;
-    }
-
-    const rewards = [10, 20, 30, 40, 50, 50, 50];
-    const reward = rewards[state.dailyLoginStreak - 1];
-
-    state.balance += reward;
-    state.dailyLoginDate = today;
-
-    saveState();
-    render();
-
-    alert(`🎁 Награда за вход: ${reward} NEVAR!`);
-}
-
-/* Свободный просмотр видео (+3 NEVAR) */
-
-function watchOptionalVideo() {
-    if (!countVideoView()) return;
-
-    state.balance += 3;
-
-    saveState();
-    render();
-
-    alert("Начислено +3 NEVAR за просмотр видео.");
-}
-
-/* Дополнительные видеозадания (+10 NEVAR на YouTube) */
-
-function completeYouTubeVideo() {
-    if (!countVideoView()) return;
-
-    state.balance += 10;
-
-    saveState();
-    render();
-
-    alert("🎉 Начислено +10 NEVAR за просмотр YouTube видео!");
-}
-
-/* Ежедневное задание: 5 видео (+10 NEVAR) */
-
-function completeDailyVideos() {
-    resetDailyVideoCounterIfNeeded();
-
-    if (state.dailyTasksClaimed.fiveVideos) {
-        alert("Награда за это задание уже получена сегодня.");
-        return;
-    }
-
-    if (state.dailyVideosWatched < 5) {
-        alert("Для выполнения задания нужно посмотреть хотя бы 5 видео.");
-        return;
-    }
-
-    state.dailyTasksClaimed.fiveVideos = true;
-    state.balance += 10;
-
-    saveState();
-    render();
-
-    alert("🎉 Начислено +10 NEVAR за выполнение ежедневного задания!");
-}
-
-/* Инициализация приложения */
-
-document.addEventListener("DOMContentLoaded", () => {
-    resetDailyVideoCounterIfNeeded();
-
-    const telegram = window.Telegram && window.Telegram.WebApp;
-
-    if (telegram) {
-        telegram.ready();
-        telegram.expand();
-    }
-
-    render();
-
-    setInterval(() => {
-        render();
-    }, 1000);
-});
-</script>
-</body>
-</html>
+    const today = 
