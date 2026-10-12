@@ -78,6 +78,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
 </head>
 <body>
 
+<!-- 1. МАЙНИНГ -->
 <div class="app-container active" id="page-mining">
     <div class="top-header">
         <div>
@@ -108,6 +109,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         </div>
     </div>
 
+    <!-- НОЧНОЙ МАЙНИНГ -->
     <div class="boost-card">
         <div class="boost-heading">
             <div class="boost-icon">🌙</div>
@@ -121,6 +123,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" id="btn-night-mining" onclick="watchNightMiningVideo()">Запустить ночной майнинг (0/5) 📺</button>
     </div>
 
+    <!-- УСКОРИТЕЛЬ -->
     <div class="boost-card">
         <div class="boost-heading">
             <div class="boost-icon">⚡</div>
@@ -134,6 +137,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">Активировать</button>
     </div>
 </div>
+<!-- 2. ЗАДАНИЯ -->
 <div id="page-tasks" class="app-container">
     <div class="section-title">📋 Ежедневные задания</div>
 
@@ -189,6 +193,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" style="width:100%" id="btn-daily-login" onclick="handleDailyLoginButton()">Получить награду за вход</button>
     </div>
 
+    <!-- ПОДПИСКИ -->
     <div class="section-title" style="margin-top:25px">🌐 Поддержи NEVAR</div>
 
     <div class="card">
@@ -227,6 +232,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
         </div>
     </div>
 </div>
+
+<!-- 3. ЭКСПЕДИЦИИ -->
 <div id="page-expeditions" class="app-container">
     <div class="section-title">🚀 Ангар и Снаряжение</div>
 
@@ -252,8 +259,9 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="section-title" style="margin-top:25px">🪐 Последовательные экспедиции по планетам</div>
     <div id="planets-list"></div>
-</div>
-    <div id="page-friends" class="app-container">
+                </div>
+                <!-- 4. ЭКИПАЖ -->
+<div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
 
     <div class="header-card">
@@ -289,6 +297,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
 </div>
 
+<!-- 5. ИНФО -->
 <div id="page-info" class="app-container">
     <div class="section-title">ℹ️ Руководство пилота NEVAR</div>
 
@@ -318,16 +327,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
         </p>
     </div>
 
-    <div class="info-box" style="margin-top:14px">
-        <h3>💡 Полезные секреты для пилотов</h3>
-        <p>
-            • <strong>Запуск Майнинга:</strong> Смотрите видео, чтобы запустить добычу на 1 час или на 6 часов ночью.<br>
-            • <strong>Буст ×2:</strong> Активируйте временное ускорение добычи монеток во вкладке майнинга.<br>
-            • <strong>Награды и Задания:</strong> Регулярный вход и выполнение заданий приносят отличный приток капитала.<br>
-            • <strong>Экипаж:</strong> Приглашайте друзей — первые пилоты дают повышенные бонусы.
-        </p>
-    </div>
-
     <div class="warning-box" style="margin-top:14px;text-align:center">
         <h3 style="color:var(--gold2);margin-bottom:6px">🌌 Главный секрет экспедиции</h3>
         <p style="font-style:italic">
@@ -342,6 +341,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
     </div>
 </div>
 
+<!-- НИЖНЯЯ НАВИГАЦИЯ -->
 <nav class="nav-bar">
     <button class="nav-item active" data-page="mining" onclick="showPage('mining')"><span class="nav-icon">⛏️</span><span class="nav-label">Майнинг</span></button>
     <button class="nav-item" data-page="tasks" onclick="showPage('tasks')"><span class="nav-icon">📋</span><span class="nav-label">Задания</span></button>
@@ -349,7 +349,11 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <button class="nav-item" data-page="friends" onclick="showPage('friends')"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
     <button class="nav-item" data-page="info" onclick="showPage('info')"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
 </nav>
-    <script>
+<script>
+/* ==========================================
+   СОСТОЯНИЕ И МАЙНИНГ
+   ========================================== */
+
 const STORAGE_KEY = "nevarGameState";
 
 const PLANETS = [
@@ -515,9 +519,15 @@ function isNightMiningActive() {
     return state.nightMiningEndsAt > Date.now();
 }
 
+/* ЗАПУСК МАЙНИНГА С ВЗАИМНОЙ БЛОКИРОВКОЙ */
 function startMiningSession() {
     if (isMiningActive()) {
         alert("Сессионный майнинг уже активен!");
+        return;
+    }
+
+    if (isNightMiningActive()) {
+        alert("Нельзя запустить обычный майнинг, пока активен ночной!");
         return;
     }
 
@@ -544,6 +554,11 @@ function watchNightMiningVideo() {
         return;
     }
 
+    if (isMiningActive()) {
+        alert("Нельзя запустить ночной майнинг, пока активен обычный!");
+        return;
+    }
+
     if (state.nightMiningVideos >= 5) {
         alert("Вы уже посмотрели 5 видео для ночного майнинга.");
         return;
@@ -556,10 +571,6 @@ function watchNightMiningVideo() {
     if (state.nightMiningVideos >= 5) {
         state.nightMiningStartedAt = Date.now();
         state.nightMiningEndsAt = Date.now() + 6 * 60 * 60 * 1000;
-        
-        state.miningStartedAt = 0;
-        state.miningEndsAt = 0;
-
         alert("🌙 Ночной майнинг запущен на 6 часов!");
     }
 
@@ -586,7 +597,8 @@ function watchBoostVideo() {
     saveState();
     render();
 }
-
+    <script>
+/* Соцсети */
 const SOCIAL_LINKS = {
     youtube: "https://youtube.com/",
     telegram: "https://t.me/",
@@ -644,6 +656,7 @@ function renderSocialBonuses() {
     });
 }
 
+/* Ангар и Снаряжение */
 function buySuit(method) {
     if (state.suitPurchased) {
         alert("Скафандр уже куплен!");
@@ -796,6 +809,7 @@ function renderPlanets() {
     });
 }
 
+/* Навигация и интерфейс */
 function showPage(pageId) {
     document.querySelectorAll(".app-container").forEach(page => {
         page.classList.remove("active");
@@ -828,13 +842,11 @@ function render() {
     resetDailyVideoCounterIfNeeded();
 
     const balanceElement = document.getElementById("balance");
-
     if (balanceElement) {
         balanceElement.textContent = Number(state.balance || 0).toFixed(2);
     }
 
     const speedIndicator = document.getElementById("speed-indicator");
-
     if (speedIndicator) {
         speedIndicator.textContent = `⚡ ${getMiningSpeed()} NEVAR/ч`;
     }
@@ -859,26 +871,12 @@ function updateMiningDisplay() {
 
     if (isMiningActive()) {
         if (miningLabel) miningLabel.textContent = "МАЙНИНГ АКТИВЕН";
-
-        if (miningTimer) {
-            miningTimer.textContent = formatTime(state.miningEndsAt - now);
-        }
-
+        if (miningTimer) miningTimer.textContent = formatTime(state.miningEndsAt - now);
         if (miningButton) miningButton.textContent = "Майнинг запущен";
     } else {
-        if (
-            state.miningEndsAt > 0 &&
-            state.lastMiningPaidAt < state.miningEndsAt
-        ) {
-            const elapsedSeconds = Math.max(
-                0,
-                (state.miningEndsAt - state.miningStartedAt) / 1000
-            );
-
-            const earned = (elapsedSeconds / 3600) *
-                getMiningSpeed() *
-                (state.boostActiveUntil > state.miningStartedAt ? 2 : 1);
-
+        if (state.miningEndsAt > 0 && state.lastMiningPaidAt < state.miningEndsAt) {
+            const elapsedSeconds = Math.max(0, (state.miningEndsAt - state.miningStartedAt) / 1000);
+            const earned = elapsedSeconds / 3600 * getMiningSpeed() * (state.boostActiveUntil > state.miningStartedAt ? 2 : 1);
             state.balance += earned;
             state.lastMiningPaidAt = state.miningEndsAt;
             saveState();
@@ -886,10 +884,7 @@ function updateMiningDisplay() {
 
         if (miningLabel) miningLabel.textContent = "МАЙНИНГ НЕ АКТИВЕН";
         if (miningTimer) miningTimer.textContent = "00:00:00";
-
-        if (miningButton) {
-            miningButton.textContent = "Запустить майнинг (1 ч) 📺";
-        }
+        if (miningButton) miningButton.textContent = "Запустить майнинг (1 ч) 📺";
     }
 
     const nightStatus = document.getElementById("night-mining-status");
@@ -935,11 +930,10 @@ function updateMiningDisplay() {
     }
 }
 
+/* Экипаж */
 function updateFriendsDisplay() {
     const count = document.getElementById("friends-count");
-    if (count) {
-        count.textContent = String(state.invitedFriends || 0);
-    }
+    if (count) count.textContent = String(state.invitedFriends || 0);
 }
 
 function inviteFriend() {
@@ -950,9 +944,7 @@ function inviteFriend() {
     const link = userId ? `https://t.me/${botUsername}?start=${userId}` : `https://t.me/${botUsername}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link)
-            .then(() => alert("Пригласительная ссылка скопирована!"))
-            .catch(() => prompt("Скопируйте ссылку:", link));
+        navigator.clipboard.writeText(link).then(() => alert("Пригласительная ссылка скопирована!")).catch(() => prompt("Скопируйте ссылку:", link));
     } else {
         prompt("Скопируйте ссылку:", link);
     }
@@ -974,9 +966,7 @@ function copyStatusLink() {
     if (uploadButton) uploadButton.disabled = false;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(link)
-            .then(() => alert("Ссылка скопирована!"))
-            .catch(() => prompt("Скопируйте ссылку:", link));
+        navigator.clipboard.writeText(link).then(() => alert("Ссылка скопирована!")).catch(() => prompt("Скопируйте ссылку:", link));
     } else {
         prompt("Скопируйте ссылку:", link);
     }
@@ -1015,7 +1005,6 @@ function handleStatusImageUpload(event) {
 
     saveState();
     render();
-
     alert(`Файл выбран. Начислено ${reward} NEVAR в тестовом режиме.`);
     event.target.value = "";
 }
@@ -1035,4 +1024,67 @@ function handleDailyLoginButton() {
         return;
     }
 
-    state.dailyLoginStr
+    state.dailyLoginStreak = (state.dailyLoginStreak || 0) + 1;
+    if (state.dailyLoginStreak > 7) state.dailyLoginStreak = 1;
+
+    const rewards = [10, 20, 30, 40, 50, 50, 50];
+    const reward = rewards[state.dailyLoginStreak - 1];
+
+    state.balance += reward;
+    state.dailyLoginDate = today;
+
+    saveState();
+    render();
+    alert(`🎁 Награда за вход: ${reward} NEVAR!`);
+}
+
+function watchOptionalVideo() {
+    if (!countVideoView()) return;
+    state.balance += 3;
+    saveState();
+    render();
+    alert("Начислено +3 NEVAR за просмотр видео.");
+}
+
+function completeYouTubeVideo() {
+    if (!countVideoView()) return;
+    state.balance += 10;
+    saveState();
+    render();
+    alert("🎉 Начислено +10 NEVAR за просмотр YouTube видео!");
+}
+
+function completeDailyVideos() {
+    resetDailyVideoCounterIfNeeded();
+    if (state.dailyTasksClaimed.fiveVideos) {
+        alert("Награда за это задание уже получена сегодня.");
+        return;
+    }
+    if (state.dailyVideosWatched < 5) {
+        alert("Для выполнения задания нужно посмотреть хотя бы 5 видео.");
+        return;
+    }
+
+    state.dailyTasksClaimed.fiveVideos = true;
+    state.balance += 10;
+    saveState();
+    render();
+    alert("🎉 Начислено +10 NEVAR за выполнение ежедневного задания!");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    resetDailyVideoCounterIfNeeded();
+    const telegram = window.Telegram && window.Telegram.WebApp;
+    if (telegram) {
+        telegram.ready();
+        telegram.expand();
+    }
+    render();
+    setInterval(() => {
+        render();
+    }, 1000);
+});
+</script>
+</body>
+</html>
+    
