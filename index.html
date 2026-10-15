@@ -62,7 +62,6 @@ button:disabled{cursor:not-allowed;opacity:.55}
 .daily-reward .mark{min-height:18px;color:var(--green);font-size:8px;line-height:1.2}
 .daily-reward.current{border-color:var(--gold);background:rgba(243,201,105,.08)}
 .daily-reward.claimed{border-color:rgba(66,214,164,.3);background:rgba(66,214,164,.05)}
-.friends-list{display:flex;flex-direction:column;gap:8px}
 .hangar-item{padding:18px;margin-bottom:14px;border:1px solid rgba(160,174,192,.15);border-radius:17px;background:var(--panel)}
 .hangar-item h3{margin:0 0 8px;color:var(--gold2);font-size:16px}
 .hangar-item p{color:var(--muted);font-size:12px;line-height:1.6}
@@ -150,10 +149,10 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <button class="btn-action" id="btn-youtube-video" onclick="completeYouTubeVideo()">Смотреть</button>
     </div>
 
-     <div class="card">
+    <div class="card">
         <div class="card-info">
             <h4>Посмотреть 5 видео</h4>
-            <p>Просмотр видео: 0/5 • <span class="gold-text">+5 NEVAR</span></p>
+            <p id="desc-daily-videos">Просмотр видео: 0/5 • <span class="gold-text">+5 NEVAR</span></p>
         </div>
         <button class="btn-action" id="btn-daily-videos" onclick="completeDailyVideos()">Смотреть</button>
     </div>
@@ -259,8 +258,9 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="section-title" style="margin-top:25px">🪐 Последовательные экспедиции по планетам</div>
     <div id="planets-list"></div>
-                                                                                              </div>
-                                                                                              <!-- 4. ЭКИПАЖ -->
+</div>
+
+<!-- 4. ЭКИПАЖ -->
 <div id="page-friends" class="app-container">
     <div class="section-title">👥 Мой экипаж</div>
 
@@ -296,13 +296,12 @@ button:disabled{cursor:not-allowed;opacity:.55}
         </div>
     </div>
 </div>
-
 <!-- 5. ИНФО -->
 <div id="page-info" class="app-container">
     <div class="section-title">ℹ️ Руководство пилота NEVAR</div>
 
     <div class="info-box">
-        <h3>🪙 Что такое NEVAR?</h3>
+        <h3> Что такое NEVAR?</h3>
         <p>
             • <strong>Суть токена:</strong> NEVAR — это внутренняя игровая валюта и будущий токен экосистемы, который пилоты добывают в ходе космической экспедиции.<br>
             • <strong>Главная цель:</strong> Все монеты, добытые с помощью сессионного майнинга, выполнения заданий и покорения планет, — это ваш капитал и подготовка к будущему <span class="gold-text">аирдропу и официальному листингу</span>.<br>
@@ -358,8 +357,9 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <button class="nav-item" data-page="expeditions" onclick="showPage('expeditions')"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
     <button class="nav-item" data-page="friends" onclick="showPage('friends')"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
     <button class="nav-item" data-page="info" onclick="showPage('info')"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
-        </nav>
-        <script>
+</nav>
+
+<script>
 /* ==========================================
    СОСТОЯНИЕ И МАЙНИНГ
    ========================================== */
@@ -749,7 +749,7 @@ function buySuit(method) {
 
     if (method === "nevar") {
         if (state.balance < 1000) {
-            alert("Недостаточно NEVAR! Требуется 1000 🪙");
+            alert("Недостаточно NEVAR! Требуется 1000 ");
             return;
         }
         state.balance -= 1000;
@@ -776,7 +776,7 @@ function buyShip(method) {
 
     if (method === "nevar") {
         if (state.balance < 5000) {
-            alert("Недостаточно NEVAR! Требуется 5000 🪙");
+            alert("Недостаточно NEVAR! Требуется 5000 ");
             return;
         }
         state.balance -= 5000;
@@ -844,7 +844,7 @@ function startExpedition(planetId) {
     }
 
     if (state.balance < planet.cost) {
-        alert(`Недостаточно NEVAR! Требуется ${planet.cost} 🪙`);
+        alert(`Недостаточно NEVAR! Требуется ${planet.cost} `);
         return;
     }
 
@@ -872,7 +872,7 @@ function renderPlanets() {
         card.className = "card";
         card.style.marginBottom = "10px";
 
-        let buttonText = `Запустить (${planet.cost} 🪙)`;
+        let buttonText = `Запустить (${planet.cost} )`;
         if (isCompleted) buttonText = "✅ Покорена";
         else if (!isUnlocked) buttonText = "Заблокировано";
 
@@ -892,7 +892,7 @@ function renderPlanets() {
         list.appendChild(card);
     });
 }
-            /* ==========================================
+    /* ==========================================
    НАВИГАЦИЯ И ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
    ========================================== */
 
@@ -1173,12 +1173,12 @@ function handleDailyLoginButton() {
 function watchOptionalVideo() {
     if (!countVideoView()) return;
 
-    state.balance += 3;
+    state.balance += 1;
 
     saveState();
     render();
 
-    alert("Начислено +3 NEVAR за просмотр видео.");
+    alert("Начислено +1 NEVAR за просмотр видео.");
 }
 
 function completeYouTubeVideo() {
@@ -1201,7 +1201,7 @@ function completeDailyVideos() {
     }
 
     if (state.dailyVideosWatched < 5) {
-        alert("Для выполнения задания нужно посмотреть хотя бы 5 видео.");
+        alert("Для выполнения задания нужно посмотреть хотябы 5 видео.");
         return;
     }
 
