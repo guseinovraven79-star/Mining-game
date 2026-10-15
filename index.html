@@ -1173,12 +1173,12 @@ function handleDailyLoginButton() {
 function watchOptionalVideo() {
     if (!countVideoView()) return;
 
-    state.balance += 3;
+    state.balance += 1;
 
     saveState();
     render();
 
-    alert("Начислено +3 NEVAR за просмотр видео.");
+    alert("Начислено +1 NEVAR за просмотр видео.");
 }
 
 function completeYouTubeVideo() {
