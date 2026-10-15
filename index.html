@@ -221,7 +221,7 @@ button:disabled{cursor:not-allowed;opacity:.55}
 
     <div class="card">
         <div class="card-info">
-            <h4>𝕏 X (Twitter)</h4>
+            <h4>𝕏 (Twitter)</h4>
             <p class="gold-text">+10 NEVAR</p>
             <p id="x-bonus-status">Бонус доступен</p>
         </div>
@@ -241,8 +241,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <p>Необходим для выхода в открытый космос и экспедиций (покупается 1 раз).</p>
         <div class="hangar-status" id="suit-status">Не приобретён</div>
         <div class="hangar-actions">
-            <button class="btn-action" id="btn-buy-suit-nevar" onclick="buySuit('nevar')">Купить за 1000 </button>
-            <button class="btn-action" id="btn-buy-suit-video" onclick="buySuit('video')">Видео (0/100) 📺</button>
+            <button class="btn-action" id="btn-buy-suit-nevar" onclick="buySuit('nevar')">Купить за 2500 </button>
+            <button class="btn-action" id="btn-buy-suit-video" onclick="buySuit('video')">Видео (0/250) 📺</button>
         </div>
     </div>
 
@@ -1138,7 +1138,7 @@ function updateDailyTaskDisplay() {
     if (dailyProgress) {
         const currentProgress = Math.min(state.dailyVideosWatched, 5);
         dailyProgress.textContent =
-            `Просмотр видео: ${currentProgress}/5 • +5.0 NEVAR`;
+            `Просмотр видео: ${currentProgress}${currentProgress}/5 • <span class="gold-text">+5 NEVAR</span>`;
     }
 
     updateVideoCounter();
