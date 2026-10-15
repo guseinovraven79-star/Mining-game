@@ -136,8 +136,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
         <p class="boost-progress" id="boost-progress">Прогресс: 0/5</p>
         <button class="btn-action" id="btn-activate-boost" onclick="watchBoostVideo()">Активировать</button>
     </div>
-</div>
-<!-- 2. ЗАДАНИЯ -->
+    </div>
+    <!-- 2. ЗАДАНИЯ -->
 <div id="page-tasks" class="app-container">
     <div class="section-title">📋 Ежедневные задания</div>
 
@@ -358,8 +358,8 @@ button:disabled{cursor:not-allowed;opacity:.55}
     <button class="nav-item" data-page="expeditions" onclick="showPage('expeditions')"><span class="nav-icon">🚀</span><span class="nav-label">Экспедиции</span></button>
     <button class="nav-item" data-page="friends" onclick="showPage('friends')"><span class="nav-icon">👥</span><span class="nav-label">Экипаж</span></button>
     <button class="nav-item" data-page="info" onclick="showPage('info')"><span class="nav-icon">ℹ️</span><span class="nav-label">Инфо</span></button>
-        </nav>
-        <script>
+</nav>
+<script>
 /* ==========================================
    СОСТОЯНИЕ И МАЙНИНГ
    ========================================== */
@@ -892,7 +892,7 @@ function renderPlanets() {
         list.appendChild(card);
     });
 }
-            /* ==========================================
+    /* ==========================================
    НАВИГАЦИЯ И ОБНОВЛЕНИЕ ИНТЕРФЕЙСА
    ========================================== */
 
@@ -1138,7 +1138,7 @@ function updateDailyTaskDisplay() {
     if (dailyProgress) {
         const currentProgress = Math.min(state.dailyVideosWatched, 5);
         dailyProgress.textContent =
-            `Просмотр видео: ${currentProgress}/5 • +10.0 NEVAR`;
+            `Просмотр видео: ${currentProgress}/5 • +5.0 NEVAR`;
     }
 
     updateVideoCounter();
@@ -1206,12 +1206,12 @@ function completeDailyVideos() {
     }
 
     state.dailyTasksClaimed.fiveVideos = true;
-    state.balance += 10;
+    state.balance += 5;
 
     saveState();
     render();
 
-    alert("🎉 Начислено +10 NEVAR за выполнение ежедневного задания!");
+    alert("🎉 Начислено +5 NEVAR за выполнение ежедневного задания!");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
